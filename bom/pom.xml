@@ -21,4 +21,19 @@
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
+    <properties>
+        <groovy.version>2.4.8</groovy.version>
+        <kpipes.version>0.0.0-SNAPSHOT</kpipes.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy</artifactId>
+                <version>${groovy.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>
