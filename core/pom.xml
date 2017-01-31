@@ -22,7 +22,9 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>starter</module>
         <module>event</module>
+        <module>function</module>
     </modules>
 
 </project>
