@@ -11,19 +11,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.kpipes</groupId>
-    <artifactId>kpipes</artifactId>
-    <version>0.0.0-SNAPSHOT</version>
+    <parent>
+        <groupId>net.kpipes</groupId>
+        <artifactId>kpipes-bom</artifactId>
+        <version>0.0.0-SNAPSHOT</version>
+        <relativePath>../bom</relativePath>
+    </parent>
+    <artifactId>kpipes-core</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
-    <modules>
-        <module>bom</module>
-        <module>core</module>
-    </modules>
-
-    <build>
-        <defaultGoal>clean install</defaultGoal>
-    </build>
 
 </project>
