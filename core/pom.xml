@@ -21,4 +21,8 @@
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>event</module>
+    </modules>
+
 </project>
