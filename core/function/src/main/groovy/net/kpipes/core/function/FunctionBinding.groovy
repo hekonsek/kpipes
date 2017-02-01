@@ -10,6 +10,8 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
+import static net.kpipes.core.event.EventDto.eventToDto
+
 @CompileStatic
 class FunctionBinding {
 
@@ -26,17 +28,19 @@ class FunctionBinding {
     }
 
     void start() {
+        def kafkaPort = kPipes.configurationResolver().integer('kafka.port', 9092)
+
         def config = new Properties()
         config.put('acks', 'all')
         config.put('retries', 5)
         config.put("linger.ms", 1);
-        config.put('bootstrap.servers', 'localhost:9092')
+        config.put('bootstrap.servers', "localhost:${kafkaPort}".toString())
         config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
         config.put("value.serializer", "org.apache.kafka.common.serialization.BytesSerializer")
         def kafkaProducer = new KafkaProducer(config)
 
         config = new Properties()
-        config.put('bootstrap.servers', 'localhost:9092')
+        config.put('bootstrap.servers', "localhost:${kafkaPort}".toString())
         config.put('group.id', 'function.' + address)
         config.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
         config.put("value.deserializer", "org.apache.kafka.common.serialization.BytesDeserializer")
@@ -45,19 +49,24 @@ class FunctionBinding {
         def consumer = new KafkaConsumer<>(config)
 
         consumer.subscribe(["function.${address}".toString()])
-        while(true) {
-            def events = consumer.poll(5000).iterator()
-            while (events.hasNext()) {
-                def record = events.next().value() as Bytes
-                def result = function.apply(new EventSerializer().deserialize(record.get()))
-                if(result.target().present) {
-                    def payload = new Bytes(new ObjectMapper().writeValueAsBytes(result))
-                    kafkaProducer.send(new ProducerRecord<String, Bytes>(result.target().get(), result.entityId().orElseGet{ UUID.randomUUID().toString() }, payload))
+        new Thread(){
+            @Override
+            void run() {
+                while(true) {
+                    def events = consumer.poll(5000).iterator()
+                    while (events.hasNext()) {
+                        def record = events.next().value() as Bytes
+                        def result = function.apply(new EventSerializer().deserialize(record.get()))
+                        if(result.target().present) {
+                            def payload = new Bytes(new ObjectMapper().writeValueAsBytes(eventToDto(result)))
+                            kafkaProducer.send(new ProducerRecord<String, Bytes>(result.target().get(), result.entityId().orElseGet{ UUID.randomUUID().toString() }, payload))
+                        }
+                        consumer.commitSync()
+                    }
+                    Thread.sleep(100)
                 }
-                consumer.commitSync()
             }
-            Thread.sleep(100)
-        }
+        }.start()
     }
 
 }

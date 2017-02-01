@@ -13,40 +13,30 @@
 
     <parent>
         <groupId>net.kpipes</groupId>
-        <artifactId>kpipes-core</artifactId>
+        <artifactId>kpipes-lib</artifactId>
         <version>0.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-core-starter</artifactId>
+    <artifactId>kpipes-lib-kafka-broker</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>
-        <!-- External dependencies -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-configuration2</artifactId>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.11</artifactId>
         </dependency>
 
-        <!-- Needed by Reflections and Groovy compiler -->
+        <!-- Optional configuration -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-core-starter</artifactId>
+            <optional>true</optional>
         </dependency>
 
-        <!-- External testing dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -55,6 +45,17 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <!--<scope>test</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
