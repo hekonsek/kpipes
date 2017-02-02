@@ -10,17 +10,17 @@ import org.apache.kafka.common.utils.Bytes
 import org.junit.Test
 
 import static com.google.common.io.Files.createTempDir
+import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
 
 class FunctionBindingTest {
 
     @Test
     void shouldInvokeFunction() {
-        def kafkaPort = new Random().nextInt(10000) + 1024
-        def zooKeeperPort = kafkaPort + 1
+        def kafkaPort = availableTcpPort()
         System.setProperty('kafka.port', "${kafkaPort}")
         System.setProperty('kafka.dataDirectory', "${createTempDir().absolutePath}")
-        System.setProperty('zooKeeper.port', "${zooKeeperPort}")
+        System.setProperty('zooKeeper.port', "${availableTcpPort()}")
         System.setProperty('zooKeeper.dataDirectory', "${createTempDir().absolutePath}")
         def kpipes = new KPipes().start()
         def serializer = new EventSerializer()
@@ -29,6 +29,7 @@ class FunctionBindingTest {
         def producer = new KafkaProducerBuilder().port(kafkaPort).build()
         producer.send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results'], [:], [name: 'henry'])))))
 
+        Thread.sleep(5000)
         def config = new Properties()
         config.put('bootstrap.servers', "localhost:${kafkaPort}".toString())
         config.put('group.id', 'groupName')

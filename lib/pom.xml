@@ -22,6 +22,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>commons</module>
         <module>kafka-client</module>
         <module>kafka-broker</module>
     </modules>
