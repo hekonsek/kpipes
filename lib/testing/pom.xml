@@ -13,47 +13,40 @@
 
     <parent>
         <groupId>net.kpipes</groupId>
-        <artifactId>kpipes-core</artifactId>
+        <artifactId>kpipes-lib</artifactId>
         <version>0.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-core-starter</artifactId>
+    <artifactId>kpipes-lib-testing</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>
         <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-lib-commons</artifactId>
+            <artifactId>kpipes-core-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-lib-kafka-broker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-lib-kafka-client</artifactId>
         </dependency>
 
         <!-- External dependencies -->
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-configuration2</artifactId>
-        </dependency>
-
-        <!-- Needed by Reflections and Groovy compiler -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- External testing dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

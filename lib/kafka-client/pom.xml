@@ -33,6 +33,7 @@
             <artifactId>kafka-clients</artifactId>
         </dependency>
 
+        <!-- Optional runtime dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
             <artifactId>kpipes-core-starter</artifactId>
