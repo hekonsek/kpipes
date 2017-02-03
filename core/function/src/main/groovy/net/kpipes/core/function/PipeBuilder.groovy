@@ -18,7 +18,11 @@ class PipeBuilder {
     void build(String pipeDefinition) {
         def definitionParts = pipeDefinition.split(/\|/).collect{ it.trim() }
         def from = definitionParts[0]
-        def function = definitionParts[1]
+
+        def functionParts = definitionParts[1].split(' ', 2)
+        def functionAddress = functionParts[0]
+        def functionConfiguration = functionParts.size() > 1 ? functionParts[1] : null
+
         def to = definitionParts[2]
 
         def kafkaPort = kpipes.configurationResolver().integer('kafka.port', 9092)
@@ -34,8 +38,11 @@ class PipeBuilder {
                     while (events.hasNext()) {
                         def record = events.next()
                         def event = new EventSerializer().deserialize((record.value() as Bytes).get())
+                        if(functionConfiguration != null) {
+                            event.metaData().functionConfig = new GroovyShell().evaluate("L:${functionConfiguration}") as Map
+                        }
                         event.metaData().put('target', to)
-                        responseProducer.send(new ProducerRecord("function.${function}", record.key(), new Bytes(new EventSerializer().serialize(event))))
+                        responseProducer.send(new ProducerRecord("function.${functionAddress}", record.key(), new Bytes(new EventSerializer().serialize(event))))
                         consumer.commitSync()
                     }
                     Thread.sleep(100)

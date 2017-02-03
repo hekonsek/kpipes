@@ -13,41 +13,34 @@
 
     <parent>
         <groupId>net.kpipes</groupId>
-        <artifactId>kpipes-lib</artifactId>
+        <artifactId>kpipes-functions</artifactId>
         <version>0.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-lib-kafka-client</artifactId>
+    <artifactId>kpipes-functions-core-filter</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>
-        <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-lib-commons</artifactId>
-        </dependency>
-
-        <!-- External dependencies -->
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
+            <artifactId>kpipes-core-function</artifactId>
+            <version>0.0.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core-starter</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- External testing dependencies -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <artifactId>kpipes-lib-kafka-broker</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
