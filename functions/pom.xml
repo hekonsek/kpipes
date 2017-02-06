@@ -23,6 +23,7 @@
 
     <modules>
         <module>core-filter</module>
+        <module>geo-geocoding</module>
     </modules>
 
 </project>
