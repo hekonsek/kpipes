@@ -24,6 +24,10 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-core-starter-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-lib-commons</artifactId>
         </dependency>
 
