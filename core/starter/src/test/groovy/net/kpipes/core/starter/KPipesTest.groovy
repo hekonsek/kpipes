@@ -1,15 +1,17 @@
 package net.kpipes.core.starter
 
+import net.kpipes.core.starter.spi.Service
 import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
 
 class KPipesTest {
 
+    static kpipes = new KPipes().start()
+
     @Test
     void shouldRetrieveService() {
         // Given
-        def kpipes = new KPipes().start()
         kpipes.serviceRegistry().registerService('foo')
 
         // When
@@ -21,9 +23,6 @@ class KPipesTest {
 
     @Test
     void shouldRetrieveServiceFromFactory() {
-        // Given
-        def kpipes = new KPipes().start()
-
         // When
         def stringService = kpipes.service(Date)
 
@@ -31,12 +30,38 @@ class KPipesTest {
         assertThat(stringService).isNotNull()
     }
 
-    static class DateFactory {
+    @Test
+    void shouldExecuteStartCallback() {
+        // When
+        def service = kpipes.service(ServiceClass)
+
+        // Then
+        assertThat(service.started).isTrue()
+    }
+
+    // Fixture classes
+
+    static class ServiceFactories {
 
         @Service
         Date date(KPipes kpipes) {
             assertThat(kpipes).isNotNull()
             new Date()
+        }
+
+        @Service(onStart = 'start')
+        def serviceClass(KPipes kpipes) {
+            new ServiceClass()
+        }
+
+    }
+
+    static class ServiceClass {
+
+        boolean started
+
+        void start() {
+            started = true
         }
 
     }

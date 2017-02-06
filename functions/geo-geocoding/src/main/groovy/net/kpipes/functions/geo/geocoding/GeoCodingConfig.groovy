@@ -2,7 +2,7 @@ package net.kpipes.functions.geo.geocoding
 
 import net.kpipes.core.function.FunctionBinding
 import net.kpipes.core.starter.KPipes
-import net.kpipes.core.starter.Service
+import net.kpipes.core.starter.spi.Service
 import org.apache.camel.ProducerTemplate
 import org.apache.camel.impl.DefaultCamelContext
 

@@ -1,6 +1,7 @@
-package net.kpipes.core.starter
+package net.kpipes.core.starter.service
 
 import groovy.transform.CompileStatic
+import net.kpipes.core.starter.spi.ServiceRegistry
 
 @CompileStatic
 class InMemoryServiceRegistry implements ServiceRegistry {

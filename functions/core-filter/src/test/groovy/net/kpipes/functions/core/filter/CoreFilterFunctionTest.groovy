@@ -31,13 +31,13 @@ class CoreFilterFunctionTest {
         kpipes.service(PipeBuilder).build('source | core.filter [predicate: "event.body.name == /henry2/"] | results')
 
         // When
-        Thread.sleep(5000)
+        Thread.sleep(10000)
         def producer = new KafkaProducerBuilder().port(kafkaPort).build()
         producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry1'])))))
         producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry2'])))))
 
         // Then
-        Thread.sleep(5000)
+        Thread.sleep(10000)
         def resultsConsumer = new KafkaConsumerBuilder('test2').port(kafkaPort).build()
         resultsConsumer.subscribe(['results'])
         while(true) {

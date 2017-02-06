@@ -1,4 +1,4 @@
-package net.kpipes.core.starter
+package net.kpipes.core.starter.spi
 
 interface ServiceRegistry {
 

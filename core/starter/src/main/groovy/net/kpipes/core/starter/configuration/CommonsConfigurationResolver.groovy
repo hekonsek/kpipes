@@ -1,5 +1,6 @@
 package net.kpipes.core.starter.configuration
 
+import net.kpipes.core.starter.spi.ConfigurationResolver
 import org.apache.commons.configuration2.Configuration
 import org.apache.commons.configuration2.EnvironmentConfiguration
 import org.apache.commons.configuration2.MapConfiguration

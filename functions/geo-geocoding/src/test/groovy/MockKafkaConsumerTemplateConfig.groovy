@@ -1,5 +1,5 @@
 import net.kpipes.core.starter.KPipes
-import net.kpipes.core.starter.Service
+import net.kpipes.core.starter.spi.Service
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 
 import static org.mockito.Mockito.mock

@@ -1,7 +1,7 @@
 package net.kpipes.lib.kafka.broker.config
 
 import net.kpipes.core.starter.KPipes
-import net.kpipes.core.starter.Service
+import net.kpipes.core.starter.spi.Service
 import net.kpipes.lib.kafka.broker.KafkaBroker
 import net.kpipes.lib.kafka.broker.ZooKeeperServer
 

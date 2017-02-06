@@ -33,7 +33,7 @@ class PipeBuilderTest {
         producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
 
         // Then
-        Thread.sleep(5000)
+        Thread.sleep(10000)
         def resultsConsumer = new KafkaConsumerBuilder('test').port(kafkaPort).build()
         resultsConsumer.subscribe(['results'])
         while(true) {

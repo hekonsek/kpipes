@@ -1,4 +1,4 @@
-package net.kpipes.core.starter.configuration
+package net.kpipes.core.starter.spi
 
 interface ConfigurationResolver {
 
