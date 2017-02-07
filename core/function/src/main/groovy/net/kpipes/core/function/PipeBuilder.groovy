@@ -4,6 +4,7 @@ import net.kpipes.core.event.EventSerializer
 import net.kpipes.core.starter.KPipes
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
+import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
@@ -26,29 +27,18 @@ class PipeBuilder {
         def to = definitionParts[2]
 
         def kafkaPort = kpipes.configurationResolver().integer('kafka.port', 9092)
-        def consumer = new KafkaConsumerBuilder(pipeDefinition).port(kafkaPort).build()
+        def consumer = new KafkaConsumerBuilder<String, Bytes>(pipeDefinition).port(kafkaPort).build()
         consumer.subscribe([from])
         def responseProducer = new KafkaProducerBuilder().port(kafkaPort).build()
 
-        new Thread(){
-            @Override
-            void run() {
-                while(true) {
-                    def events = consumer.poll(5000).iterator()
-                    while (events.hasNext()) {
-                        def record = events.next()
-                        def event = new EventSerializer().deserialize((record.value() as Bytes).get())
-                        if(functionConfiguration != null) {
-                            event.metaData().functionConfig = new GroovyShell().evaluate("L:${functionConfiguration}") as Map
-                        }
-                        event.metaData().put('target', to)
-                        responseProducer.send(new ProducerRecord("function.${functionAddress}", record.key(), new Bytes(new EventSerializer().serialize(event))))
-                        consumer.commitSync()
-                    }
-                    Thread.sleep(100)
-                }
+        kpipes.service(KafkaConsumerTemplate).consumeRecord(consumer) { eventRecord ->
+            def event = new EventSerializer().deserialize(eventRecord.value().get())
+            if(functionConfiguration != null) {
+                event.metaData().functionConfig = new GroovyShell().evaluate("L:${functionConfiguration}") as Map
             }
-        }.start()
+            event.metaData().put('target', to)
+            responseProducer.send(new ProducerRecord("function.${functionAddress}", eventRecord.key(), new Bytes(new EventSerializer().serialize(event))))
+        }
     }
 
 }
