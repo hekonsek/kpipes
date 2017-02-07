@@ -1,35 +1,44 @@
 package net.kpipes.core.function
 
+import io.vertx.ext.unit.TestContext
+import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.event.Event
 import net.kpipes.core.event.EventSerializer
-import net.kpipes.core.starter.KPipes
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
+import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
+import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.junit.BeforeClass
 import org.junit.Test
+import org.junit.runner.RunWith
 
 import java.util.concurrent.Callable
 
-import static com.google.common.io.Files.createTempDir
 import static com.jayway.awaitility.Awaitility.await
-import static net.kpipes.lib.commons.Networks.availableTcpPort
+import static net.kpipes.core.function.FunctionBinding.functionBinding
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
+@RunWith(VertxUnitRunner)
 class PipeBuilderTest {
 
-    @Test(timeout = 30000L)
-    void pipeShouldInvokeFunction() {
-        def kafkaPort = availableTcpPort()
-        System.setProperty('kafka.port', "${kafkaPort}")
-        System.setProperty('kafka.dataDirectory', "${createTempDir().absolutePath}")
-        System.setProperty('zooKeeper.port', "${availableTcpPort()}")
-        System.setProperty('zooKeeper.dataDirectory', "${createTempDir().absolutePath}")
-        def kpipes = new KPipes().start()
+    static def kpipesTest = new KPipesTest().start()
 
+    static def kpipes = kpipesTest.kpipes()
+
+    static def kafkaPort = kpipesTest.kafkaPort()
+
+    @BeforeClass
+    static void beforeClass() {
+        functionBinding(kpipes, 'hello.world') { it.body().hello = it.body().name; it }.start()
+    }
+
+    @Test(timeout = 30000L)
+    void pipeShouldInvokeFunction(TestContext context) {
+        def async = context.async()
         def serializer = new EventSerializer()
-        new FunctionBinding(kpipes, 'hello.world', { (it.body() as Map).hello = (it.body() as Map).name; it }).start()
         kpipes.service(PipeBuilder).build('source | hello.world | results')
 
         // When
@@ -37,19 +46,13 @@ class PipeBuilderTest {
         producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
 
         // Then
-        def resultsConsumer = new KafkaConsumerBuilder(uuid()).port(kafkaPort).build()
+        def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kafkaPort).build()
         await().until({ resultsConsumer.partitionsFor('results').size() > 0 } as Callable<Boolean>)
         resultsConsumer.subscribe(['results'])
-        while(true) {
-            def events = resultsConsumer.poll(5000).iterator()
-            while (events.hasNext()) {
-                resultsConsumer.commitSync()
-                def bytes = events.next().value() as Bytes
-                def event = serializer.deserialize(bytes.get())
-                assertThat((event.body() as Map).hello).isEqualTo('henry')
-                return
-            }
-            Thread.sleep(100)
+        kpipes.service(KafkaConsumerTemplate).consumeRecord(resultsConsumer) {
+            def event = serializer.deserialize(it.value().get())
+            assertThat(event.body().hello).isEqualTo('henry')
+            async.complete()
         }
     }
 

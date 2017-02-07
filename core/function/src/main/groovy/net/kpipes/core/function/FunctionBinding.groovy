@@ -37,7 +37,7 @@ class FunctionBinding {
         def responseProducer = new KafkaProducerBuilder().port(kafkaPort).build()
         def functionConsumer = new KafkaConsumerBuilder('function.' + address).port(kafkaPort).build()
         functionConsumer.subscribe(["function.${address}" as String])
-        kpipes.service(KafkaConsumerTemplate).start(functionConsumer) {
+        kpipes.service(KafkaConsumerTemplate).consumeRecords(functionConsumer) {
             def events = it.iterator()
             while (events.hasNext()) {
                 def record = events.next().value() as Bytes

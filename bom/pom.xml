@@ -37,6 +37,7 @@
         <mockito.version>1.10.19</mockito.version>
         <reflections.version>0.9.10</reflections.version>
         <slf4j.version>1.7.22</slf4j.version>
+        <vertx.version>3.3.3</vertx.version>
     </properties>
 
     <dependencyManagement>
@@ -98,6 +99,11 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-unit</artifactId>
+                <version>${vertx.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
