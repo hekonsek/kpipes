@@ -41,6 +41,13 @@
             <artifactId>kpipes-lib-testing</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- External testing dependencies -->
+        <dependency>
+            <groupId>com.jayway.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

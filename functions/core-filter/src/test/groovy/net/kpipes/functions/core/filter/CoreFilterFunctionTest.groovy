@@ -9,11 +9,14 @@ import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
-import org.assertj.core.api.Assertions
 import org.junit.Test
 
+import java.util.concurrent.Callable
+
 import static com.google.common.io.Files.createTempDir
+import static com.jayway.awaitility.Awaitility.await
 import static net.kpipes.lib.commons.Networks.availableTcpPort
+import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
 class CoreFilterFunctionTest {
@@ -31,14 +34,13 @@ class CoreFilterFunctionTest {
         kpipes.service(PipeBuilder).build('source | core.filter [predicate: "event.body.name == /henry2/"] | results')
 
         // When
-        Thread.sleep(10000)
         def producer = new KafkaProducerBuilder().port(kafkaPort).build()
         producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry1'])))))
         producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry2'])))))
 
         // Then
-        Thread.sleep(10000)
-        def resultsConsumer = new KafkaConsumerBuilder('test2').port(kafkaPort).build()
+        def resultsConsumer = new KafkaConsumerBuilder(uuid()).port(kafkaPort).build()
+        await().until({ resultsConsumer.partitionsFor('results').size() > 0 } as Callable<Boolean>)
         resultsConsumer.subscribe(['results'])
         while(true) {
             def events = resultsConsumer.poll(5000).iterator()

@@ -23,6 +23,7 @@
 
     <properties>
         <assertj.version>3.6.2</assertj.version>
+        <awaitility.version>1.7.0</awaitility.version>
         <camel.version>2.18.2</camel.version>
         <commons-configuration.version>2.1</commons-configuration.version>
         <commons-lang.version>3.4</commons-lang.version>
@@ -87,6 +88,11 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>

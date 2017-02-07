@@ -33,6 +33,7 @@ public class KafkaBroker {
         kafkaConfig.setProperty("port", port + "");
         kafkaConfig.setProperty("log.dir", dataDirectory);
         kafkaConfig.setProperty("log.flush.interval.messages", 1 + "");
+        kafkaConfig.setProperty('num.partitions', 25 + '')
 
         KafkaServer broker = new KafkaServer(new KafkaConfig(kafkaConfig), SystemTime$.MODULE$, Option.empty(), JavaConversions.asScalaBuffer(Collections.emptyList()));
         broker.startup();
