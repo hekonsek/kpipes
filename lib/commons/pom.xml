@@ -21,9 +21,14 @@
     <name>${project.artifactId}</name>
 
     <dependencies>
+        <!-- External dependencies -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

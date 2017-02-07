@@ -11,13 +11,13 @@ class EventSerializerTest {
     @Test
     void shouldDeserializeBody() {
         // Given
-        def serializedEvent = serializer.serialize(new Event([:], [:], 'body'))
+        def serializedEvent = serializer.serialize(new Event(foo: 'bar'))
 
         // When
         def deserializedEvent = serializer.deserialize(serializedEvent)
 
         // Then
-        assertThat(deserializedEvent.body()).isEqualTo('body')
+        assertThat(deserializedEvent.body()).containsEntry('foo', 'bar')
     }
 
 }

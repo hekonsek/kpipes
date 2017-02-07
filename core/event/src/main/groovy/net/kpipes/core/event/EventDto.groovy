@@ -9,7 +9,7 @@ class EventDto {
 
     Map<String, Object> headers
 
-    Object body
+    Map<String, Object> body
 
     static EventDto eventToDto(Event event) {
         new EventDto(metaData: event.metaData(), headers: event.headers(), body: event.body())

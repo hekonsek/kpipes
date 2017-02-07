@@ -9,24 +9,28 @@ class Event {
 
     private final Map<String, Object> headers
 
-    private final Object body
+    private final Map<String, Object> body
 
-    Event(Map<String, Object> metaData, Map<String, Object> headers, Object body) {
-        this.metaData = metaData
-        this.headers = headers
-        this.body = body
+    Event(Map<String, Object> metaData, Map<String, Object> headers, Map<String, Object> body) {
+        this.metaData = new LinkedHashMap<>(metaData)
+        this.headers = new LinkedHashMap<>(headers)
+        this.body = new LinkedHashMap<>(body)
+    }
+
+    Event(Map<String, Object> body) {
+        this([:], [:], body)
     }
 
     Map<String, Object> metaData() {
         metaData
     }
 
-    String user() {
-        metaData.user
+    Optional<String> user() {
+        Optional.ofNullable((String) metaData.user)
     }
 
-    String tenant() {
-        metaData.tenant
+    Optional<String> tenant() {
+        Optional.ofNullable((String) metaData.tenant)
     }
 
     Optional<String> target() {
@@ -41,7 +45,7 @@ class Event {
         headers
     }
 
-    Object body() {
+    Map<String, Object> body() {
         body
     }
 

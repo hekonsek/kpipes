@@ -25,7 +25,9 @@
         <assertj.version>3.6.2</assertj.version>
         <camel.version>2.18.2</camel.version>
         <commons-configuration.version>2.1</commons-configuration.version>
+        <commons-lang.version>3.4</commons-lang.version>
         <groovy.version>2.4.8</groovy.version>
+        <jackson.version>2.7.3</jackson.version>
         <javax-servlet.version>3.0.1</javax-servlet.version>
         <junit.version>4.12</junit.version>
         <kafka.version>0.10.1.1</kafka.version>
@@ -87,6 +89,11 @@
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${javax-servlet.version}</version>
@@ -101,6 +108,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-configuration2</artifactId>
                 <version>${commons-configuration.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.camel</groupId>
