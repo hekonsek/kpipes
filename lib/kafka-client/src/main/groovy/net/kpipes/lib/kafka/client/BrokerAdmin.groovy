@@ -25,7 +25,7 @@ class BrokerAdmin {
         if (!AdminUtils.topicExists(zooKeeperUtils, topic)) {
             RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
             AdminUtils.createTopic(zooKeeperUtils, topic, 25, 1, new Properties(), mode)
-            Thread.sleep(10000)
+            Thread.sleep(15000)
         }
     }
 
