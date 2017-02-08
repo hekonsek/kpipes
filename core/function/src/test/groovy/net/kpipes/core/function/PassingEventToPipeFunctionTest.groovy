@@ -1,3 +1,19 @@
+/**
+ * Licensed to the KPipes under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kpipes.core.function
 
 import io.vertx.ext.unit.TestContext
@@ -26,7 +42,7 @@ import org.junit.runner.RunWith
 @RunWith(VertxUnitRunner)
 class PassingEventToPipeFunctionTest {
 
-    @Test(timeout = 30000L)
+    @Test(timeout = 60000L)
     void shouldPassEventToFunctionTopic(TestContext context) {
         def async = context.async()
         def kpipesTest = new KPipesTest().start()
@@ -48,10 +64,7 @@ class PassingEventToPipeFunctionTest {
         def producer = new KafkaProducerBuilder().port(kafkaPort).build()
         producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
 
-//        Thread.sleep(10000)
-
         // Then
-
         if (!AdminUtils.topicExists(ZkUtils.apply(zkClient, false), 'function.hello.world')) {
             RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
             AdminUtils.createTopic(ZkUtils.apply(zkClient, false), 'function.hello.world', 25, 1, new Properties(), mode)
