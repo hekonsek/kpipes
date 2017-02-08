@@ -31,4 +31,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME
 
     String onStart() default ''
 
+    boolean overridable() default false
+
 }

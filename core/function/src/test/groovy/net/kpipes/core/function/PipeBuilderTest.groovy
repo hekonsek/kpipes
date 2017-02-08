@@ -4,6 +4,7 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.event.Event
 import net.kpipes.core.event.EventSerializer
+import net.kpipes.core.function.pipe.PipeBuilder
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
@@ -11,6 +12,7 @@ import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -21,6 +23,7 @@ import static net.kpipes.core.function.FunctionBinding.functionBinding
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
+@Ignore
 @RunWith(VertxUnitRunner)
 class PipeBuilderTest {
 

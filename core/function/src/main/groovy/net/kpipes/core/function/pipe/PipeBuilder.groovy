@@ -1,11 +1,9 @@
-package net.kpipes.core.function
+package net.kpipes.core.function.pipe
 
 import net.kpipes.core.event.EventSerializer
 import net.kpipes.core.starter.KPipes
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
-import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
-import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
 class PipeBuilder {
@@ -29,15 +27,15 @@ class PipeBuilder {
         def kafkaPort = kpipes.configurationResolver().integer('kafka.port', 9092)
         def consumer = new KafkaConsumerBuilder<String, Bytes>(pipeDefinition).port(kafkaPort).build()
         consumer.subscribe([from])
-        def responseProducer = new KafkaProducerBuilder().port(kafkaPort).build()
 
+        def functionExecutor = kpipes.service(FunctionExecutor)
         kpipes.service(KafkaConsumerTemplate).consumeRecord(consumer) { eventRecord ->
             def event = new EventSerializer().deserialize(eventRecord.value().get())
             if(functionConfiguration != null) {
                 event.metaData().functionConfig = new GroovyShell().evaluate("L:${functionConfiguration}") as Map
             }
             event.metaData().put('target', to)
-            responseProducer.send(new ProducerRecord("function.${functionAddress}", eventRecord.key(), new Bytes(new EventSerializer().serialize(event))))
+            functionExecutor.executeFunction("function.${functionAddress}", eventRecord.key(), event)
         }
     }
 

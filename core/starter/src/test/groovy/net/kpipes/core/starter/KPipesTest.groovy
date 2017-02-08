@@ -9,6 +9,23 @@ class KPipesTest {
 
     static kpipes = new KPipes().start()
 
+    @Service(overridable = true)
+    def Integer small(KPipes kpipes) {
+        10
+    }
+
+    @Service
+    def Integer big(KPipes kpipes) {
+        100
+    }
+
+    @Service(overridable = true)
+    def Long overridable(KPipes kpipes) {
+        10
+    }
+
+    // Tests
+
     @Test
     void shouldRetrieveService() {
         // Given
@@ -37,6 +54,24 @@ class KPipesTest {
 
         // Then
         assertThat(service.started).isTrue()
+    }
+
+    @Test
+    void shouldOverrideServiceDefinition() {
+        // When
+        def service = kpipes.service(Integer)
+
+        // Then
+        assertThat(service).isEqualTo(100)
+    }
+
+    @Test
+    void shouldNotOverrideServiceDefinition() {
+        // When
+        def service = kpipes.service(Long)
+
+        // Then
+        assertThat(service).isEqualTo(10)
     }
 
     // Fixture classes
