@@ -35,6 +35,7 @@ class FunctionBindingTest {
 
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results'], [:], [name: 'henry'])))))
 
+        Thread.sleep(10000)
         def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kpipesTest.kafkaPort()).build()
         kpipesTest.kpipes().service(KafkaConsumerTemplate).get().subscribe(resultsConsumer, 'results') {
             def event = serializer.deserialize(it.value().get())
