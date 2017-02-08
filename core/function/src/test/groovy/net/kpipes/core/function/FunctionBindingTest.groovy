@@ -65,7 +65,7 @@ class FunctionBindingTest {
     void shouldInvokeFunctionTwice(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
-        kpipesTest.kpipes().service(BrokerAdmin).get().ensureTopicExists('results')
+        kpipesTest.kpipes().service(BrokerAdmin).get().ensureTopicExists('results2')
 
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results2'], [:], [name: 'henry'])))))
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results2'], [:], [name: 'henry'])))))
