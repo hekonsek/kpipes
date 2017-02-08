@@ -20,6 +20,7 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.event.Event
 import net.kpipes.core.event.EventSerializer
+import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
@@ -48,10 +49,9 @@ class FunctionBindingTest {
     void shouldInvokeFunction(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
+        kpipesTest.kpipes().service(BrokerAdmin).get().ensureTopicExists('results')
 
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results'], [:], [name: 'henry'])))))
-
-        Thread.sleep(10000)
 
         def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kpipesTest.kafkaPort()).build()
         kpipesTest.kpipes().service(KafkaConsumerTemplate).get().subscribe(resultsConsumer, 'results') {
@@ -65,6 +65,7 @@ class FunctionBindingTest {
     void shouldInvokeFunctionTwice(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
+        kpipesTest.kpipes().service(BrokerAdmin).get().ensureTopicExists('results')
 
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results2'], [:], [name: 'henry'])))))
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results2'], [:], [name: 'henry'])))))

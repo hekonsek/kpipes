@@ -13,6 +13,8 @@ class KPipesTest {
 
     private final kafkaPort = availableTcpPort()
 
+    private final zooKeeperPort = availableTcpPort()
+
     private final eventProducer = new KafkaProducerBuilder().port(kafkaPort).build()
 
     KPipesTest(Object... servicesToRegister) {
@@ -24,7 +26,7 @@ class KPipesTest {
     KPipesTest start() {
         System.setProperty('kafka.port', "${kafkaPort}")
         System.setProperty('kafka.dataDirectory', "${createTempDir().absolutePath}")
-        System.setProperty('zooKeeper.port', "${availableTcpPort()}")
+        System.setProperty('zooKeeper.port', "${zooKeeperPort}")
         System.setProperty('zooKeeper.dataDirectory', "${createTempDir().absolutePath}")
         kpipes.start()
 
@@ -37,6 +39,10 @@ class KPipesTest {
 
     int kafkaPort() {
         kafkaPort
+    }
+
+    int zooKeeperPort() {
+        zooKeeperPort
     }
 
     KafkaProducer eventProducer() {
