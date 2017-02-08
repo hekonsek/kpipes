@@ -1,3 +1,19 @@
+/**
+ * Licensed to the KPipes under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kpipes.core.function
 
 import net.kpipes.core.event.Event
@@ -26,6 +42,8 @@ class PipeSourceReadingTest {
 
     def source = "source-${uuid()}"
 
+    def key = "key-${uuid()}"
+
     @Before
     void before() {
         kpipes.service(BrokerAdmin).get().ensureTopicExists(source)
@@ -39,7 +57,7 @@ class PipeSourceReadingTest {
 
         // When
         def producer = new KafkaProducerBuilder().port(kpipesTest.kafkaPort()).build()
-        producer.send(new ProducerRecord(source, 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
+        producer.send(new ProducerRecord(source, uuid(), new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
 
         // Then
         def exec = kpipes.service(FunctionExecutor).get() as MockFunctionExecutor
@@ -55,7 +73,7 @@ class PipeSourceReadingTest {
         // When
         def producer = new KafkaProducerBuilder().port(kpipesTest.kafkaPort()).build()
         100.times {
-            producer.send(new ProducerRecord(source, 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
+            producer.send(new ProducerRecord(source, uuid(), new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
         }
 
         // Then
