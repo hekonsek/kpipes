@@ -44,7 +44,7 @@ class FunctionBindingTest {
         }).start()
     }
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 120000L)
     void shouldInvokeFunction(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
@@ -59,7 +59,7 @@ class FunctionBindingTest {
         }
     }
 
-    @Test(timeout = 30000L)
+    @Test(timeout = 60000L)
     void shouldInvokeFunctionTwice(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
