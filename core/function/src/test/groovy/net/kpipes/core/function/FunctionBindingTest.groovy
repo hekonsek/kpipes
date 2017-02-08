@@ -44,12 +44,14 @@ class FunctionBindingTest {
         }).start()
     }
 
-    @Test(timeout = 120000L)
+    @Test(timeout = 60000L)
     void shouldInvokeFunction(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
 
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results'], [:], [name: 'henry'])))))
+
+        Thread.sleep(10000)
 
         def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kpipesTest.kafkaPort()).build()
         kpipesTest.kpipes().service(KafkaConsumerTemplate).get().subscribe(resultsConsumer, 'results') {
