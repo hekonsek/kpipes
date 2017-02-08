@@ -42,7 +42,7 @@ class PassingEventToPipeFunctionTest {
 
 
         def serializer = new EventSerializer()
-        kpipes.service(PipeBuilder).build('source | hello.world | results')
+        kpipes.service(PipeBuilder).get().build('source | hello.world | results')
 
         // When
         def producer = new KafkaProducerBuilder().port(kafkaPort).build()
@@ -76,7 +76,7 @@ class PassingEventToPipeFunctionTest {
                 println partitions
             }
         })
-        kpipes.service(KafkaConsumerTemplate).consumeRecord(consumer) {
+        kpipes.service(KafkaConsumerTemplate).get().consumeRecord(consumer) {
             async.complete()
         }
     }

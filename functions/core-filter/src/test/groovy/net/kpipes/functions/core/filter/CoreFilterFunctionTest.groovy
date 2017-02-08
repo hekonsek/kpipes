@@ -49,7 +49,7 @@ class CoreFilterFunctionTest {
         def kpipes = new KPipes().start()
         def serializer = new EventSerializer()
         new FunctionBinding(kpipes, 'hello.world', { (it.body() as Map).hello = (it.body() as Map).name; it }).start()
-        kpipes.service(PipeBuilder).build('source | core.filter [predicate: "event.body.name == /henry2/"] | results')
+        kpipes.service(PipeBuilder).get().build('source | core.filter [predicate: "event.body.name == /henry2/"] | results')
 
         // When
         def producer = new KafkaProducerBuilder().port(kafkaPort).build()

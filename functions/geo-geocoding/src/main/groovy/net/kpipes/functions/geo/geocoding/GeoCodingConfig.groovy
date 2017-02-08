@@ -27,7 +27,7 @@ class GeoCodingConfig {
 
     @Service(onStart = 'start')
     def coreFilterFunctionBinding(KPipes kpipes) {
-        def camelProducerTemplate = kpipes.service(ProducerTemplate)
+        def camelProducerTemplate = kpipes.service(ProducerTemplate).get()
         functionBinding(kpipes, 'geo.coding.reverse', new GeoCodingReverseFunction(camelProducerTemplate))
     }
 

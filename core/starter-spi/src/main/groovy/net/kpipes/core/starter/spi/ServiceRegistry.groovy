@@ -6,6 +6,6 @@ interface ServiceRegistry {
 
     def registerService(Object instance)
 
-    def <T> T service(Class<T> serviceType)
+    def <T> Optional<T> service(Class<T> serviceType)
 
 }

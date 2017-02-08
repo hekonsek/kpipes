@@ -28,21 +28,21 @@ class PipeSourceReadingTest {
 
     @Before
     void before() {
-        kpipes.service(BrokerAdmin).ensureTopicExists(source)
+        kpipes.service(BrokerAdmin).get().ensureTopicExists(source)
     }
 
     @Test
     void shouldPassEventToFunctionExecutor() {
         // Given
         def serializer = new EventSerializer()
-        kpipes.service(PipeBuilder).build("${source} | function")
+        kpipes.service(PipeBuilder).get().build("${source} | function")
 
         // When
         def producer = new KafkaProducerBuilder().port(kpipesTest.kafkaPort()).build()
         producer.send(new ProducerRecord(source, 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
 
         // Then
-        def exec = kpipes.service(FunctionExecutor) as MockFunctionExecutor
+        def exec = kpipes.service(FunctionExecutor).get() as MockFunctionExecutor
         await().until({!exec.events().empty} as Callable<Boolean>)
     }
 
@@ -50,7 +50,7 @@ class PipeSourceReadingTest {
     void shouldPassSeriesOfEventsToFunctionExecutor() {
         // Given
         def serializer = new EventSerializer()
-        kpipes.service(PipeBuilder).build("${source} | function")
+        kpipes.service(PipeBuilder).get().build("${source} | function")
 
         // When
         def producer = new KafkaProducerBuilder().port(kpipesTest.kafkaPort()).build()
@@ -59,7 +59,7 @@ class PipeSourceReadingTest {
         }
 
         // Then
-        def exec = kpipes.service(FunctionExecutor) as MockFunctionExecutor
+        def exec = kpipes.service(FunctionExecutor).get() as MockFunctionExecutor
         await().until({exec.events().size() == 100} as Callable<Boolean>)
     }
 

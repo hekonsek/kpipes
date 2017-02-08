@@ -28,8 +28,8 @@ class PipeBuilder {
         def consumer = new KafkaConsumerBuilder<String, Bytes>(pipeDefinition).port(kafkaPort).build()
         consumer.subscribe([from])
 
-        def functionExecutor = kpipes.service(FunctionExecutor)
-        kpipes.service(KafkaConsumerTemplate).consumeRecord(consumer) { eventRecord ->
+        def functionExecutor = kpipes.service(FunctionExecutor).get()
+        kpipes.service(KafkaConsumerTemplate).get().consumeRecord(consumer) { eventRecord ->
             def event = new EventSerializer().deserialize(eventRecord.value().get())
             if(functionConfiguration != null) {
                 event.metaData().functionConfig = new GroovyShell().evaluate("L:${functionConfiguration}") as Map

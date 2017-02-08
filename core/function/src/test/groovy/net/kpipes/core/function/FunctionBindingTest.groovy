@@ -36,7 +36,7 @@ class FunctionBindingTest {
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results'], [:], [name: 'henry'])))))
 
         def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kpipesTest.kafkaPort()).build()
-        kpipesTest.kpipes().service(KafkaConsumerTemplate).subscribe(resultsConsumer, 'results') {
+        kpipesTest.kpipes().service(KafkaConsumerTemplate).get().subscribe(resultsConsumer, 'results') {
             def event = serializer.deserialize(it.value().get())
             assertThat(event.body().hello).isEqualTo('henry')
             async.complete()
@@ -53,7 +53,7 @@ class FunctionBindingTest {
 
         def resultsConsumer = new KafkaConsumerBuilder(uuid()).port(kpipesTest.kafkaPort()).build()
         def eventsCount = 0
-        kpipesTest.kpipes().service(KafkaConsumerTemplate).subscribe(resultsConsumer, 'results2') {
+        kpipesTest.kpipes().service(KafkaConsumerTemplate).get().subscribe(resultsConsumer, 'results2') {
             eventsCount++
             if(eventsCount == 2) {
                 async.complete()

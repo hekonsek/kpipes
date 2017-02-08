@@ -42,7 +42,7 @@ class PipeBuilderTest {
     void pipeShouldInvokeFunction(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
-        kpipes.service(PipeBuilder).build('source | hello.world | results')
+        kpipes.service(PipeBuilder).get().build('source | hello.world | results')
 
         // When
         def producer = new KafkaProducerBuilder().port(kafkaPort).build()
@@ -52,7 +52,7 @@ class PipeBuilderTest {
         def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kafkaPort).build()
         await().until({ resultsConsumer.partitionsFor('results').size() > 0 } as Callable<Boolean>)
         resultsConsumer.subscribe(['results'])
-        kpipes.service(KafkaConsumerTemplate).consumeRecord(resultsConsumer) {
+        kpipes.service(KafkaConsumerTemplate).get().consumeRecord(resultsConsumer) {
             def event = serializer.deserialize(it.value().get())
             assertThat(event.body().hello).isEqualTo('henry')
             async.complete()

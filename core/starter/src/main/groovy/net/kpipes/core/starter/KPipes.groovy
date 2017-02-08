@@ -32,7 +32,7 @@ class KPipes implements KPipesOperations {
         serviceRegistry
     }
 
-    def <T> T service(Class<T> serviceType) {
+    def <T> Optional<T> service(Class<T> serviceType) {
         serviceRegistry.service(serviceType)
     }
 

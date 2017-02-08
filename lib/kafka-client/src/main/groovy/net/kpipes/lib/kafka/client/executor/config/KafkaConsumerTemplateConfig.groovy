@@ -10,7 +10,7 @@ class KafkaConsumerTemplateConfig {
 
     @Service
     KafkaConsumerTemplate kafkaConsumerTemplate(KPipes kpipes) {
-        new CachedThreadPoolKafkaConsumerTemplate(kpipes.service(BrokerAdmin))
+        new CachedThreadPoolKafkaConsumerTemplate(kpipes.service(BrokerAdmin).get())
     }
 
     @Service

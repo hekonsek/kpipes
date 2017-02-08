@@ -19,7 +19,7 @@ Primary KPipes features:
 
 ```
 KPipes kpipes = new KPipes().start();
-PipesBuilder pipesBuilder = kpipes.service(PipesBuilder.class);
+PipesBuilder pipesBuilder = kpipes.service(PipesBuilder.class).get();
 pipesBuilder.pipe("myGeoData | geo.coding.reverse | targetTopic");
 ```
 ```
@@ -47,7 +47,7 @@ new FunctionBinding(kpipes, "helloWorld",
   { event -> event.body().set("world", "world!"); return event; }
 ).start();
 
-PipesBuilder pipesBuilder = kpipes.service(PipesBuilder.class);
+PipesBuilder pipesBuilder = kpipes.service(PipesBuilder.class).get();
 pipesBuilder.pipe("myData | helloWorld | targetTopic");
 ```
 ```
