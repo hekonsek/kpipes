@@ -13,20 +13,19 @@
 
     <parent>
         <groupId>net.kpipes</groupId>
-        <artifactId>kpipes-bom</artifactId>
+        <artifactId>kpipes-core</artifactId>
         <version>0.0.0-SNAPSHOT</version>
-        <relativePath>../bom</relativePath>
+        <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-core</artifactId>
+    <artifactId>kpipes-core-function-spi</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>starter-spi</module>
-        <module>starter</module>
-        <module>event</module>
-        <module>function-spi</module>
-        <module>function</module>
-    </modules>
+    <dependencies>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-core-event</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

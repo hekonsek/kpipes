@@ -15,6 +15,12 @@ class KPipesTest {
 
     private final eventProducer = new KafkaProducerBuilder().port(kafkaPort).build()
 
+    KPipesTest(Object... servicesToRegister) {
+        servicesToRegister.each {
+            kpipes.serviceRegistry().registerService(it)
+        }
+    }
+
     KPipesTest start() {
         System.setProperty('kafka.port', "${kafkaPort}")
         System.setProperty('kafka.dataDirectory', "${createTempDir().absolutePath}")

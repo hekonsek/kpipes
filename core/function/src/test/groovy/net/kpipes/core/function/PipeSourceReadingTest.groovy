@@ -1,21 +1,16 @@
 package net.kpipes.core.function
 
-import kafka.admin.AdminUtils
-import kafka.admin.RackAwareMode
-import kafka.utils.ZKStringSerializer$
-import kafka.utils.ZkUtils
 import net.kpipes.core.event.Event
 import net.kpipes.core.event.EventSerializer
 import net.kpipes.core.function.pipe.FunctionExecutor
 import net.kpipes.core.function.pipe.MockFunctionExecutor
 import net.kpipes.core.function.pipe.PipeBuilder
-import net.kpipes.core.starter.KPipes
-import net.kpipes.core.starter.spi.Service
+import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.testing.KPipesTest
-import org.I0Itec.zkclient.ZkClient
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Before
 import org.junit.Test
 
 import java.util.concurrent.Callable
@@ -25,23 +20,21 @@ import static net.kpipes.lib.commons.Uuids.uuid
 
 class PipeSourceReadingTest {
 
+    def kpipesTest = new KPipesTest(new MockFunctionExecutor()).start()
+
+    def kpipes = kpipesTest.kpipes()
+
     def source = "source-${uuid()}"
+
+    @Before
+    void before() {
+        kpipes.service(BrokerAdmin).ensureTopicExists(source)
+    }
 
     @Test
     void shouldPassEventToFunctionExecutor() {
         // Given
-        def kpipesTest = new KPipesTest()
-        kpipesTest.kpipes().serviceRegistry().registerService(new MockFunctionExecutor())
-        kpipesTest.start()
-        def kpipes = kpipesTest.kpipes()
         def serializer = new EventSerializer()
-
-        def zkClient = new ZkClient('localhost:' + kpipes.configurationResolver().integer('zooKeeper.port', 2181), Integer.MAX_VALUE, 10000, ZKStringSerializer$.MODULE$)
-        if (!AdminUtils.topicExists(ZkUtils.apply(zkClient, false), source)) {
-            RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
-            AdminUtils.createTopic(ZkUtils.apply(zkClient, false), source, 25, 1, new Properties(), mode)
-            Thread.sleep(10000)
-        }
         kpipes.service(PipeBuilder).build("${source} | function")
 
         // When
@@ -56,18 +49,7 @@ class PipeSourceReadingTest {
     @Test
     void shouldPassSeriesOfEventsToFunctionExecutor() {
         // Given
-        def kpipesTest = new KPipesTest()
-        kpipesTest.kpipes().serviceRegistry().registerService(new MockFunctionExecutor())
-        kpipesTest.start()
-        def kpipes = kpipesTest.kpipes()
         def serializer = new EventSerializer()
-
-        def zkClient = new ZkClient('localhost:' + kpipes.configurationResolver().integer('zooKeeper.port', 2181), Integer.MAX_VALUE, 10000, ZKStringSerializer$.MODULE$)
-        if (!AdminUtils.topicExists(ZkUtils.apply(zkClient, false), source)) {
-            RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
-            AdminUtils.createTopic(ZkUtils.apply(zkClient, false), source, 25, 1, new Properties(), mode)
-            Thread.sleep(10000)
-        }
         kpipes.service(PipeBuilder).build("${source} | function")
 
         // When

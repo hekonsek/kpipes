@@ -24,7 +24,7 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core-event</artifactId>
+            <artifactId>kpipes-core-function-spi</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>

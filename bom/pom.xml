@@ -55,6 +55,11 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
+                <artifactId>kpipes-core-function-spi</artifactId>
+                <version>${kpipes.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-core-starter</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>
