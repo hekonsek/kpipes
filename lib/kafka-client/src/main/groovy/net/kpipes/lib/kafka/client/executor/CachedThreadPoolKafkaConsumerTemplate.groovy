@@ -1,13 +1,19 @@
 package net.kpipes.lib.kafka.client.executor
 
-import org.apache.kafka.clients.consumer.ConsumerRecords
+import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.consumer.KafkaConsumer
 
 import static java.util.concurrent.Executors.newCachedThreadPool
 
 class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
 
+    private final BrokerAdmin brokerAdmin
+
     private final executor = newCachedThreadPool()
+
+    CachedThreadPoolKafkaConsumerTemplate(BrokerAdmin brokerAdmin) {
+        this.brokerAdmin = brokerAdmin
+    }
 
     @Override
     def <K, V> void consumeRecords(KafkaConsumer<K, V> consumer, ConsumerRecordsCallback<K, V> consumerRecordsCallback) {
@@ -31,6 +37,13 @@ class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
             }
             Thread.sleep(100)
         }
+    }
+
+    @Override
+    def <K, V> void subscribe(KafkaConsumer<K, V> consumer, String topic, ConsumerRecordCallback<K, V> consumerRecordCallback) {
+        brokerAdmin.ensureTopicExists(topic)
+        consumer.subscribe([topic])
+        consumeRecord(consumer, consumerRecordCallback)
     }
 
 }

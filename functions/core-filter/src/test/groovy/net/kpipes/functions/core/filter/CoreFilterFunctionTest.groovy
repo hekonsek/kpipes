@@ -25,6 +25,7 @@ import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Ignore
 import org.junit.Test
 
 import java.util.concurrent.Callable
@@ -35,6 +36,7 @@ import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
+@Ignore
 class CoreFilterFunctionTest {
 
     @Test

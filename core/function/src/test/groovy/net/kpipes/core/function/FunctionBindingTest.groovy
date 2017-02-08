@@ -10,13 +10,12 @@ import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
+import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
-@Ignore
 @RunWith(VertxUnitRunner)
 class FunctionBindingTest {
 
@@ -25,7 +24,7 @@ class FunctionBindingTest {
     @BeforeClass
     static void beforeClass() {
         new FunctionBinding(kpipesTest.kpipes(), 'hello.world', {
-            (it.body() as Map).hello = (it.body() as Map).name; it
+            it.body().hello = it.body().name; it
         }).start()
     }
 
@@ -36,35 +35,29 @@ class FunctionBindingTest {
 
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results'], [:], [name: 'henry'])))))
 
-        def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>('test').port(kpipesTest.kafkaPort()).build()
-        resultsConsumer.subscribe(['results'])
-        kpipesTest.kpipes().service(KafkaConsumerTemplate).consumeRecord(resultsConsumer) {
+        def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kpipesTest.kafkaPort()).build()
+        kpipesTest.kpipes().service(KafkaConsumerTemplate).subscribe(resultsConsumer, 'results') {
             def event = serializer.deserialize(it.value().get())
             assertThat(event.body().hello).isEqualTo('henry')
             async.complete()
         }
     }
 
-    @Test
-    void shouldInvokeFunctionTwice() {
+    @Test(timeout = 30000L)
+    void shouldInvokeFunctionTwice(TestContext context) {
+        def async = context.async()
         def serializer = new EventSerializer()
 
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results2'], [:], [name: 'henry'])))))
         kpipesTest.eventProducer().send(new ProducerRecord('function.hello.world', 'key', new Bytes(serializer.serialize(new Event([target: 'results2'], [:], [name: 'henry'])))))
 
-        def resultsConsumer = new KafkaConsumerBuilder('test2').port(kpipesTest.kafkaPort()).build()
-        resultsConsumer.subscribe(['results2'])
+        def resultsConsumer = new KafkaConsumerBuilder(uuid()).port(kpipesTest.kafkaPort()).build()
         def eventsCount = 0
-        while (true) {
-            def events = resultsConsumer.poll(5000).iterator()
-            while (events.hasNext()) {
-                eventsCount++
-                if (eventsCount == 2) {
-                    return
-                }
-                resultsConsumer.commitSync()
+        kpipesTest.kpipes().service(KafkaConsumerTemplate).subscribe(resultsConsumer, 'results2') {
+            eventsCount++
+            if(eventsCount == 2) {
+                async.complete()
             }
-            Thread.sleep(100)
         }
     }
 

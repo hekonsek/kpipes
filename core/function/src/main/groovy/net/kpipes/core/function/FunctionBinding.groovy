@@ -36,8 +36,7 @@ class FunctionBinding {
         def kafkaPort = kpipes.configurationResolver().integer('kafka.port', 9092)
         def responseProducer = new KafkaProducerBuilder().port(kafkaPort).build()
         def functionConsumer = new KafkaConsumerBuilder<String, Bytes>('function.' + address).port(kafkaPort).build()
-        functionConsumer.subscribe(["function.${address}" as String])
-        kpipes.service(KafkaConsumerTemplate).consumeRecord(functionConsumer) {
+        kpipes.service(KafkaConsumerTemplate).subscribe(functionConsumer, "function.${address}") {
             def result = function.apply(new EventSerializer().deserialize(it.value().get()))
             if (result.target().present) {
                 def payload = new Bytes(new ObjectMapper().writeValueAsBytes(eventToDto(result)))

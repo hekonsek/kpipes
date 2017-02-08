@@ -1,8 +1,7 @@
 package net.kpipes.functions.geo.geocoding
 
 import net.kpipes.core.event.Event
-import net.kpipes.core.starter.KPipes
-import org.apache.camel.ProducerTemplate
+import org.apache.camel.impl.DefaultCamelContext
 import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
@@ -11,9 +10,9 @@ class GeoCodingTest {
 
     @Test
     void shouldExecuteReverseGeocoding() {
-        def kpipes = new KPipes().start()
-        def camelProducerTemplate = kpipes.service(ProducerTemplate)
-        def reverseFunction = new GeoCodingReverseFunction(camelProducerTemplate)
+        def camel = new DefaultCamelContext()
+        camel.start()
+        def reverseFunction = new GeoCodingReverseFunction(camel.createProducerTemplate())
         def result = reverseFunction.apply(new Event([:], [:], [lat: 40.714224, lng: -73.961452]))
 
         def response = result.metaData()['response.geo.coding.reverse'] as Map<String, String>

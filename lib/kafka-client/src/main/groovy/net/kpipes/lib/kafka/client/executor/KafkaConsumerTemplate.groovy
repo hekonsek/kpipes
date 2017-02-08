@@ -8,4 +8,6 @@ interface KafkaConsumerTemplate {
 
     def <K,V> void consumeRecord(KafkaConsumer<K,V> consumer, ConsumerRecordCallback<K,V> consumerRecordCallback)
 
+    def <K,V> void subscribe(KafkaConsumer<K,V> consumer, String topic, ConsumerRecordCallback<K,V> consumerRecordCallback)
+
 }
