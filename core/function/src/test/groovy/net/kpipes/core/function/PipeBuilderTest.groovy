@@ -28,18 +28,13 @@ import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import java.util.concurrent.Callable
-
-import static com.jayway.awaitility.Awaitility.await
 import static net.kpipes.core.function.FunctionBinding.functionBinding
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
-@Ignore
 @RunWith(VertxUnitRunner)
 class PipeBuilderTest {
 
@@ -54,7 +49,7 @@ class PipeBuilderTest {
         functionBinding(kpipes, 'hello.world') { it.body().hello = it.body().name; it }.start()
     }
 
-    @Test(timeout = 30000L)
+    @Test(timeout = 60000L)
     void pipeShouldInvokeFunction(TestContext context) {
         def async = context.async()
         def serializer = new EventSerializer()
@@ -66,8 +61,28 @@ class PipeBuilderTest {
 
         // Then
         def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kafkaPort).build()
-        await().until({ resultsConsumer.partitionsFor('results').size() > 0 } as Callable<Boolean>)
         resultsConsumer.subscribe(['results'])
+        kpipes.service(KafkaConsumerTemplate).get().consumeRecord(resultsConsumer) {
+            def event = serializer.deserialize(it.value().get())
+            assertThat(event.body().hello).isEqualTo('henry')
+            async.complete()
+        }
+    }
+
+    @Test(timeout = 60000L)
+    void onePipeShouldProduceToAnother(TestContext context) {
+        def async = context.async()
+        def serializer = new EventSerializer()
+        kpipes.service(PipeBuilder).get().build('source | hello.world | source2')
+        kpipes.service(PipeBuilder).get().build('source2 | hello.world | results2')
+
+        // When
+        def producer = new KafkaProducerBuilder().port(kafkaPort).build()
+        producer.send(new ProducerRecord('source', 'key', new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
+
+        // Then
+        def resultsConsumer = new KafkaConsumerBuilder<String, Bytes>(uuid()).port(kafkaPort).build()
+        resultsConsumer.subscribe(['results2'])
         kpipes.service(KafkaConsumerTemplate).get().consumeRecord(resultsConsumer) {
             def event = serializer.deserialize(it.value().get())
             assertThat(event.body().hello).isEqualTo('henry')
