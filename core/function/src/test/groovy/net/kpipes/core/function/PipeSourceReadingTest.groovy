@@ -22,7 +22,6 @@ import net.kpipes.core.function.pipe.FunctionExecutor
 import net.kpipes.core.function.pipe.MockFunctionExecutor
 import net.kpipes.core.function.pipe.PipeBuilder
 import net.kpipes.lib.kafka.client.BrokerAdmin
-import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
@@ -32,6 +31,7 @@ import org.junit.Test
 import java.util.concurrent.Callable
 
 import static com.jayway.awaitility.Awaitility.await
+import static java.util.concurrent.TimeUnit.MINUTES
 import static net.kpipes.lib.commons.Uuids.uuid
 
 class PipeSourceReadingTest {
@@ -40,14 +40,22 @@ class PipeSourceReadingTest {
 
     def kpipes = kpipesTest.kpipes()
 
+    def producer = kpipesTest.eventProducer()
+
+    // Data fixtures
+
     def source = "source-${uuid()}"
 
-    def key = "key-${uuid()}"
+    def key = "key-${uuid()}" as String
+
+    // Topics fixtures
 
     @Before
     void before() {
         kpipes.service(BrokerAdmin).get().ensureTopicExists(source)
     }
+
+    // Tests
 
     @Test
     void shouldPassEventToFunctionExecutor() {
@@ -56,8 +64,7 @@ class PipeSourceReadingTest {
         kpipes.service(PipeBuilder).get().build("${source} | function")
 
         // When
-        def producer = new KafkaProducerBuilder().port(kpipesTest.kafkaPort()).build()
-        producer.send(new ProducerRecord(source, uuid(), new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
+        producer.send(new ProducerRecord(source, key, new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
 
         // Then
         def exec = kpipes.service(FunctionExecutor).get() as MockFunctionExecutor
@@ -71,14 +78,13 @@ class PipeSourceReadingTest {
         kpipes.service(PipeBuilder).get().build("${source} | function")
 
         // When
-        def producer = new KafkaProducerBuilder().port(kpipesTest.kafkaPort()).build()
         100.times {
-            producer.send(new ProducerRecord(source, uuid(), new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
+            producer.send(new ProducerRecord(source, key, new Bytes(serializer.serialize(new Event([:], [:], [name: 'henry'])))))
         }
 
         // Then
         def exec = kpipes.service(FunctionExecutor).get() as MockFunctionExecutor
-        await().until({exec.events().size() == 100} as Callable<Boolean>)
+        await().atMost(1, MINUTES).until({exec.events().size() == 100} as Callable<Boolean>)
     }
 
 }
