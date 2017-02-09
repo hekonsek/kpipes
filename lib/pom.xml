@@ -23,6 +23,7 @@
 
     <modules>
         <module>commons</module>
+        <module>geo</module>
         <module>kafka-client</module>
         <module>kafka-broker</module>
         <module>testing</module>

@@ -26,10 +26,14 @@
         <awaitility.version>1.7.0</awaitility.version>
         <camel.version>2.18.2</camel.version>
         <commons-configuration.version>2.1</commons-configuration.version>
+        <commons-io.version>2.5</commons-io.version>
         <commons-lang.version>3.4</commons-lang.version>
+        <googlemaps.version>0.1.15</googlemaps.version>
         <groovy.version>2.4.8</groovy.version>
+        <guava.version>19.0</guava.version>
         <jackson.version>2.7.3</jackson.version>
         <javax-servlet.version>3.0.1</javax-servlet.version>
+        <jts.version>1.14.0</jts.version>
         <junit.version>4.12</junit.version>
         <kafka.version>0.10.1.1</kafka.version>
         <kpipes.version>0.0.0-SNAPSHOT</kpipes.version>
@@ -96,14 +100,34 @@
                 <version>${logback.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.jayway.awaitility</groupId>
-                <artifactId>awaitility</artifactId>
-                <version>${awaitility.version}</version>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.maps</groupId>
+                <artifactId>google-maps-services</artifactId>
+                <version>${googlemaps.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>${jts.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.vertx</groupId>
