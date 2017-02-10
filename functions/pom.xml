@@ -24,6 +24,7 @@
     <modules>
         <module>core-filter</module>
         <module>geo-geocoding</module>
+        <module>geo-geofencing</module>
     </modules>
 
 </project>

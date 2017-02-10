@@ -1,0 +1,24 @@
+package net.kpipes.functions.geo.fencing
+
+import net.kpipes.core.event.Event
+import net.kpipes.functions.geo.geofencing.GeoFencingDistanceFunction
+import org.junit.Test
+
+import static org.assertj.core.api.Assertions.assertThat
+
+class GeoFencingTest {
+
+    @Test
+    void shouldCalculateDistanceFromFence() {
+        def function = new GeoFencingDistanceFunction()
+        def fenceConfig = [fence: [center: [lat: 49.820813, lng: 19.054982], radius: 25]]
+
+        // When
+        def result = function.apply(new Event([config: fenceConfig], [:], [lat: 49.820829, lng: 19.056378]))
+
+        // Then
+        def response = result.metaData()['response.geo.fencing.distance']
+        assertThat(response.distance as double).isGreaterThan(75d)
+    }
+
+}
