@@ -51,7 +51,7 @@ class GoogleMapsTest {
         def secondPoint = point(49.829472, 19.077234)
 
         // When
-        def url = GoogleMaps.renderCircleFenceMapUrl(firstPoint, secondPoint, 500d)
+        def url = GoogleMaps.renderCircleFenceMapUrl(firstPoint, 500d, secondPoint)
         IOUtils.copy(url.openStream(), new FileOutputStream(mapFile))
 
         // Then

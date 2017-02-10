@@ -55,7 +55,7 @@ class GoogleMaps {
         return "color:" + color + "%7Clabel:" + marketText + "%7C" + coordinates.lat + "," + coordinates.lng;
     }
 
-    public static URL renderCircleFenceMapUrl(Point center, Point marker, double fenceRadiusInMeters) {
+    public static URL renderCircleFenceMapUrl(Point center, double fenceRadiusInMeters, Point marker) {
         String circle = encodeCircle(center, fenceRadiusInMeters);
         String encodedMarker = encodeMarker(marker, 'D' as char, "blue");
 
