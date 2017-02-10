@@ -5,7 +5,7 @@ import net.kpipes.core.starter.spi.Service
 
 class PipeBuilderConfig {
 
-    @Service
+    @Service(onStart = 'start')
     PipeBuilder pipeBuilder(KPipes kpipes) {
         new PipeBuilder(kpipes)
     }
