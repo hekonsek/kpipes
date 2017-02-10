@@ -22,6 +22,7 @@ import net.kpipes.core.starter.KPipes
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.slf4j.Logger
 
@@ -70,7 +71,7 @@ class PipeBuilder {
 
         def kafkaPort = kpipes.configurationResolver().integer('kafka.port', 9092)
         def consumer = new KafkaConsumerBuilder<String, Bytes>(pipeDefinition.id()).port(kafkaPort).build()
-        kpipes.service(KafkaConsumerTemplate).get().subscribe(consumer, pipeDefinition.from()) { eventRecord ->
+        kpipes.service(KafkaConsumerTemplate).get().subscribe(consumer, pipeDefinition.from()) { ConsumerRecord<String, Bytes> eventRecord ->
             def event = new EventSerializer().deserialize(eventRecord.value().get())
             if (!pipeDefinition.functionConfiguration().isEmpty()) {
                 event.metaData().functionConfig = pipeDefinition.functionConfiguration()
