@@ -31,6 +31,13 @@
             <artifactId>kpipes-lib-geo</artifactId>
         </dependency>
 
+        <!-- External dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- External testing dependencies -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

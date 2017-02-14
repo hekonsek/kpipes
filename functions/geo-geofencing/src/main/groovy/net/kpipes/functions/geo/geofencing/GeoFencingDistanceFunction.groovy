@@ -9,14 +9,14 @@ import static net.kpipes.lib.geo.Geofencing.metersOutsideFence
 class GeoFencingDistanceFunction implements Function {
 
     @Override
-    Map<String, Object> apply(KeyValue<String, Map<String, Object>> event) {
-        def fenceConfig = event.metaData().config.fence
+    Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
+        def fenceConfig = config.fence as Map
         def fenceCenter = new Point(fenceConfig.center.lat as double, fenceConfig.center.lng as double)
         def fenceRadius = fenceConfig.radius as double
 
-        def currentLocation = new Point(event.body().lat as double, event.body().lng as double)
+        def currentLocation = new Point(event.lat as double, event.lng as double)
 
-        event.metaData()['response.geo.fencing.distance'] = [distance: metersOutsideFence(fenceCenter, currentLocation, fenceRadius)]
+        event['response.geo.fencing.distance'] = [distance: metersOutsideFence(fenceCenter, currentLocation, fenceRadius)]
         event
     }
 
