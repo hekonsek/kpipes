@@ -1,20 +1,12 @@
-package net.kpipes.lib.kafka.broker.config
+package net.kpipes.lib.kafka.broker
 
 import com.google.common.io.Files
 import net.kpipes.lib.kafka.broker.KafkaBroker
 import net.kpipes.lib.kafka.broker.ZooKeeperServer
 
-class KafkaBrokerConfig {
+class KafkaBrokerFactory {
 
-    KafkaBroker kafkaBroker() {
-
-//        def kafkaPort = config.integer('kafka.port', 9092)
-//        def kafkaData = config.string('kafka.dataDirectory', 'kafka_data')
-//
-//        def zooKeeperHost = config.string('zooKeeper.host', 'localhost')
-//        def zooKeeperPort = config.integer('zooKeeper.port', 2181)
-//        def zooKeeperData = config.string('zooKeeper.dataDirectory', 'zookeeper_data')
-
+    KafkaBroker start() {
         def kafkaPort = 9092
         def kafkaData = Files.createTempDir().absolutePath
 

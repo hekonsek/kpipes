@@ -4,14 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.lib.commons.Uuids
-import net.kpipes.lib.kafka.broker.config.KafkaBrokerConfig
+import net.kpipes.lib.kafka.broker.KafkaBrokerFactory
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.context.annotation.Bean
@@ -21,6 +20,7 @@ import static net.kpipes.core.KPipesFactory.kpipes
 import static org.assertj.core.api.Assertions.assertThat
 
 @RunWith(VertxUnitRunner)
+@Configuration
 class KPipesTest {
 
     def source = Uuids.uuid()
@@ -29,7 +29,7 @@ class KPipesTest {
 
     @BeforeClass
     static void beforeClass() {
-        new KafkaBrokerConfig().kafkaBroker()
+        new KafkaBrokerFactory().start()
     }
 
     @Test(timeout = 60000L)
@@ -114,9 +114,6 @@ class KPipesTest {
         }
     }
 
-    @Configuration
-    static class TestFunctionConfig {
-
         @Bean
         Function functionFoo() {
             new Function() {
@@ -138,7 +135,5 @@ class KPipesTest {
                 }
             }
         }
-
-    }
 
 }
