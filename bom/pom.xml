@@ -23,7 +23,6 @@
 
     <properties>
         <assertj.version>3.6.2</assertj.version>
-        <awaitility.version>1.7.0</awaitility.version>
         <camel.version>2.18.2</camel.version>
         <commons-configuration.version>2.1</commons-configuration.version>
         <commons-io.version>2.5</commons-io.version>
@@ -100,11 +99,6 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.jayway.awaitility</groupId>
-                <artifactId>awaitility</artifactId>
-                <version>${awaitility.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.vividsolutions</groupId>
                 <artifactId>jts-core</artifactId>
                 <version>${jts.version}</version>
@@ -143,6 +137,11 @@
             <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-geocoder</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-spring-boot</artifactId>
                 <version>${camel.version}</version>
             </dependency>
             <dependency>

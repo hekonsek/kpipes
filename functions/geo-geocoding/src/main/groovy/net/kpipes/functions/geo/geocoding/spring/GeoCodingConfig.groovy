@@ -14,28 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kpipes.functions.geo.geocoding
+package net.kpipes.functions.geo.geocoding.spring
 
-import net.kpipes.core.KPipes
-import net.kpipes.core.starter.spi.Service
+import net.kpipes.functions.geo.geocoding.GeoCodingReverseFunction
 import org.apache.camel.ProducerTemplate
-import org.apache.camel.impl.DefaultCamelContext
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
-import static net.kpipes.core.function.FunctionBinding.functionBinding
-
+@Configuration
 class GeoCodingConfig {
 
-    @Service(onStart = 'start')
-    def coreFilterFunctionBinding(KPipes kpipes) {
-        def camelProducerTemplate = kpipes.service(ProducerTemplate).get()
-        functionBinding(kpipes, 'geo.coding.reverse', new GeoCodingReverseFunction(camelProducerTemplate))
-    }
-
-    @Service
-    def camelProducerTemplate(KPipes kpipes) {
-        def camel = new DefaultCamelContext()
-        camel.start()
-        camel.createProducerTemplate()
+    @Bean(name = 'geo.coding.reverse')
+    def coreFilterFunctionBinding(ProducerTemplate producerTemplate) {
+        new GeoCodingReverseFunction(producerTemplate)
     }
 
 }

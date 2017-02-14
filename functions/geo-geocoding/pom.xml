@@ -21,15 +21,26 @@
     <name>${project.artifactId}</name>
 
     <dependencies>
+        <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
             <artifactId>kpipes-core</artifactId>
         </dependency>
 
-        <!-- Testing dependencies -->
+        <!-- External dependencies -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-geocoder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring-boot</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- External testing dependencies -->
