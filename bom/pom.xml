@@ -49,7 +49,7 @@
             <!-- Internal dependencies -->
             <dependency>
                 <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-core-starter</artifactId>
+                <artifactId>kpipes-core</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>
             <dependency>
@@ -184,6 +184,11 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-autoconfigure</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
         </dependencies>

@@ -25,7 +25,7 @@
         <!--<module>core-filter</module>-->
         <!--<module>geo-geocoding</module>-->
         <module>geo-geofencing</module>
-        <!--<module>geo-googlemaps</module>-->
+        <module>geo-googlemaps</module>
     </modules>
 
 </project>

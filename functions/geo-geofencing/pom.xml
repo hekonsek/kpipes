@@ -24,7 +24,7 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core-starter</artifactId>
+            <artifactId>kpipes-core</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>

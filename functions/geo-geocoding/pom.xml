@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core-starter</artifactId>
+            <artifactId>kpipes-core</artifactId>
         </dependency>
 
         <!-- Testing dependencies -->

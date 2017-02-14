@@ -19,10 +19,56 @@
     </parent>
     <artifactId>kpipes-core</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>starter</module>
-    </modules>
+    <dependencies>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-lib-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+            <version>${kafka.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- External testing dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-lib-kafka-broker</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-lib-kafka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>
