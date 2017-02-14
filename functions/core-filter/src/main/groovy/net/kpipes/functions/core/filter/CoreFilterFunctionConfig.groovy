@@ -1,7 +1,7 @@
 package net.kpipes.functions.core.filter
 
 import net.kpipes.core.function.FunctionBinding
-import net.kpipes.core.starter.KPipes
+import net.kpipes.core.KPipes
 import net.kpipes.core.starter.spi.Service
 
 class CoreFilterFunctionConfig {

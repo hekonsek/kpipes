@@ -33,13 +33,6 @@
             <artifactId>kafka_2.11</artifactId>
         </dependency>
 
-        <!-- Optional configuration -->
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core-starter</artifactId>
-            <optional>true</optional>
-        </dependency>
-
         <!-- Internal testing dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>

@@ -22,11 +22,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>starter-spi</module>
         <module>starter</module>
-        <module>event</module>
-        <module>function-spi</module>
-        <module>function</module>
     </modules>
 
 </project>

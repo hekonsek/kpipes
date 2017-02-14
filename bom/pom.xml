@@ -49,27 +49,7 @@
             <!-- Internal dependencies -->
             <dependency>
                 <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-core-event</artifactId>
-                <version>${kpipes.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-core-function</artifactId>
-                <version>${kpipes.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-core-function-spi</artifactId>
-                <version>${kpipes.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-core-starter</artifactId>
-                <version>${kpipes.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-core-starter-spi</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>
             <dependency>

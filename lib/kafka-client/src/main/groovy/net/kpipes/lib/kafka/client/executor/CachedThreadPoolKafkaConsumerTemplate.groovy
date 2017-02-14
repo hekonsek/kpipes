@@ -41,7 +41,7 @@ class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
 
     @Override
     def <K, V> void subscribe(KafkaConsumer<K, V> consumer, String topic, ConsumerRecordCallback<K, V> consumerRecordCallback) {
-        brokerAdmin.ensureTopicExists(topic)
+//        brokerAdmin.ensureTopicExists(topic)
         consumer.subscribe([topic])
         consumeRecord(consumer, consumerRecordCallback)
     }

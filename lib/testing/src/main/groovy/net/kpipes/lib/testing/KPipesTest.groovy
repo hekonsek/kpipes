@@ -1,6 +1,6 @@
 package net.kpipes.lib.testing
 
-import net.kpipes.core.starter.KPipes
+import net.kpipes.core.KPipes
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import org.apache.kafka.clients.producer.KafkaProducer
 
@@ -19,7 +19,7 @@ class KPipesTest {
 
     KPipesTest(Object... servicesToRegister) {
         servicesToRegister.each {
-            kpipes.serviceRegistry().registerService(it)
+            kpipes.functionRegistry().registerService(it)
         }
     }
 

@@ -20,7 +20,7 @@ import net.kpipes.core.event.Event
 import net.kpipes.core.event.EventSerializer
 import net.kpipes.core.function.FunctionBinding
 import net.kpipes.core.function.pipe.PipeBuilder
-import net.kpipes.core.starter.KPipes
+import net.kpipes.core.KPipes
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import org.apache.kafka.clients.producer.ProducerRecord

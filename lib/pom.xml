@@ -26,7 +26,7 @@
         <module>geo</module>
         <module>kafka-client</module>
         <module>kafka-broker</module>
-        <module>testing</module>
+        <!--<module>testing</module>-->
     </modules>
 
 </project>

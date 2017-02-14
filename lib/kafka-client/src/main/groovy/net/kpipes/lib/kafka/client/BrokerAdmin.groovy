@@ -40,18 +40,25 @@ class BrokerAdmin {
 
     }
 
-    void ensureTopicExists(String topic) {
+    void ensureTopicExists(Set<String> topics) {
         def zkClient = new ZkClient("${zooKeeperHost}:${zooKeeperPort}", Integer.MAX_VALUE, 10000, ZKStringSerializer$.MODULE$)
         ZkUtils zooKeeperUtils = ZkUtils.apply(zkClient, false)
 
-        try {
-            if (!AdminUtils.topicExists(zooKeeperUtils, topic)) {
-                RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
-                AdminUtils.createTopic(zooKeeperUtils, topic, 25, 1, new Properties(), mode)
-                Thread.sleep(10000)
+        boolean topicCreated = false
+        topics.each { topic ->
+            try {
+                if (!AdminUtils.topicExists(zooKeeperUtils, topic)) {
+                    RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
+                    AdminUtils.createTopic(zooKeeperUtils, topic, 25, 1, new Properties(), mode)
+//                    Thread.sleep(10000)
+                    topicCreated = true
+                }
+            } catch (TopicExistsException e) {
+                LOG.debug(e.message)
             }
-        } catch (TopicExistsException e) {
-            LOG.debug(e.message)
+        }
+        if(topicCreated) {
+            Thread.sleep(5000)
         }
     }
 
