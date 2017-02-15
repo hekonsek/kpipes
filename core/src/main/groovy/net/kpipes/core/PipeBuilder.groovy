@@ -53,7 +53,7 @@ class PipeBuilder {
 
     private KStreamBuilder builder = new KStreamBuilder()
 
-    private Map<String, KStream> streams = new HashMap<>()
+    private Map<String, KStream> sourceStreams = new HashMap<>()
 
     // Constructor
 
@@ -74,10 +74,10 @@ class PipeBuilder {
 
         LOG.debug('Ensuring that all topics involved in a pipe exist.')
 
-        def sourceStream = streams[pipeDefinition.from()]
+        def sourceStream = sourceStreams[pipeDefinition.from()]
         if (sourceStream == null) {
             sourceStream = builder.stream(pipeDefinition.from())
-            streams[pipeDefinition.from()] = sourceStream
+            sourceStreams[pipeDefinition.from()] = sourceStream
         }
 
         if(pipeDefinition.functionAddress() == 'filter') {
