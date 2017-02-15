@@ -28,26 +28,32 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.apache.kafka.streams.kstream.KeyValueMapper
+import org.apache.kafka.streams.kstream.Predicate
 import org.slf4j.Logger
 
+import static net.kpipes.core.PipeDefinition.parsePipeDefinition
 import static org.slf4j.LoggerFactory.getLogger
 
 @CompileStatic
 class PipeBuilder {
 
-    KStreamBuilder builder = new KStreamBuilder()
-
-    Map<String, KStream> streams = new HashMap<>()
-
-    Set<String> topic = new HashSet<>()
-
     private static final Logger LOG = getLogger(PipeBuilder)
 
     // Collaborators
 
+    private final FunctionRegistry functionRegistry
+
+    // Members
+
     private final KPipesConfig config
 
-    private final FunctionRegistry functionRegistry
+    // Internal state
+
+    private final Set<String> topics = new HashSet<>()
+
+    private KStreamBuilder builder = new KStreamBuilder()
+
+    private Map<String, KStream> streams = new HashMap<>()
 
     // Constructor
 
@@ -59,34 +65,47 @@ class PipeBuilder {
     // Operations
 
     void build(String pipeDefinition) {
-        build(PipeDefinition.parsePipeDefinition(pipeDefinition))
+        build(parsePipeDefinition(pipeDefinition))
     }
 
     void build(PipeDefinition pipeDefinition) {
-//        LOG.debug('Building pipe from definition: {}', pipeDefinition)
-
-        topic << pipeDefinition.from()
-        topic << pipeDefinition.to()
+        topics << pipeDefinition.from()
+        topics << pipeDefinition.to()
 
         LOG.debug('Ensuring that all topics involved in a pipe exist.')
 
-        def function = functionRegistry.service(pipeDefinition.functionAddress())
-        def st = streams[pipeDefinition.from()]
-        if (st == null) {
-            st = builder.stream(pipeDefinition.from())
-            streams[pipeDefinition.from()] = st
+        def sourceStream = streams[pipeDefinition.from()]
+        if (sourceStream == null) {
+            sourceStream = builder.stream(pipeDefinition.from())
+            streams[pipeDefinition.from()] = sourceStream
         }
-        st.map(new KeyValueMapper<String, Bytes, KeyValue>() {
-            @Override
-            KeyValue apply(String key, Bytes value) {
-                def event = new ObjectMapper().readValue(value.get(), Map)
-                new KeyValue<>(key, new Bytes(new ObjectMapper().writeValueAsBytes(function.apply(pipeDefinition.functionConfiguration(), key, event))))
-            }
-        }).to(pipeDefinition.to())
+
+        if(pipeDefinition.functionAddress() == 'filter') {
+            def predicateText = pipeDefinition.functionConfiguration().predicate as String
+            sourceStream.filter(new Predicate() {
+                @Override
+                boolean test(Object key, Object value) {
+                    def shell = new GroovyShell()
+                    shell.setVariable('key', key)
+                    def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
+                    shell.setVariable('event', event)
+                    shell.evaluate(predicateText) as boolean
+                }
+            }).to(pipeDefinition.to())
+        } else {
+            def function = functionRegistry.service(pipeDefinition.functionAddress())
+            sourceStream.map(new KeyValueMapper<String, Bytes, KeyValue>() {
+                @Override
+                KeyValue apply(String key, Bytes value) {
+                    def event = new ObjectMapper().readValue(value.get(), Map)
+                    new KeyValue<>(key, new Bytes(new ObjectMapper().writeValueAsBytes(function.apply(pipeDefinition.functionConfiguration(), key, event))))
+                }
+            }).to(pipeDefinition.to())
+        }
     }
 
     void start() {
-        new BrokerAdmin(config.zooKeeperHost, config.zooKeeperPort).ensureTopicExists(topic)
+        new BrokerAdmin(config.zooKeeperHost, config.zooKeeperPort).ensureTopicExists(topics)
 
         def streamsConfiguration = new Properties()
         streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, "wordcount-lambda-example" + Uuids.uuid());

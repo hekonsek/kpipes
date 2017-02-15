@@ -114,26 +114,47 @@ class KPipesTest {
         }
     }
 
-        @Bean
-        Function functionFoo() {
-            new Function() {
-                @Override
-                Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
-                    event.hello = 'world'
-                    event
-                }
-            }
-        }
+    @Test(timeout = 60000L)
+    void shouldFilterOutMessage(TestContext context) {
+        // Given
+        def async = context.async()
+        def kpipes = kpipes()
+        def pipeBuilder = kpipes.pipeBuilder()
+        pipeBuilder.build("${source} | filter [predicate: 'event.foo == /baz/'] | ${target}")
+        kpipes.start()
 
-        @Bean
-        Function functionWithConfig() {
-            new Function() {
-                @Override
-                Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
-                    event.config = config
-                    event
-                }
+        // When
+        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
+
+        // Then
+        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).build(), target) {
+            def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
+            assertThat(event.foo)isEqualTo('baz')
+            async.complete()
+        }
+    }
+
+    @Bean
+    Function functionFoo() {
+        new Function() {
+            @Override
+            Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
+                event.hello = 'world'
+                event
             }
         }
+    }
+
+    @Bean
+    Function functionWithConfig() {
+        new Function() {
+            @Override
+            Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
+                event.config = config
+                event
+            }
+        }
+    }
 
 }
