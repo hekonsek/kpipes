@@ -50,7 +50,6 @@ class BrokerAdmin {
                 if (!AdminUtils.topicExists(zooKeeperUtils, topic)) {
                     RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
                     AdminUtils.createTopic(zooKeeperUtils, topic, 25, 1, new Properties(), mode)
-//                    Thread.sleep(10000)
                     topicCreated = true
                 }
             } catch (TopicExistsException e) {
@@ -60,6 +59,10 @@ class BrokerAdmin {
         if(topicCreated) {
             Thread.sleep(5000)
         }
+    }
+
+    void ensureTopicExists(String... topics) {
+        ensureTopicExists(topics.toList().toSet())
     }
 
 }

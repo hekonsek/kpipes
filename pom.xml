@@ -22,6 +22,7 @@
         <module>lib</module>
         <module>core</module>
         <module>functions</module>
+        <module>adapter</module>
     </modules>
 
     <properties>
