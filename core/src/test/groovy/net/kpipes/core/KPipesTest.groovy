@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.lib.commons.Uuids
-import net.kpipes.lib.kafka.broker.KafkaBrokerFactory
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
-import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.context.annotation.Bean

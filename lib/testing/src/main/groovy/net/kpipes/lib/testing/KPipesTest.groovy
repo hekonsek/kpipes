@@ -17,11 +17,11 @@ class KPipesTest {
         System.setProperty('kafka.broker.enabled', 'false')
 
         System.setProperty('kafka.port', "${kafkaPort}")
-        System.setProperty('kafka.dataDirectory', "${createTempDir().absolutePath}")
         System.setProperty('zooKeeper.port', "${zooKeeperPort}")
-        System.setProperty('zooKeeper.dataDirectory', "${createTempDir().absolutePath}")
 
-        new KafkaBrokerFactory(kafkaPort, 'localhost', zooKeeperPort).start()
+        def kafkaDataDirectory = createTempDir().absolutePath
+        def zooKeeperDataDirectory = createTempDir().absolutePath
+        new KafkaBrokerFactory(kafkaPort, kafkaDataDirectory, 'localhost', zooKeeperPort, zooKeeperDataDirectory).start()
 
         this
     }

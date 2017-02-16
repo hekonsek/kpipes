@@ -1,34 +1,41 @@
 package net.kpipes.lib.kafka.broker
 
 import com.google.common.io.Files
-import net.kpipes.lib.kafka.broker.KafkaBroker
-import net.kpipes.lib.kafka.broker.ZooKeeperServer
+
+import static org.slf4j.LoggerFactory.getLogger
 
 class KafkaBrokerFactory {
 
-    int kafkaPort
+    private static final LOG = getLogger(KafkaBrokerFactory)
 
-    String zooKeeperHost
+    private final int kafkaPort
 
-    int zooKeeperPort
+    private final String kafkaDataDirectory
 
-    KafkaBrokerFactory(int kafkaPort, String zooKeeperHost, int zooKeeperPort) {
+    private final String zooKeeperHost
+
+    private final int zooKeeperPort
+
+    private final String zooKeeperDataDirectory
+
+    KafkaBrokerFactory(int kafkaPort, String kafkaDataDirectory, String zooKeeperHost, int zooKeeperPort, String zooKeeperDataDirectory) {
         this.kafkaPort = kafkaPort
+        this.kafkaDataDirectory = kafkaDataDirectory
         this.zooKeeperHost = zooKeeperHost
         this.zooKeeperPort = zooKeeperPort
+        this.zooKeeperDataDirectory = zooKeeperDataDirectory
     }
 
-    KafkaBroker start() {
-        def kafkaData = Files.createTempDir().absolutePath
-        def zooKeeperData = Files.createTempDir().absolutePath
+    // Life-cycle
 
-        new ZooKeeperServer(zooKeeperPort, kafkaData).start()
+    KafkaBroker start() {
+        new ZooKeeperServer(zooKeeperPort, kafkaDataDirectory).start()
         KafkaBroker kafka = null
         while (kafka == null) {
             try {
-                kafka = new KafkaBroker(kafkaPort, zooKeeperHost, zooKeeperPort, zooKeeperData).start()
+                kafka = new KafkaBroker(kafkaPort, zooKeeperHost, zooKeeperPort, zooKeeperDataDirectory).start()
             } catch (Exception e) {
-                e.printStackTrace()
+                LOG.debug('Failed attempt to start a broker:', e)
                 Thread.sleep(100)
             }
         }
