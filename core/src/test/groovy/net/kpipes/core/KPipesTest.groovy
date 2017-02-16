@@ -23,14 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat
 @Configuration
 class KPipesTest {
 
+    static kpipesTest = new net.kpipes.lib.testing.KPipesTest().start()
+
+    static kafkaPort = kpipesTest.kafkaPort()
+
     def source = Uuids.uuid()
 
     def target = Uuids.uuid()
-
-    @BeforeClass
-    static void beforeClass() {
-        new KafkaBrokerFactory().start()
-    }
 
     @Test(timeout = 60000L)
     void shouldExecuteFunction(TestContext context) {
@@ -42,10 +41,10 @@ class KPipesTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
             async.complete()
         }
     }
@@ -62,10 +61,10 @@ class KPipesTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).build(), 'finalTarget') {
+        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), 'finalTarget') {
             async.complete()
         }
     }
@@ -83,11 +82,11 @@ class KPipesTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).build(), target) {
-            new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).build(), secondTarget) {
+        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+            new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), secondTarget) {
                 async.complete()
             }
         }
@@ -104,10 +103,10 @@ class KPipesTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
             def response = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(response.config.configKey).isEqualTo('configValue')
             async.complete()
@@ -124,11 +123,11 @@ class KPipesTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
-        new KafkaProducerBuilder<>().build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('baz')
             async.complete()

@@ -6,12 +6,20 @@ import net.kpipes.lib.kafka.broker.ZooKeeperServer
 
 class KafkaBrokerFactory {
 
-    KafkaBroker start() {
-        def kafkaPort = 9092
-        def kafkaData = Files.createTempDir().absolutePath
+    int kafkaPort
 
-        def zooKeeperHost = 'localhost'
-        def zooKeeperPort = 2181
+    String zooKeeperHost
+
+    int zooKeeperPort
+
+    KafkaBrokerFactory(int kafkaPort, String zooKeeperHost, int zooKeeperPort) {
+        this.kafkaPort = kafkaPort
+        this.zooKeeperHost = zooKeeperHost
+        this.zooKeeperPort = zooKeeperPort
+    }
+
+    KafkaBroker start() {
+        def kafkaData = Files.createTempDir().absolutePath
         def zooKeeperData = Files.createTempDir().absolutePath
 
         new ZooKeeperServer(zooKeeperPort, kafkaData).start()

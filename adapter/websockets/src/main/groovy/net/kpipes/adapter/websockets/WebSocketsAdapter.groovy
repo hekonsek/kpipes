@@ -19,10 +19,13 @@ class WebSocketsAdapter {
 
     private final BrokerAdmin brokerAdmin
 
-    WebSocketsAdapter(KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
+    private final int kafkaPort
+
+    WebSocketsAdapter(KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, int kafkaPort) {
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
+        this.kafkaPort = kafkaPort
     }
 
     void start() {
@@ -38,7 +41,7 @@ class WebSocketsAdapter {
                 def channelName = ws.uri().replaceFirst(/\/notification\//, '')
                 def channel = "notification.${channelName}"
                 brokerAdmin.ensureTopicExists(channel) // TODO kafkaConsumerTemplate.subscribe should create topic
-                kafkaConsumerTemplate.subscribe(new KafkaConsumerBuilder<>(uuid()).build(), channel) {
+                kafkaConsumerTemplate.subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), channel) {
                     ws.write(buffer((it.value() as Bytes).get()))
                 }
                 ws.closeHandler {

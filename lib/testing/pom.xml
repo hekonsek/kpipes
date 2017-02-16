@@ -24,10 +24,6 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-lib-kafka-broker</artifactId>
         </dependency>
         <dependency>
@@ -39,6 +35,10 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-unit</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

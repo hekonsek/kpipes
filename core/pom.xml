@@ -40,6 +40,12 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-lib-testing</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- External testing dependencies -->
         <dependency>
             <groupId>junit</groupId>
