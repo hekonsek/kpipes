@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.lib.commons.Uuids
+import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
@@ -25,6 +26,8 @@ class KPipesTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
+    static def brokerAdmin = new BrokerAdmin('localhost', kpipesTest.zooKeeperPort())
+
     def source = Uuids.uuid()
 
     def target = Uuids.uuid()
@@ -42,7 +45,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
             async.complete()
         }
     }
@@ -62,7 +65,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), 'finalTarget') {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), 'finalTarget') {
             async.complete()
         }
     }
@@ -83,8 +86,8 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
-            new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), secondTarget) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+            new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), secondTarget) {
                 async.complete()
             }
         }
@@ -104,7 +107,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
             def response = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(response.config.configKey).isEqualTo('configValue')
             async.complete()
@@ -125,7 +128,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('baz')
             async.complete()

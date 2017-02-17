@@ -2,6 +2,7 @@ package net.kpipes.adapter.websockets
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.Vertx
+import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.KPipesFactory
@@ -39,13 +40,13 @@ class WebSocketsAdapterTest {
 
         // When
         def client = Vertx.vertx().createHttpClient()
-        client.websocket(8080, "localhost", "/event/${source}") { websocket ->
+        def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
+        client.websocket(8080, "localhost", "/event/${source}", headers) { websocket ->
             websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([foo: 'bar'])))
         }
 
         // Then
-        new BrokerAdmin('localhost', zooKeeperPort).ensureTopicExists(source)
-        new CachedThreadPoolKafkaConsumerTemplate(null).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), source) {
+        new CachedThreadPoolKafkaConsumerTemplate(new BrokerAdmin('localhost', zooKeeperPort)).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), source) {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('bar')
             async.complete()
@@ -61,11 +62,12 @@ class WebSocketsAdapterTest {
         new BrokerAdmin('localhost', zooKeeperPort).ensureTopicExists("notification.${source}")
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("anonymous.notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
         def client = Vertx.vertx().createHttpClient()
-        client.websocket(8080, "localhost", "/notification/${source}") { websocket ->
+        def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
+        client.websocket(8080, "localhost", "/notification/${source}", headers) { websocket ->
             websocket.handler {
                 def event = new ObjectMapper().readValue(it.bytes, Map)
                 assertThat(event.foo)isEqualTo('bar')

@@ -16,7 +16,6 @@
  */
 package net.kpipes.adapter.websockets
 
-import io.vertx.core.Vertx
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
@@ -24,6 +23,7 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
+import static io.vertx.core.Vertx.vertx
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.lib.commons.Uuids.uuid
 
@@ -35,39 +35,49 @@ class WebSocketsAdapter {
 
     private final BrokerAdmin brokerAdmin
 
+    private final Authenticator authenticator
+
+    // Configuration members
+
     private final int kafkaPort
 
-    WebSocketsAdapter(KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, int kafkaPort) {
+    // Constructors
+    WebSocketsAdapter(KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator, int kafkaPort) {
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
+        this.authenticator = authenticator
         this.kafkaPort = kafkaPort
     }
 
     // Life-cycle
 
     void start() {
-        Vertx.vertx().createHttpServer().websocketHandler { ws ->
-            def uri = ws.uri()
+        vertx().createHttpServer().websocketHandler { socket ->
+            def authentication = authenticator.authenticate(socket.headers().collectEntries())
+            if(!authentication.present) {
+                socket.reject()
+            }
+
+            def uri = socket.uri()
             if(uri.startsWith('/event/')) {
                 def eventName = uri.replaceFirst(/\/event\//, '')
                 brokerAdmin.ensureTopicExists(eventName)
-                ws.handler { message ->
-                    def key = ws.headers().get('kpipes.key')
+                socket.handler { message ->
+                    def key = "${authentication.get().tenant()}|${authentication.get().username()}|${socket.headers().get('key')}" as String
                     kafkaProducer.send(new ProducerRecord(eventName, key ?: uuid(), new Bytes(message.bytes)))
                 }
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')
-                def channel = "notification.${channelName}"
-                brokerAdmin.ensureTopicExists(channel) // TODO kafkaConsumerTemplate.subscribe should create topic
+                def channel = "${authentication.get().tenant()}.notification.${channelName}"
                 kafkaConsumerTemplate.subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), channel) {
-                    ws.write(buffer((it.value() as Bytes).get()))
+                    socket.write(buffer((it.value() as Bytes).get()))
                 }
-                ws.closeHandler {
+                socket.closeHandler {
                     // stop kafka consumer
                 }
             } else {
-                ws.reject()
+                socket.reject()
             }
         }.listen(8080)
     }
