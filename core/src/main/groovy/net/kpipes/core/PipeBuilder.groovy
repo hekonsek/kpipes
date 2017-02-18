@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
-import net.kpipes.lib.kafka.client.KafkaProducerBuilder
-import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.KafkaStreams
@@ -29,9 +28,6 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.apache.kafka.streams.kstream.Predicate
-import org.apache.kafka.streams.processor.Processor
-import org.apache.kafka.streams.processor.ProcessorContext
-import org.apache.kafka.streams.processor.ProcessorSupplier
 import org.slf4j.Logger
 
 import static net.kpipes.core.PipeDefinition.parsePipeDefinition
@@ -102,37 +98,9 @@ class PipeBuilder {
             if(function instanceof EventFunction) {
                 new EventFunctionBuilder().build(function, sourceStream, pipeDefinition)
             } else if(function instanceof RoutingEventFunction) {
-                def routingFunction = function as RoutingEventFunction
-                def sender = new KafkaProducerBuilder().port(config.kafkaPort).build()
-                sourceStream.process(new ProcessorSupplier<String, Bytes>() {
-                    @Override
-                    Processor get() {
-
-                        new Processor<String, Bytes>() {
-                            @Override
-                            void init(ProcessorContext context) {
-
-                            }
-
-                            @Override
-                            void process(String key, Bytes value) {
-                                def routedEvent = routingFunction.apply(pipeDefinition.functionConfiguration(), key, new ObjectMapper().readValue(value.get(), Map))
-                                new BrokerAdmin(config.zooKeeperHost, config.zooKeeperPort).ensureTopicExists(routedEvent.destination)
-                                sender.send(new ProducerRecord(routedEvent.destination(), key, new Bytes(new ObjectMapper().writeValueAsBytes(routedEvent.event()))))
-                            }
-
-                            @Override
-                            void punctuate(long timestamp) {
-
-                            }
-
-                            @Override
-                            void close() {
-
-                            }
-                        }
-                    }
-                })
+                def brokerAdmin = functionRegistry.service(BrokerAdmin)
+                def kafkaProducer = functionRegistry.service(KafkaProducer)
+                new RoutingEventFunctionBuilder(kafkaProducer, brokerAdmin).build(function, sourceStream, pipeDefinition)
             }
         }
     }
