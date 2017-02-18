@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration
 class GeoCodingConfig {
 
     @Bean(name = 'geo.coding.reverse')
-    def coreFilterFunctionBinding(ProducerTemplate producerTemplate) {
+    def geoCodingReverseFunction(ProducerTemplate producerTemplate) {
         new GeoCodingReverseFunction(producerTemplate)
     }
 
