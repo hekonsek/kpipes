@@ -7,12 +7,12 @@ import static java.io.File.createTempFile
 import static java.nio.file.Files.probeContentType
 import static org.assertj.core.api.Assertions.assertThat
 
-class GeoGoogleMapsRenderFunctionTest {
+class GeoGoogleMapsRenderEventFunctionTest {
 
     @Test
     void shouldGenerateMapUrl() {
         // Given
-        def function = new GeoGoogleMapsRenderFunction()
+        def function = new GeoGoogleMapsRenderEventFunction()
         def fenceConfig = [fence: [center: [lat: 49.820813, lng: 19.054982], radius: 80]]
 
         // When

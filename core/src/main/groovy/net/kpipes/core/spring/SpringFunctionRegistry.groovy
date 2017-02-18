@@ -1,6 +1,5 @@
 package net.kpipes.core.spring
 
-import net.kpipes.core.Function
 import net.kpipes.core.FunctionRegistry
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.ApplicationContext
@@ -14,8 +13,13 @@ class SpringFunctionRegistry implements FunctionRegistry {
     }
 
     @Override
-    Function service(String id) {
-        applicationContext.getBean(id, Function)
+    Object service(String id) {
+        applicationContext.getBean(id)
+    }
+
+    @Override
+    <T> T service(Class<T> type) {
+        applicationContext.getBean(type)
     }
 
     ApplicationContext getApplicationContext() {

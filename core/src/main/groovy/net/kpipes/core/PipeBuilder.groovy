@@ -20,15 +20,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
+import net.kpipes.lib.kafka.client.KafkaProducerBuilder
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
-import org.apache.kafka.streams.kstream.KeyValueMapper
 import org.apache.kafka.streams.kstream.Predicate
+import org.apache.kafka.streams.processor.Processor
+import org.apache.kafka.streams.processor.ProcessorContext
+import org.apache.kafka.streams.processor.ProcessorSupplier
 import org.slf4j.Logger
 
 import static net.kpipes.core.PipeDefinition.parsePipeDefinition
@@ -70,7 +73,9 @@ class PipeBuilder {
 
     void build(PipeDefinition pipeDefinition) {
         topics << pipeDefinition.from()
-        topics << pipeDefinition.to()
+        if(pipeDefinition.to().isPresent()) {
+            topics << pipeDefinition.to().get()
+        }
 
         LOG.debug('Ensuring that all topics involved in a pipe exist.')
 
@@ -91,16 +96,44 @@ class PipeBuilder {
                     shell.setVariable('event', event)
                     shell.evaluate(predicateText) as boolean
                 }
-            }).to(pipeDefinition.to())
+            }).to(pipeDefinition.to().get())
         } else {
             def function = functionRegistry.service(pipeDefinition.functionAddress())
-            sourceStream.map(new KeyValueMapper<String, Bytes, KeyValue>() {
-                @Override
-                KeyValue apply(String key, Bytes value) {
-                    def event = new ObjectMapper().readValue(value.get(), Map)
-                    new KeyValue<>(key, new Bytes(new ObjectMapper().writeValueAsBytes(function.apply(pipeDefinition.functionConfiguration(), key, event))))
-                }
-            }).to(pipeDefinition.to())
+            if(function instanceof EventFunction) {
+                new EventFunctionBuilder().build(function, sourceStream, pipeDefinition)
+            } else if(function instanceof RoutingEventFunction) {
+                def routingFunction = function as RoutingEventFunction
+                def sender = new KafkaProducerBuilder().port(config.kafkaPort).build()
+                sourceStream.process(new ProcessorSupplier<String, Bytes>() {
+                    @Override
+                    Processor get() {
+
+                        new Processor<String, Bytes>() {
+                            @Override
+                            void init(ProcessorContext context) {
+
+                            }
+
+                            @Override
+                            void process(String key, Bytes value) {
+                                def routedEvent = routingFunction.apply(pipeDefinition.functionConfiguration(), key, new ObjectMapper().readValue(value.get(), Map))
+                                new BrokerAdmin(config.zooKeeperHost, config.zooKeeperPort).ensureTopicExists(routedEvent.destination)
+                                sender.send(new ProducerRecord(routedEvent.destination(), key, new Bytes(new ObjectMapper().writeValueAsBytes(routedEvent.event()))))
+                            }
+
+                            @Override
+                            void punctuate(long timestamp) {
+
+                            }
+
+                            @Override
+                            void close() {
+
+                            }
+                        }
+                    }
+                })
+            }
         }
     }
 

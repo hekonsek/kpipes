@@ -2,6 +2,8 @@ package net.kpipes.core
 
 interface FunctionRegistry {
 
-    Function service(String id)
+    Object service(String id)
+
+    def <T> T service(Class<T> type)
 
 }

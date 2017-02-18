@@ -16,7 +16,7 @@
  */
 package net.kpipes.functions.geo.geocoding.spring
 
-import net.kpipes.functions.geo.geocoding.GeoCodingReverseFunction
+import net.kpipes.functions.geo.geocoding.GeoCodingReverseEventFunction
 import org.apache.camel.ProducerTemplate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,7 +26,7 @@ class GeoCodingConfig {
 
     @Bean(name = 'geo.coding.reverse')
     def geoCodingReverseFunction(ProducerTemplate producerTemplate) {
-        new GeoCodingReverseFunction(producerTemplate)
+        new GeoCodingReverseEventFunction(producerTemplate)
     }
 
 }

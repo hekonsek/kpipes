@@ -1,14 +1,14 @@
 package net.kpipes.functions.geo.geocoding
 
 import com.google.code.geocoder.model.GeocodeResponse
-import net.kpipes.core.Function
+import net.kpipes.core.EventFunction
 import org.apache.camel.ProducerTemplate
 
-class GeoCodingReverseFunction implements Function {
+class GeoCodingReverseEventFunction implements EventFunction {
 
     private final ProducerTemplate camelProducerTemplate
 
-    GeoCodingReverseFunction(ProducerTemplate camelProducerTemplate) {
+    GeoCodingReverseEventFunction(ProducerTemplate camelProducerTemplate) {
         this.camelProducerTemplate = camelProducerTemplate
     }
 

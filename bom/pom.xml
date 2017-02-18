@@ -68,6 +68,11 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
+                <artifactId>kpipes-functions-notification</artifactId>
+                <version>${kpipes.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-lib-commons</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>

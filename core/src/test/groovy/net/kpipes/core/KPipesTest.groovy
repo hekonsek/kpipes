@@ -135,9 +135,27 @@ class KPipesTest {
         }
     }
 
+    @Test(timeout = 60000L)
+    void shouldRouteEvent(TestContext context) {
+        // Given
+        def async = context.async()
+        def kpipes = kpipes()
+        def pipeBuilder = kpipes.pipeBuilder()
+        pipeBuilder.build("${source} | routingFunction")
+        kpipes.start()
+
+        // When
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([target: target]))))
+
+        // Then
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+            async.complete()
+        }
+    }
+
     @Bean
-    Function functionFoo() {
-        new Function() {
+    EventFunction functionFoo() {
+        new EventFunction() {
             @Override
             Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
                 event.hello = 'world'
@@ -147,12 +165,22 @@ class KPipesTest {
     }
 
     @Bean
-    Function functionWithConfig() {
-        new Function() {
+    EventFunction functionWithConfig() {
+        new EventFunction() {
             @Override
             Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
                 event.config = config
                 event
+            }
+        }
+    }
+
+    @Bean
+    RoutingEventFunction routingFunction() {
+        new RoutingEventFunction() {
+            @Override
+            RoutingEventFunction.RoutedEvent apply(Map<String, Object> config, String key, Map<String, Object> event) {
+                new RoutingEventFunction.RoutedEvent(event, event.target as String)
             }
         }
     }

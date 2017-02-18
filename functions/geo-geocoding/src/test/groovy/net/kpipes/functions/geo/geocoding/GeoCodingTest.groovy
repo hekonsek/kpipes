@@ -11,7 +11,7 @@ class GeoCodingTest {
     @Test
     void shouldExecuteReverseGeocoding() {
         def producerTemplate = new SpringFunctionRegistry().applicationContext.getBean(ProducerTemplate)
-        def reverseFunction = new GeoCodingReverseFunction(producerTemplate)
+        def reverseFunction = new GeoCodingReverseEventFunction(producerTemplate)
         def result = reverseFunction.apply([:], 'key', [lat: 40.714224, lng: -73.961452])
 
         def response = result['response.geo.coding.reverse'] as Map<String, String>

@@ -25,6 +25,7 @@
         <module>geo-geocoding</module>
         <module>geo-geofencing</module>
         <module>geo-googlemaps</module>
+        <module>notification</module>
     </modules>
 
 </project>

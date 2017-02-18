@@ -8,9 +8,9 @@ class PipeDefinition {
 
     private final Map<String, Object> functionConfiguration
 
-    private final String to
+    private final Optional<String> to
 
-    PipeDefinition(String from, String functionAddress, Map<String, Object> functionConfiguration, String to) {
+    PipeDefinition(String from, String functionAddress, Map<String, Object> functionConfiguration, Optional<String> to) {
         this.from = from
         this.functionAddress = functionAddress
         this.functionConfiguration = functionConfiguration
@@ -25,7 +25,7 @@ class PipeDefinition {
         def functionAddress = functionParts[0]
         def functionConfiguration = functionParts.size() == 2 ? new GroovyShell().evaluate("L:${functionParts[1]}") as Map : [:]
 
-        def to = definitionParts[2]
+        def to = definitionParts.size() > 2 ? Optional.of(definitionParts[2]) : Optional.empty()
 
         new PipeDefinition(from, functionAddress, functionConfiguration, to)
     }
@@ -42,7 +42,7 @@ class PipeDefinition {
         return functionConfiguration
     }
 
-    String to() {
+    Optional<String> to() {
         to
     }
 

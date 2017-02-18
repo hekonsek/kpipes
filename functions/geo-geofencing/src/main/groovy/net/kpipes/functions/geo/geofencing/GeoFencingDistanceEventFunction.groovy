@@ -1,12 +1,11 @@
 package net.kpipes.functions.geo.geofencing
 
-import net.kpipes.core.Function
+import net.kpipes.core.EventFunction
 import net.kpipes.lib.geo.Point
-import org.apache.kafka.streams.KeyValue
 
 import static net.kpipes.lib.geo.Geofencing.metersOutsideFence
 
-class GeoFencingDistanceFunction implements Function {
+class GeoFencingDistanceEventFunction implements EventFunction {
 
     @Override
     Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {

@@ -1,11 +1,11 @@
 package net.kpipes.functions.geo.googlemaps
 
-import net.kpipes.core.Function
+import net.kpipes.core.EventFunction
 import net.kpipes.lib.geo.Point
 
 import static net.kpipes.lib.geo.GoogleMaps.renderCircleFenceMapUrl
 
-class GeoGoogleMapsRenderFunction implements Function {
+class GeoGoogleMapsRenderEventFunction implements EventFunction {
 
     @Override
     Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
