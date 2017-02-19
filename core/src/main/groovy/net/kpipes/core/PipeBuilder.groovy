@@ -16,21 +16,22 @@
  */
 package net.kpipes.core
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
-import org.apache.kafka.streams.kstream.Predicate
 import org.slf4j.Logger
 
 import static net.kpipes.core.PipeDefinition.parsePipeDefinition
+import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.KEY_SERDE_CLASS_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.VALUE_SERDE_CLASS_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.ZOOKEEPER_CONNECT_CONFIG
 import static org.slf4j.LoggerFactory.getLogger
 
 @CompileStatic
@@ -40,7 +41,7 @@ class PipeBuilder {
 
     // Collaborators
 
-    private final FunctionRegistry functionRegistry
+    private final ServiceRegistry serviceRegistry
 
     private final List<FunctionBuilder> functionBuilders
 
@@ -58,12 +59,12 @@ class PipeBuilder {
 
     // Constructor
 
-    PipeBuilder(KPipesConfig config, FunctionRegistry functionRegistry) {
+    PipeBuilder(KPipesConfig config, ServiceRegistry serviceRegistry) {
         this.config = config
-        this.functionRegistry = functionRegistry
+        this.serviceRegistry = serviceRegistry
 
-        def brokerAdmin = functionRegistry.service(BrokerAdmin)
-        def producer = functionRegistry.service(KafkaProducer)
+        def brokerAdmin = serviceRegistry.service(BrokerAdmin)
+        def producer = serviceRegistry.service(KafkaProducer)
         functionBuilders = [new EventFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventStreamFunctionBuilder()] as List<FunctionBuilder>
     }
 
@@ -87,23 +88,21 @@ class PipeBuilder {
             sourceStreams[pipeDefinition.from()] = sourceStream
         }
 
-        def function = functionRegistry.service(pipeDefinition.functionAddress())
+        def function = serviceRegistry.service(pipeDefinition.functionAddress())
         def functionBuilder = functionBuilders.find{ it.supports(function) }
         functionBuilder.build(pipeDefinition, function, sourceStream)
     }
 
     void start() {
-        new BrokerAdmin(config.zooKeeperHost, config.zooKeeperPort).ensureTopicExists(topics)
+        serviceRegistry.service(BrokerAdmin).ensureTopicExists(topics)
 
         def streamsConfiguration = new Properties()
-        streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, "wordcount-lambda-example" + Uuids.uuid());
-        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "${config.kafkaHost}:${config.kafkaPort}" as String);
-        streamsConfiguration.put(StreamsConfig.ZOOKEEPER_CONNECT_CONFIG, "${config.zooKeeperHost}:${config.zooKeeperPort}" as String);
-        streamsConfiguration.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        streamsConfiguration.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.Bytes().getClass().getName());
+        streamsConfiguration.put(APPLICATION_ID_CONFIG, "wordcount-lambda-example" + Uuids.uuid());
+        streamsConfiguration.put(BOOTSTRAP_SERVERS_CONFIG, "${config.kafkaHost}:${config.kafkaPort}" as String);
+        streamsConfiguration.put(ZOOKEEPER_CONNECT_CONFIG, "${config.zooKeeperHost}:${config.zooKeeperPort}" as String);
+        streamsConfiguration.put(KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        streamsConfiguration.put(VALUE_SERDE_CLASS_CONFIG, Serdes.Bytes().getClass().getName());
         new KafkaStreams(builder, streamsConfiguration).start()
-
-
     }
 
 }

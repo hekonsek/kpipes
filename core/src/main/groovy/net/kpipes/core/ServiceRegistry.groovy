@@ -1,6 +1,6 @@
 package net.kpipes.core
 
-interface FunctionRegistry {
+interface ServiceRegistry {
 
     Object service(String id)
 

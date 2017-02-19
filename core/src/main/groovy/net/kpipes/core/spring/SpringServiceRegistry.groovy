@@ -1,14 +1,14 @@
 package net.kpipes.core.spring
 
-import net.kpipes.core.FunctionRegistry
+import net.kpipes.core.ServiceRegistry
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.ApplicationContext
 
-class SpringFunctionRegistry implements FunctionRegistry {
+class SpringServiceRegistry implements ServiceRegistry {
 
     private ApplicationContext applicationContext
 
-    SpringFunctionRegistry() {
+    SpringServiceRegistry() {
         applicationContext = new SpringApplicationBuilder(SpringFunctionRegistryConfiguration).run()
     }
 

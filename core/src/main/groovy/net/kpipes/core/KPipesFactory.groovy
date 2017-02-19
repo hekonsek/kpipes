@@ -1,11 +1,11 @@
 package net.kpipes.core
 
-import net.kpipes.core.spring.SpringFunctionRegistry
+import net.kpipes.core.spring.SpringServiceRegistry
 
 class KPipesFactory {
 
     static KPipes kpipes() {
-        def functionRegistry = new SpringFunctionRegistry()
+        def functionRegistry = new SpringServiceRegistry()
         new KPipes(functionRegistry.applicationContext.getBean(KPipesConfig), functionRegistry)
     }
 
