@@ -14,7 +14,7 @@ class EventFunctionBuilder implements FunctionBuilder<EventFunction> {
     }
 
     @Override
-    void build(EventFunction function, KStream<String, Bytes> source, PipeDefinition pipeDefinition) {
+    void build(PipeDefinition pipeDefinition, EventFunction function, KStream<String, Bytes> source) {
         source.map(new KeyValueMapper<String, Bytes, KeyValue>() {
             @Override
             KeyValue apply(String key, Bytes value) {

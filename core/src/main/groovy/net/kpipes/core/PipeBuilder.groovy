@@ -42,6 +42,8 @@ class PipeBuilder {
 
     private final FunctionRegistry functionRegistry
 
+    private final List<FunctionBuilder> functionBuilders
+
     // Members
 
     private final KPipesConfig config
@@ -59,6 +61,10 @@ class PipeBuilder {
     PipeBuilder(KPipesConfig config, FunctionRegistry functionRegistry) {
         this.config = config
         this.functionRegistry = functionRegistry
+
+        def brokerAdmin = functionRegistry.service(BrokerAdmin)
+        def producer = functionRegistry.service(KafkaProducer)
+        functionBuilders = [new EventFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventStreamFunctionBuilder()] as List<FunctionBuilder>
     }
 
     // Operations
@@ -81,28 +87,9 @@ class PipeBuilder {
             sourceStreams[pipeDefinition.from()] = sourceStream
         }
 
-        if(pipeDefinition.functionAddress() == 'filter') {
-            def predicateText = pipeDefinition.functionConfiguration().predicate as String
-            sourceStream.filter(new Predicate() {
-                @Override
-                boolean test(Object key, Object value) {
-                    def shell = new GroovyShell()
-                    shell.setVariable('key', key)
-                    def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-                    shell.setVariable('event', event)
-                    shell.evaluate(predicateText) as boolean
-                }
-            }).to(pipeDefinition.to().get())
-        } else {
-            def function = functionRegistry.service(pipeDefinition.functionAddress())
-            if(function instanceof EventFunction) {
-                new EventFunctionBuilder().build(function, sourceStream, pipeDefinition)
-            } else if(function instanceof RoutingEventFunction) {
-                def brokerAdmin = functionRegistry.service(BrokerAdmin)
-                def kafkaProducer = functionRegistry.service(KafkaProducer)
-                new RoutingEventFunctionBuilder(kafkaProducer, brokerAdmin).build(function, sourceStream, pipeDefinition)
-            }
-        }
+        def function = functionRegistry.service(pipeDefinition.functionAddress())
+        def functionBuilder = functionBuilders.find{ it.supports(function) }
+        functionBuilder.build(pipeDefinition, function, sourceStream)
     }
 
     void start() {

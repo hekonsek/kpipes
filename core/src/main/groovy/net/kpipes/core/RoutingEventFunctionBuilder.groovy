@@ -24,7 +24,7 @@ class RoutingEventFunctionBuilder implements FunctionBuilder<RoutingEventFunctio
     }
 
     @Override
-    void build(RoutingEventFunction function, KStream<String, Bytes> source, PipeDefinition pipeDefinition) {
+    void build(PipeDefinition pipeDefinition, RoutingEventFunction function, KStream<String, Bytes> source) {
         source.foreach { String key, Bytes value ->
             def routedEvent = function.apply(pipeDefinition.functionConfiguration(), key, new ObjectMapper().readValue(value.get(), Map))
             brokerAdmin.ensureTopicExists(routedEvent.destination)

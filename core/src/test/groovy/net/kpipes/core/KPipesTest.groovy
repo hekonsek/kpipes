@@ -26,7 +26,7 @@ class KPipesTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
-    static def brokerAdmin = new BrokerAdmin('localhost', kpipesTest.zooKeeperPort())
+    static brokerAdmin = new BrokerAdmin('localhost', kpipesTest.zooKeeperPort())
 
     def source = Uuids.uuid()
 

@@ -7,6 +7,6 @@ interface FunctionBuilder<T> {
 
     boolean supports(Object function)
 
-    void build(T function, KStream<String, Bytes> source, PipeDefinition pipeDefinition)
+    void build(PipeDefinition pipeDefinition, T function, KStream<String, Bytes> source)
 
 }
