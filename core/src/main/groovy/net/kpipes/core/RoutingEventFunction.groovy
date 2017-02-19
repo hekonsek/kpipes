@@ -6,9 +6,9 @@ interface RoutingEventFunction {
 
     static class RoutedEvent {
 
-        Map<String, Object> event
+        private final Map<String, Object> event
 
-        String destination
+        private final String destination
 
         RoutedEvent(Map<String, Object> event, String destination) {
             this.event = event
@@ -16,11 +16,11 @@ interface RoutingEventFunction {
         }
 
         Map<String, Object> event() {
-            return event
+            event
         }
 
         String destination() {
-            return destination
+            destination
         }
 
     }
