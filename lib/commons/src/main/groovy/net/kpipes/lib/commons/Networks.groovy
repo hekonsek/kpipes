@@ -42,17 +42,17 @@ final class Networks {
 
     private static lastPort = new AtomicInteger(MINIMUM_PORT_NUMBER)
 
-    public static synchronized int availableTcpPort() {
+    static synchronized int availableTcpPort() {
         int port = lastPort.incrementAndGet()
         if(port > MAXIMUM_PORT_NUMBER) {
             lastPort.set(MINIMUM_PORT_NUMBER)
             port = lastPort.getAndIncrement()
         }
 
-        ServerSocket socket = null;
+        ServerSocket socket = null
         try {
-            socket = new ServerSocket(port);
-            socket.setReuseAddress(true);
+            socket = new ServerSocket(port)
+            socket.setReuseAddress(true)
             LOG.debug('Found available TCP port: {}', port)
             return port
         } catch (IOException e) {
@@ -60,7 +60,7 @@ final class Networks {
         } finally {
             if (socket != null) {
                 try {
-                    socket.close();
+                    socket.close()
                 } catch (IOException e) {
                     LOG.debug('Error while closing socket:', e)
                 }
