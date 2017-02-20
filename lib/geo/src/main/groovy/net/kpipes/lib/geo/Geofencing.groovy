@@ -29,19 +29,19 @@ class Geofencing {
     }
 
     static double gpsCoordinateToRadius(double value) {
-        return (value * PI) / 180;
+        return (value * PI) / 180
     }
 
     static double metersBetweenPoints(Point a, Point b) {
-        double latitudeDistance = gpsCoordinateToRadius(b.lat - a.lat)
-        double longitudeDistance = gpsCoordinateToRadius(b.lng - a.lng)
-        double lat1 = gpsCoordinateToRadius(a.lat)
-        double lat2 = gpsCoordinateToRadius(b.lat)
+        double latitudeDistance = gpsCoordinateToRadius(b.lat() - a.lat())
+        double longitudeDistance = gpsCoordinateToRadius(b.lng() - a.lng())
+        double lat1 = gpsCoordinateToRadius(a.lat())
+        double lat2 = gpsCoordinateToRadius(b.lat())
 
         double aa = sin(latitudeDistance / 2) * sin(latitudeDistance / 2) +
-                sin(longitudeDistance / 2) * sin(longitudeDistance / 2) * cos(lat1) * cos(lat2);
-        double c = 2 * atan2(sqrt(aa), sqrt(1 - aa));
-        return EARTH_RADIUS_IN_KILOMETERS * c * 1000;
+                sin(longitudeDistance / 2) * sin(longitudeDistance / 2) * cos(lat1) * cos(lat2)
+        double c = 2 * atan2(sqrt(aa), sqrt(1 - aa))
+        EARTH_RADIUS_IN_KILOMETERS * c * 1000
     }
 
     static boolean isPointWithinPolygon(Point point, List<Point> polygon) {
