@@ -16,6 +16,10 @@
  */
 package net.kpipes.lib.commons
 
+import groovy.transform.CompileStatic
+import org.apache.commons.lang3.RandomUtils
+import org.slf4j.Logger
+
 import java.util.concurrent.atomic.AtomicInteger
 
 import static org.slf4j.LoggerFactory.getLogger
@@ -23,15 +27,16 @@ import static org.slf4j.LoggerFactory.getLogger
 /**
  * IP networking related utilities.
  */
+@CompileStatic
 final class Networks {
 
-    static final MINIMUM_PORT_NUMBER = 1100
+    private static final int MINIMUM_PORT_NUMBER = 1100
 
-    static final MAXIMUM_PORT_NUMBER = 65535
+    private static final int MAXIMUM_PORT_NUMBER = 65535
 
     // Logger
 
-    private static final LOG = getLogger(Networks)
+    private static final Logger LOG = getLogger(Networks)
 
     // Constructors
 
@@ -40,7 +45,7 @@ final class Networks {
 
     // Utilities API
 
-    private static lastPort = new AtomicInteger(MINIMUM_PORT_NUMBER)
+    private static AtomicInteger lastPort = new AtomicInteger(RandomUtils.nextInt(MINIMUM_PORT_NUMBER, MAXIMUM_PORT_NUMBER))
 
     static synchronized int availableTcpPort() {
         int port = lastPort.incrementAndGet()
