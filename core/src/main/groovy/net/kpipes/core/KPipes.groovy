@@ -5,13 +5,13 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class KPipes {
 
-    private final ServiceRegistry functionRegistry
+    private final ServiceRegistry serviceRegistry
 
     private final PipeBuilder pipeBuilder
 
-    KPipes(KPipesConfig config, ServiceRegistry functionRegistry) {
-        this.functionRegistry = functionRegistry
-        this.pipeBuilder = new PipeBuilder(config, functionRegistry)
+    KPipes(KPipesConfig config, ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry
+        this.pipeBuilder = new PipeBuilder(config, serviceRegistry)
     }
 
     void start() {
@@ -20,6 +20,10 @@ class KPipes {
 
     PipeBuilder pipeBuilder() {
         pipeBuilder
+    }
+
+    ServiceRegistry serviceRegistry() {
+        serviceRegistry
     }
 
 }
