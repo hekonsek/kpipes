@@ -48,6 +48,11 @@
             <!-- Internal dependencies -->
             <dependency>
                 <groupId>net.kpipes</groupId>
+                <artifactId>kpipes-adapter-websockets</artifactId>
+                <version>${kpipes.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-core</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>
