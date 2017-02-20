@@ -16,11 +16,11 @@
  */
 package net.kpipes.lib.geo
 
-import org.assertj.core.api.Assertions
 import org.junit.Test
 
-import static Geofencing.*
 import static Point.point
+import static net.kpipes.lib.geo.Geofencing.*
+import static org.assertj.core.api.Assertions.assertThat
 
 class GeofencingTest {
 
@@ -37,7 +37,7 @@ class GeofencingTest {
         def isWithin = isPointWithinPolygon(point, polygon)
 
         // Then
-        Assertions.assertThat(isWithin).isTrue()
+        assertThat(isWithin).isTrue()
     }
 
     @Test
@@ -49,7 +49,31 @@ class GeofencingTest {
         def isWithin = isPointWithinPolygon(point, polygon)
 
         // Then
-        Assertions.assertThat(isWithin).isFalse()
+        assertThat(isWithin).isFalse()
+    }
+
+    @Test
+    void pointsFromPolygonShouldNotReturnDistanceFromPolygon() {
+        def point = new Point(1,1)
+        def polygon = [new Point(0,0), new Point(1,2), new Point(2,1)]
+
+        // When
+        def isWithin = metersOutsidePolygon(point, polygon)
+
+        // Then
+        assertThat(isWithin).isEmpty()
+    }
+
+    @Test
+    void shouldReturnDistanceFromPolygon() {
+        def point = new Point(49.8209418, 19.0551721)
+        def polygon = [new Point(49.821152, 19.054440), new Point(49.820680, 19.054596), new Point(49.820644, 19.055739)]
+
+        // When
+        def distance = metersOutsidePolygon(point, polygon)
+
+        // Then
+        assertThat(distance.get()).isBetween(50.0d, 51.0d)
     }
 
     @Test
@@ -58,8 +82,8 @@ class GeofencingTest {
         def distanceInKilometers = metersBetweenPoints(bielskoCity, gdyniaCity) / 1000
 
         // Then
-        Assertions.assertThat(distanceInKilometers).isGreaterThan(500d)
-        Assertions.assertThat(distanceInKilometers).isLessThan(550d)
+        assertThat(distanceInKilometers).isGreaterThan(500d)
+        assertThat(distanceInKilometers).isLessThan(550d)
     }
 
     @Test
@@ -69,7 +93,7 @@ class GeofencingTest {
         def gdyniaBielskoDistance = metersBetweenPoints(gdyniaCity, bielskoCity)
 
         // Then
-        Assertions.assertThat(bielskoGdyniaDistance).isEqualTo(gdyniaBielskoDistance)
+        assertThat(bielskoGdyniaDistance).isEqualTo(gdyniaBielskoDistance)
     }
 
     @Test
@@ -79,10 +103,10 @@ class GeofencingTest {
         def fiftyKilometers = 50 * 1000
 
         // When
-        def outsizeOfFence = metersOutsideFence(gdyniaCity, bielskoCity, fenceRadius)
+        def outsizeOfFence = metersOutsideCircle(gdyniaCity, bielskoCity, fenceRadius)
 
         // Then
-        Assertions.assertThat(outsizeOfFence).isBetween(0d, fiftyKilometers.doubleValue())
+        assertThat(outsizeOfFence).isBetween(0d, fiftyKilometers.doubleValue())
     }
 
 

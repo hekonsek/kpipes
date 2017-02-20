@@ -1,6 +1,6 @@
 package net.kpipes.functions.geo.fencing
 
-import net.kpipes.functions.geo.geofencing.GeoFencingDistanceEventFunction
+import net.kpipes.functions.geo.geofencing.GeoFencingDistanceFunction
 import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
@@ -9,7 +9,7 @@ class GeoFencingTest {
 
     @Test
     void shouldCalculateDistanceFromFence() {
-        def function = new GeoFencingDistanceEventFunction()
+        def function = new GeoFencingDistanceFunction()
         def fenceConfig = [fence: [center: [lat: 49.820813, lng: 19.054982], radius: 25]]
 
         // When
