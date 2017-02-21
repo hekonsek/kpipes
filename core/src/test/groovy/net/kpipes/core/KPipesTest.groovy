@@ -3,7 +3,6 @@ package net.kpipes.core
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
@@ -16,6 +15,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
 @RunWith(VertxUnitRunner)
@@ -28,9 +28,9 @@ class KPipesTest {
 
     static brokerAdmin = new BrokerAdmin('localhost', kpipesTest.zooKeeperPort())
 
-    def source = Uuids.uuid()
+    def source = uuid()
 
-    def target = Uuids.uuid()
+    def target = uuid()
 
     @Test(timeout = 60000L)
     void shouldExecuteFunction(TestContext context) {
@@ -45,7 +45,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
             async.complete()
         }
     }
@@ -65,7 +65,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), 'finalTarget') {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), 'finalTarget') {
             async.complete()
         }
     }
@@ -73,7 +73,7 @@ class KPipesTest {
     @Test(timeout = 60000L)
     void shouldSplitStream(TestContext context) {
         // Given
-        def secondTarget = Uuids.uuid()
+        def secondTarget = uuid()
         def async = context.async()
         def kpipes = kpipes()
         def pipeBuilder = kpipes.pipeBuilder()
@@ -86,8 +86,8 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
-            new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), secondTarget) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+            new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), secondTarget) {
                 async.complete()
             }
         }
@@ -107,7 +107,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
             def response = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(response.config.configKey).isEqualTo('configValue')
             async.complete()
@@ -128,7 +128,7 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('baz')
             async.complete()
@@ -148,8 +148,59 @@ class KPipesTest {
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([target: target]))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
             async.complete()
+        }
+    }
+
+    @Test(timeout = 60000L)
+    void shouldCountEvents(TestContext context) {
+        // Given
+        def async = context.async()
+        def kpipes = kpipes()
+        def pipeBuilder = kpipes.pipeBuilder()
+        pipeBuilder.build("${source} | count [groupBy: 'country', byTenant: false] | ${target}")
+        kpipes.start()
+
+        // When
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([country: 'US']))))
+
+        // Then
+        def results = [:]
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+            def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
+            results[it.key] = event.count
+            if(results.US == 1 && results.PL == 2) {
+                async.complete()
+            }
+        }
+    }
+
+    @Test(timeout = 60000L)
+    void shouldCountEventsByTenant(TestContext context) {
+        // Given
+        def async = context.async()
+        def kpipes = kpipes()
+        def pipeBuilder = kpipes.pipeBuilder()
+        pipeBuilder.build("${source} | count [groupBy: 'country'] | ${target}")
+        kpipes.start()
+
+        // When
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, "tenant1|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, "tenant2|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, "tenant2|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, "tenant1|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'US']))))
+
+        // Then
+        def results = [:]
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+            def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
+            results[it.key()] = event.count
+            if(results['tenant1|US'] == 1 && results['tenant1|PL'] == 1 && results['tenant2|PL'] == 2) {
+                async.complete()
+            }
         }
     }
 

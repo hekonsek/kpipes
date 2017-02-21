@@ -16,6 +16,7 @@
  */
 package net.kpipes.core
 
+import com.google.common.io.Files
 import groovy.transform.CompileStatic
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -27,11 +28,7 @@ import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.slf4j.Logger
 
 import static net.kpipes.core.PipeDefinition.parsePipeDefinition
-import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.KEY_SERDE_CLASS_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.VALUE_SERDE_CLASS_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.ZOOKEEPER_CONNECT_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.*
 import static org.slf4j.LoggerFactory.getLogger
 
 @CompileStatic
@@ -65,7 +62,7 @@ class PipeBuilder {
 
         def brokerAdmin = serviceRegistry.service(BrokerAdmin)
         def producer = serviceRegistry.service(KafkaProducer)
-        functionBuilders = [new EventFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventStreamFunctionBuilder()] as List<FunctionBuilder>
+        functionBuilders = [new EventFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventStreamFunctionBuilder(), new EventAggregateFunctionBuilder()] as List<FunctionBuilder>
     }
 
     // Operations
@@ -102,6 +99,9 @@ class PipeBuilder {
         streamsConfiguration.put(ZOOKEEPER_CONNECT_CONFIG, "${config.zooKeeperHost}:${config.zooKeeperPort}" as String);
         streamsConfiguration.put(KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         streamsConfiguration.put(VALUE_SERDE_CLASS_CONFIG, Serdes.Bytes().getClass().getName());
+        streamsConfiguration.put(STATE_DIR_CONFIG, Files.createTempDir().absolutePath)
+        streamsConfiguration.put(COMMIT_INTERVAL_MS_CONFIG, "5000");
+
         new KafkaStreams(builder, streamsConfiguration).start()
     }
 
