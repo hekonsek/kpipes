@@ -12,7 +12,7 @@
 
     <groupId>net.kpipes</groupId>
     <artifactId>kpipes</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.0-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
