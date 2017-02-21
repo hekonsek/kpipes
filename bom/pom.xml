@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <licenses>
         <license>
@@ -14,7 +13,7 @@
     <parent>
         <groupId>net.kpipes</groupId>
         <artifactId>kpipes</artifactId>
-        <version>0.0.0-SNAPSHOT</version>
+        <version>0.0.0</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>kpipes-bom</artifactId>
@@ -34,7 +33,7 @@
         <jts.version>1.14.0</jts.version>
         <junit.version>4.12</junit.version>
         <kafka.version>0.10.1.1</kafka.version>
-        <kpipes.version>0.0.0-SNAPSHOT</kpipes.version>
+        <kpipes.version>0.0.0</kpipes.version>
         <logback.version>1.1.7</logback.version>
         <mockito.version>1.10.19</mockito.version>
         <slf4j.version>1.7.22</slf4j.version>
