@@ -171,6 +171,9 @@
 
     <!-- Meta information required for Sonatype release -->
 
+    <description>KPipes</description>
+    <url>https://github.com/kpipes/kpipes</url>
+
     <developers>
         <developer>
             <name>Henryk Konsek</name>
