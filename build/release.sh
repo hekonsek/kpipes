@@ -28,6 +28,6 @@ if [ -z "${OLD_VERSION}" ] || [ -z "${NEW_VERSION}" ]; then
     exit
 fi
 
-mvn -Darguments='-Dmaven.test.skip=true' -Darguments=-Dgpg.passphrase=$GPG_PASSWORD release:prepare release:perform
+mvn -Darguments="-Dmaven.test.skip=true -Dgpg.passphrase=$GPG_PASSWORD" release:prepare release:perform
 
 # sed -i -e "s/${OLD_VERSION}/${NEW_VERSION}/g" readme.md
