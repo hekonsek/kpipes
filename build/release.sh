@@ -17,18 +17,17 @@
 
 set -e
 
-OLD_VERSION="${1}"
-NEW_VERSION="${2}"
+GPG_PASSWORD="${1}"
+OLD_VERSION="${2}"
+NEW_VERSION="${3}"
 
 if [ -z "${OLD_VERSION}" ] || [ -z "${NEW_VERSION}" ]; then
     echo 'Please specify the latest and the new version of KPipes. For example:'
     echo
-    echo '  build/release.sh 0.0.5 0.0.6'
+    echo '  build/release.sh mygpgpassword 0.0.5 0.0.6'
     exit
 fi
 
-mvn -Darguments='-Dmaven.test.skip=true' release:prepare release:perform
+mvn -Darguments='-Dmaven.test.skip=true' -Darguments=-Dgpg.passphrase=$GPG_PASSWORD release:prepare release:perform
 
 # sed -i -e "s/${OLD_VERSION}/${NEW_VERSION}/g" readme.md
-
-# mvn clean install -Pdocker -DskipTests
