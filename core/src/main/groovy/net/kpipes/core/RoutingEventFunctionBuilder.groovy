@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.KStream
+import org.apache.kafka.streams.kstream.KTable
 
 class RoutingEventFunctionBuilder implements FunctionBuilder<RoutingEventFunction> {
 
@@ -24,7 +25,7 @@ class RoutingEventFunctionBuilder implements FunctionBuilder<RoutingEventFunctio
     }
 
     @Override
-    void build(PipeDefinition pipeDefinition, RoutingEventFunction function, KStream<String, Bytes> source) {
+    void build(PipeDefinition pipeDefinition, RoutingEventFunction function, KTable<String, Bytes> source) {
         source.foreach { String key, Bytes value ->
             def routedEvent = function.apply(pipeDefinition.functionConfiguration(), key, new ObjectMapper().readValue(value.get(), Map))
             brokerAdmin.ensureTopicExists(routedEvent.destination)

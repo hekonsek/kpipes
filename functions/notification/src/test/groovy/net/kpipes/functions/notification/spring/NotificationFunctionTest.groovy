@@ -26,7 +26,7 @@ class NotificationFunctionTest {
 
     def target = Uuids.uuid()
 
-    @Test(timeout = 30000L)
+    @Test(timeout = 60000L)
     void shouldRouteEvent(TestContext context) {
         // Given
         def async = context.async()

@@ -21,9 +21,9 @@ import net.kpipes.core.EventAggregateFunction
 class CountFunction implements EventAggregateFunction {
 
     @Override
-    Map<String, Object> onEvent(Map<String, Object> config, Map<String, Object> accumulator, String key, Map<String, Object> event) {
+    Map<String, Object> onEvent(boolean added, Map<String, Object> config, Map<String, Object> accumulator, String key, Map<String, Object> event) {
         def current = accumulator.getOrDefault('count', 0)
-        [count: current + 1]
+        [count: added ? current + 1 : current - 1]
     }
 
 }

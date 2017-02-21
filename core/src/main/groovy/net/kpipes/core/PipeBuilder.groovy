@@ -25,6 +25,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
+import org.apache.kafka.streams.kstream.KTable
 import org.slf4j.Logger
 
 import static net.kpipes.core.PipeDefinition.parsePipeDefinition
@@ -42,6 +43,8 @@ class PipeBuilder {
 
     private final List<FunctionBuilder> functionBuilders
 
+    private KafkaStreams kafkaStreams
+
     // Members
 
     private final KPipesConfig config
@@ -52,7 +55,7 @@ class PipeBuilder {
 
     private KStreamBuilder builder = new KStreamBuilder()
 
-    private Map<String, KStream> sourceStreams = new HashMap<>()
+    private Map<String, KTable> sourceStreams = new HashMap<>()
 
     // Constructor
 
@@ -81,7 +84,7 @@ class PipeBuilder {
 
         def sourceStream = sourceStreams[pipeDefinition.from()]
         if (sourceStream == null) {
-            sourceStream = builder.stream(pipeDefinition.from())
+            sourceStream = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.from(), pipeDefinition.from())
             sourceStreams[pipeDefinition.from()] = sourceStream
         }
 
@@ -102,7 +105,12 @@ class PipeBuilder {
         streamsConfiguration.put(STATE_DIR_CONFIG, Files.createTempDir().absolutePath)
         streamsConfiguration.put(COMMIT_INTERVAL_MS_CONFIG, "5000");
 
-        new KafkaStreams(builder, streamsConfiguration).start()
+        kafkaStreams = new KafkaStreams(builder, streamsConfiguration)
+        kafkaStreams.start()
+    }
+
+    void stop() {
+        kafkaStreams.close()
     }
 
 }

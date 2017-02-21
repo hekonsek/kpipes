@@ -2,12 +2,12 @@ package net.kpipes.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.kstream.KStream
+import org.apache.kafka.streams.kstream.KTable
 
 class FilterFunction implements EventStreamFunction {
 
     @Override
-    void apply(PipeDefinition pipeDefinition, KStream<String, Bytes> source) {
+    void apply(PipeDefinition pipeDefinition, KTable<String, Bytes> source) {
         def predicateText = pipeDefinition.functionConfiguration().predicate as String
         source.filter { Object key, Object value ->
             def shell = new GroovyShell()
