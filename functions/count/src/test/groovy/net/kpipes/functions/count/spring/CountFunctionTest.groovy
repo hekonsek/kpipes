@@ -3,8 +3,6 @@ package net.kpipes.functions.count.spring
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.core.EventFunction
-import net.kpipes.core.RoutingEventFunction
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
@@ -13,12 +11,10 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 import static net.kpipes.core.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
-import static org.assertj.core.api.Assertions.assertThat
 
 @RunWith(VertxUnitRunner)
 @Configuration

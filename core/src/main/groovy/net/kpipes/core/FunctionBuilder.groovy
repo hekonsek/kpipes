@@ -4,7 +4,7 @@ import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KTable
 
-interface FunctionBuilder<T> {
+interface FunctionBuilder<T> extends net.kpipes.core.function.FunctionBuilder {
 
     boolean supports(Object function)
 

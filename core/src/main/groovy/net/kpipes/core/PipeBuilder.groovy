@@ -18,6 +18,8 @@ package net.kpipes.core
 
 import com.google.common.io.Files
 import groovy.transform.CompileStatic
+import net.kpipes.core.function.EventMappingFunctionBuilder
+import net.kpipes.core.function.StreamFunctionBuilder
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -41,7 +43,7 @@ class PipeBuilder {
 
     private final ServiceRegistry serviceRegistry
 
-    private final List<FunctionBuilder> functionBuilders
+    private final List<net.kpipes.core.function.FunctionBuilder> functionBuilders
 
     private KafkaStreams kafkaStreams
 
@@ -67,7 +69,7 @@ class PipeBuilder {
 
         def brokerAdmin = serviceRegistry.service(BrokerAdmin)
         def producer = serviceRegistry.service(KafkaProducer)
-        functionBuilders = [new EventFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventTableFunctionBuilder(), new EventAggregateFunctionBuilder()] as List<FunctionBuilder>
+        functionBuilders = [new EventMappingFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventTableFunctionBuilder(), new EventAggregateFunctionBuilder()] as List<net.kpipes.core.function.FunctionBuilder>
     }
 
     // Operations
@@ -92,14 +94,14 @@ class PipeBuilder {
                 sourceStream = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.from(), pipeDefinition.from())
                 sourceTables[pipeDefinition.from()] = sourceStream
             }
-            functionBuilder.build(pipeDefinition, function, sourceStream)
+            (functionBuilder as FunctionBuilder).build(pipeDefinition, function, sourceStream)
         } else {
             def sourceStream = sourceStreams[pipeDefinition.from()]
             if (sourceStream == null) {
                 sourceStream = builder.stream(pipeDefinition.from())
                 sourceStreams[pipeDefinition.from()] = sourceStream
             }
-            functionBuilder.build(pipeDefinition, function, sourceStream)
+            (functionBuilder as StreamFunctionBuilder).build(pipeDefinition, function, sourceStream)
         }
     }
 

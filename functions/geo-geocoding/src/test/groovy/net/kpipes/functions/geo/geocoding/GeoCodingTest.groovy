@@ -1,5 +1,6 @@
 package net.kpipes.functions.geo.geocoding
 
+import net.kpipes.core.function.Event
 import net.kpipes.core.spring.SpringServiceRegistry
 import org.apache.camel.ProducerTemplate
 import org.junit.Test
@@ -12,7 +13,7 @@ class GeoCodingTest {
     void shouldExecuteReverseGeocoding() {
         def producerTemplate = new SpringServiceRegistry().applicationContext.getBean(ProducerTemplate)
         def reverseFunction = new GeoCodingReverseEventFunction(producerTemplate)
-        def result = reverseFunction.apply([:], 'key', [lat: 40.714224, lng: -73.961452])
+        def result = reverseFunction.onEvent(new Event('key', [lat: 40.714224, lng: -73.961452], [:]))
 
         def response = result['response.geo.coding.reverse'] as Map<String, String>
         assertThat(response.address).contains('Brooklyn')

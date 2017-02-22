@@ -1,10 +1,11 @@
 package net.kpipes.functions.geo.geocoding
 
 import com.google.code.geocoder.model.GeocodeResponse
-import net.kpipes.core.EventFunction
+import net.kpipes.core.function.Event
+import net.kpipes.core.function.EventMappingFunction
 import org.apache.camel.ProducerTemplate
 
-class GeoCodingReverseEventFunction implements EventFunction {
+class GeoCodingReverseEventFunction implements EventMappingFunction {
 
     private final ProducerTemplate camelProducerTemplate
 
@@ -13,12 +14,12 @@ class GeoCodingReverseEventFunction implements EventFunction {
     }
 
     @Override
-    Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
-        def geocodeResponse = camelProducerTemplate.requestBody("geocoder:latlng:${event.lat},${event.lng}", null, GeocodeResponse)
+    Map<String, Object> onEvent(Event event) {
+        def geocodeResponse = camelProducerTemplate.requestBody("geocoder:latlng:${event.body().lat},${event.body().lng}", null, GeocodeResponse)
         def address = geocodeResponse.results.first().formattedAddress
         def city = geocodeResponse.results.find { it.types.contains('locality') }.addressComponents.first().longName
-        event['response.geo.coding.reverse'] = [address: address, city: city]
-        event
+        event.body()['response.geo.coding.reverse'] = [address: address, city: city]
+        event.body()
     }
 
 }

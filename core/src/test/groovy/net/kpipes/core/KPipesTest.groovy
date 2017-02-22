@@ -3,6 +3,8 @@ package net.kpipes.core
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
+import net.kpipes.core.function.Event
+import net.kpipes.core.function.EventMappingFunction
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
@@ -154,23 +156,23 @@ class KPipesTest {
     }
 
     @Bean
-    EventFunction functionFoo() {
-        new EventFunction() {
+    EventMappingFunction functionFoo() {
+        new EventMappingFunction() {
             @Override
-            Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
-                event.hello = 'world'
-                event
+            Map<String, Object> onEvent(Event event) {
+                event.body().hello = 'world'
+                event.body()
             }
         }
     }
 
     @Bean
-    EventFunction functionWithConfig() {
-        new EventFunction() {
+    EventMappingFunction functionWithConfig() {
+        new EventMappingFunction() {
             @Override
-            Map<String, Object> apply(Map<String, Object> config, String key, Map<String, Object> event) {
-                event.config = config
-                event
+            Map<String, Object> onEvent(Event event) {
+                event.body().config = event.config()
+                event.body()
             }
         }
     }
