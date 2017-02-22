@@ -25,6 +25,15 @@ class RoutingEventFunctionBuilder implements FunctionBuilder<RoutingEventFunctio
     }
 
     @Override
+    void build(PipeDefinition pipeDefinition, RoutingEventFunction function, KStream<String, Bytes> source) {
+        source.foreach { String key, Bytes value ->
+            def routedEvent = function.apply(pipeDefinition.functionConfiguration(), key, new ObjectMapper().readValue(value.get(), Map))
+            brokerAdmin.ensureTopicExists(routedEvent.destination)
+            kafkaProducer.send(new ProducerRecord(routedEvent.destination(), key, new Bytes(new ObjectMapper().writeValueAsBytes(routedEvent.event()))))
+        }
+    }
+
+    @Override
     void build(PipeDefinition pipeDefinition, RoutingEventFunction function, KTable<String, Bytes> source) {
         source.foreach { String key, Bytes value ->
             def routedEvent = function.apply(pipeDefinition.functionConfiguration(), key, new ObjectMapper().readValue(value.get(), Map))

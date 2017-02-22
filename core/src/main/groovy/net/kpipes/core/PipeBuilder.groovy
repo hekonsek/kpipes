@@ -55,7 +55,9 @@ class PipeBuilder {
 
     private KStreamBuilder builder = new KStreamBuilder()
 
-    private Map<String, KTable> sourceStreams = new HashMap<>()
+    private Map<String, KStream> sourceStreams = new HashMap<>()
+
+    private Map<String, KTable> sourceTables = new HashMap<>()
 
     // Constructor
 
@@ -65,7 +67,7 @@ class PipeBuilder {
 
         def brokerAdmin = serviceRegistry.service(BrokerAdmin)
         def producer = serviceRegistry.service(KafkaProducer)
-        functionBuilders = [new EventFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventStreamFunctionBuilder(), new EventAggregateFunctionBuilder()] as List<FunctionBuilder>
+        functionBuilders = [new EventFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventTableFunctionBuilder(), new EventAggregateFunctionBuilder()] as List<FunctionBuilder>
     }
 
     // Operations
@@ -80,20 +82,29 @@ class PipeBuilder {
             topics << pipeDefinition.to().get()
         }
 
-        LOG.debug('Ensuring that all topics involved in a pipe exist.')
-
-        def sourceStream = sourceStreams[pipeDefinition.from()]
-        if (sourceStream == null) {
-            sourceStream = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.from(), pipeDefinition.from())
-            sourceStreams[pipeDefinition.from()] = sourceStream
-        }
-
         def function = serviceRegistry.service(pipeDefinition.functionAddress())
         def functionBuilder = functionBuilders.find{ it.supports(function) }
-        functionBuilder.build(pipeDefinition, function, sourceStream)
+        def requiresKTable = function instanceof EventAggregateFunction
+
+        if(requiresKTable) {
+            def sourceStream = sourceTables[pipeDefinition.from()]
+            if (sourceStream == null) {
+                sourceStream = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.from(), pipeDefinition.from())
+                sourceTables[pipeDefinition.from()] = sourceStream
+            }
+            functionBuilder.build(pipeDefinition, function, sourceStream)
+        } else {
+            def sourceStream = sourceStreams[pipeDefinition.from()]
+            if (sourceStream == null) {
+                sourceStream = builder.stream(pipeDefinition.from())
+                sourceStreams[pipeDefinition.from()] = sourceStream
+            }
+            functionBuilder.build(pipeDefinition, function, sourceStream)
+        }
     }
 
     void start() {
+        LOG.debug('Ensuring that all topics involved in a pipe exist.')
         serviceRegistry.service(BrokerAdmin).ensureTopicExists(topics)
 
         def streamsConfiguration = new Properties()

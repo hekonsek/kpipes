@@ -15,6 +15,17 @@ class EventFunctionBuilder implements FunctionBuilder<EventFunction> {
     }
 
     @Override
+    void build(PipeDefinition pipeDefinition, EventFunction function, KStream<String, Bytes> source) {
+        source.map(new KeyValueMapper<String, Bytes, KeyValue>() {
+            @Override
+            KeyValue apply(String key, Bytes value) {
+                def event = new ObjectMapper().readValue(value.get(), Map)
+                new KeyValue<>(key, new Bytes(new ObjectMapper().writeValueAsBytes(function.apply(pipeDefinition.functionConfiguration(), key, event))))
+            }
+        }).to(pipeDefinition.to().get())
+    }
+
+    @Override
     void build(PipeDefinition pipeDefinition, EventFunction function, KTable<String, Bytes> source) {
         source.toStream().map(new KeyValueMapper<String, Bytes, KeyValue>() {
             @Override
