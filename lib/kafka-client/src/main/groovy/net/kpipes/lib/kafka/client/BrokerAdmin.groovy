@@ -61,7 +61,7 @@ class BrokerAdmin {
             }
         }
         if(topicCreated) {
-            Thread.sleep(5000)
+            Thread.sleep(4000)
         }
     }
 
