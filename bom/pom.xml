@@ -35,7 +35,6 @@
         <kafka.version>0.10.2.0</kafka.version>
         <kpipes.version>0.0.1-SNAPSHOT</kpipes.version>
         <logback.version>1.2.1</logback.version>
-        <mockito.version>1.10.19</mockito.version>
         <slf4j.version>1.7.22</slf4j.version>
         <vertx.version>3.3.3</vertx.version>
         <spring-boot.version>1.5.1.RELEASE</spring-boot.version>
@@ -202,11 +201,6 @@
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
