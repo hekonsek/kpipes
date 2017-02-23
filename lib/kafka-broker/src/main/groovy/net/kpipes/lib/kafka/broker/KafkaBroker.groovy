@@ -16,21 +16,27 @@
  */
 package net.kpipes.lib.kafka.broker
 
+import groovy.transform.CompileStatic
+import kafka.metrics.KafkaMetricsReporter
 import kafka.server.KafkaConfig
 import kafka.server.KafkaServer
-import kafka.utils.SystemTime$
 import scala.Option
 import scala.collection.JavaConversions
 
-public class KafkaBroker {
+import static org.apache.kafka.common.utils.Time.SYSTEM
 
-    private final int port;
+@CompileStatic
+class KafkaBroker {
 
-    private final String zooKeeperHost;
+    private final int port
 
-    private final int zooKeeperPort;
+    private final String zooKeeperHost
+
+    private final int zooKeeperPort
 
     private final String dataDirectory
+
+    private KafkaServer broker
 
     KafkaBroker(int port, String zooKeeperHost, int zooKeeperPort, String dataDirectory) {
         this.port = port
@@ -39,21 +45,28 @@ public class KafkaBroker {
         this.dataDirectory = dataDirectory
     }
 
-    public KafkaBroker start() {
-        Properties kafkaConfig = new Properties();
-        kafkaConfig.setProperty("zookeeper.connect", zooKeeperHost + ":" + zooKeeperPort);
-        kafkaConfig.setProperty("broker.id", "1");
-        kafkaConfig.setProperty("host.name", "localhost");
-        kafkaConfig.setProperty("advertised.host.name", "localhost");
-        kafkaConfig.setProperty("auto.create.topics.enable", "true");
-        kafkaConfig.setProperty("port", port + "");
-        kafkaConfig.setProperty("log.dir", dataDirectory);
-        kafkaConfig.setProperty("log.flush.interval.messages", 1 + "");
+    // Life-cycle
+
+    KafkaBroker start() {
+        Properties kafkaConfig = new Properties()
+        kafkaConfig.setProperty("zookeeper.connect", zooKeeperHost + ":" + zooKeeperPort)
+        kafkaConfig.setProperty("broker.id", "1")
+        kafkaConfig.setProperty("host.name", "localhost")
+        kafkaConfig.setProperty("advertised.host.name", "localhost")
+        kafkaConfig.setProperty("auto.create.topics.enable", "true")
+        kafkaConfig.setProperty("port", port + "")
+        kafkaConfig.setProperty("log.dir", dataDirectory)
+        kafkaConfig.setProperty("log.flush.interval.messages", 1 + "")
         kafkaConfig.setProperty('num.partitions', 25 + '')
 
-        KafkaServer broker = new KafkaServer(new KafkaConfig(kafkaConfig), SystemTime$.MODULE$, Option.empty(), JavaConversions.asScalaBuffer(Collections.emptyList()));
-        broker.startup();
-        return this;
+        broker = new KafkaServer(new KafkaConfig(kafkaConfig), SYSTEM, Option.<String>empty(), JavaConversions.<KafkaMetricsReporter>asScalaBuffer([]))
+        broker.startup()
+        this
+    }
+
+    KafkaBroker stop() {
+        broker.shutdown()
+        this
     }
 
 }
