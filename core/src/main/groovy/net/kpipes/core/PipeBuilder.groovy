@@ -18,11 +18,10 @@ package net.kpipes.core
 
 import com.google.common.io.Files
 import groovy.transform.CompileStatic
-import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.StreamFunctionBuilder
+import net.kpipes.core.function.TableFunctionBuilder
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
-import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.KStream
@@ -81,15 +80,14 @@ class PipeBuilder {
         def functionBuilders = serviceRegistry.services(net.kpipes.core.function.FunctionBuilder)
         def function = serviceRegistry.service(pipeDefinition.functionAddress())
         def functionBuilder = functionBuilders.find{ it.supports(function) }
-        def requiresKTable = function instanceof EventAggregateFunction
 
-        if(requiresKTable) {
-            def sourceStream = sourceTables[pipeDefinition.from()]
-            if (sourceStream == null) {
-                sourceStream = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.from(), pipeDefinition.from())
-                sourceTables[pipeDefinition.from()] = sourceStream
+        if(functionBuilder instanceof TableFunctionBuilder) {
+            def sourceTable = sourceTables[pipeDefinition.from()]
+            if (sourceTable == null) {
+                sourceTable = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.from(), pipeDefinition.from())
+                sourceTables[pipeDefinition.from()] = sourceTable
             }
-            (functionBuilder as FunctionBuilder).build(pipeDefinition, function, sourceStream)
+            (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
         } else {
             def sourceStream = sourceStreams[pipeDefinition.from()]
             if (sourceStream == null) {

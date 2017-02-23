@@ -1,6 +1,5 @@
 package net.kpipes.core.spring
 
-import net.kpipes.core.EventAggregateFunctionBuilder
 import net.kpipes.core.EventTableFunctionBuilder
 import net.kpipes.core.RoutingEventFunctionBuilder
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -11,10 +10,6 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class LegacyFunctionBuilderConfig {
 
-    @Bean
-    eventAggregateFunctionBuilder() {
-        new EventAggregateFunctionBuilder()
-    }
 
     @Bean
     eventTableFunctionBuilder() {

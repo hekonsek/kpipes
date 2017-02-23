@@ -1,6 +1,7 @@
-package net.kpipes.core
+package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.kpipes.core.PipeDefinition
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
@@ -10,16 +11,11 @@ import org.apache.kafka.streams.kstream.Initializer
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KTable
 
-class EventAggregateFunctionBuilder implements FunctionBuilder<EventAggregateFunction> {
+class TableEventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggregateFunction> {
 
     @Override
     boolean supports(Object function) {
         function instanceof EventAggregateFunction
-    }
-
-    @Override
-    void build(PipeDefinition pipeDefinition, EventAggregateFunction function, KStream<String, Bytes> source) {
-        throw new NotImplementedException('')
     }
 
     @Override
@@ -45,7 +41,7 @@ class EventAggregateFunctionBuilder implements FunctionBuilder<EventAggregateFun
                     aggregate = new ObjectMapper().readValue((aggregate as Bytes).get(), Map)
                 }
                 def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-                event = function.onEvent(true, config, aggregate as Map, aggKey as String, event)
+                event = function.onEvent(new Event(aggKey as String, event, config, true), aggregate as Map)
                 new Bytes(new ObjectMapper().writeValueAsBytes(event))
             }
         }, new Aggregator() {
@@ -55,7 +51,7 @@ class EventAggregateFunctionBuilder implements FunctionBuilder<EventAggregateFun
                     aggregate = new ObjectMapper().readValue((aggregate as Bytes).get(), Map)
                 }
                 def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-                event = function.onEvent(false, config, aggregate as Map, aggKey as String, event)
+                event = function.onEvent(new Event(aggKey as String, event, config, false), aggregate as Map)
                 new Bytes(new ObjectMapper().writeValueAsBytes(event))
             }
         }, Serdes.Bytes(), "${pipeDefinition.from()}${pipeDefinition.to().get()}").to(pipeDefinition.to().get())
