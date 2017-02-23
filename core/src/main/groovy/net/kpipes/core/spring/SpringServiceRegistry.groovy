@@ -22,6 +22,11 @@ class SpringServiceRegistry implements ServiceRegistry {
         applicationContext.getBean(type)
     }
 
+    @Override
+    <T> List<T> services(Class<T> type) {
+        applicationContext.getBeansOfType(type).values().toList()
+    }
+
     ApplicationContext getApplicationContext() {
         return applicationContext
     }

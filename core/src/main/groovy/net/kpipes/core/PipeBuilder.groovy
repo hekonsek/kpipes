@@ -43,8 +43,6 @@ class PipeBuilder {
 
     private final ServiceRegistry serviceRegistry
 
-    private final List<net.kpipes.core.function.FunctionBuilder> functionBuilders
-
     private KafkaStreams kafkaStreams
 
     // Members
@@ -66,10 +64,6 @@ class PipeBuilder {
     PipeBuilder(KPipesConfig config, ServiceRegistry serviceRegistry) {
         this.config = config
         this.serviceRegistry = serviceRegistry
-
-        def brokerAdmin = serviceRegistry.service(BrokerAdmin)
-        def producer = serviceRegistry.service(KafkaProducer)
-        functionBuilders = [new EventMappingFunctionBuilder(), new RoutingEventFunctionBuilder(producer, brokerAdmin), new EventTableFunctionBuilder(), new EventAggregateFunctionBuilder()] as List<net.kpipes.core.function.FunctionBuilder>
     }
 
     // Operations
@@ -84,6 +78,7 @@ class PipeBuilder {
             topics << pipeDefinition.to().get()
         }
 
+        def functionBuilders = serviceRegistry.services(net.kpipes.core.function.FunctionBuilder)
         def function = serviceRegistry.service(pipeDefinition.functionAddress())
         def functionBuilder = functionBuilders.find{ it.supports(function) }
         def requiresKTable = function instanceof EventAggregateFunction

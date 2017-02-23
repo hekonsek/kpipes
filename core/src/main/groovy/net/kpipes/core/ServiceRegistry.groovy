@@ -6,4 +6,6 @@ interface ServiceRegistry {
 
     def <T> T service(Class<T> type)
 
+    def <T> List<T> services(Class<T> type)
+
 }
