@@ -11,7 +11,7 @@ import org.apache.kafka.streams.kstream.Initializer
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KTable
 
-class TableEventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggregateFunction> {
+class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggregateFunction> {
 
     @Override
     boolean supports(Object function) {
