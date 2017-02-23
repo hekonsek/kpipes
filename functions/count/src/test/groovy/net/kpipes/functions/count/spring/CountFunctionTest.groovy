@@ -3,12 +3,15 @@ package net.kpipes.functions.count.spring
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
+import net.kpipes.core.KPipes
+import net.kpipes.core.PipeBuilder
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.context.annotation.Configuration
@@ -24,18 +27,27 @@ class CountFunctionTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
-    static brokerAdmin = new BrokerAdmin('localhost', kpipesTest.zooKeeperPort())
+    KPipes kpipes
+
+    BrokerAdmin brokerAdmin
+
+    PipeBuilder pipeBuilder
 
     def source = uuid()
 
     def target = uuid()
 
+    @Before
+    void before() {
+        kpipes = kpipes()
+        brokerAdmin = kpipes.serviceRegistry().service(BrokerAdmin)
+        pipeBuilder = kpipes.pipeBuilder()
+    }
+
     @Test(timeout = 90000L)
     void shouldCountEvents(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | count [groupBy: 'country', byTenant: false] | ${target}")
         kpipes.start()
 
@@ -60,8 +72,6 @@ class CountFunctionTest {
     void shouldCountEventsByTenant(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | count [groupBy: 'country'] | ${target}")
         kpipes.start()
 
@@ -87,8 +97,6 @@ class CountFunctionTest {
     void shouldCompactEvents(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | count [groupBy: 'country', byTenant: false] | ${target}")
         kpipes.start()
 
@@ -112,8 +120,6 @@ class CountFunctionTest {
     void shouldSubtractOnEventRemoval(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | count [groupBy: 'country', byTenant: false] | ${target}")
         kpipes.start()
 
@@ -125,7 +131,7 @@ class CountFunctionTest {
         def results = [:]
         new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
-            results[it.key] = event.count
+            results[it.key()] = event.count
             if(results.US == 2) {
                 new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', null))
             }

@@ -18,8 +18,9 @@ class KafkaClientsConfig {
 
     @Bean
     BrokerAdmin brokerAdmin(@Value('${zooKeeper.host:localhost}') String zooKeeperHost,
-                            @Value('${zooKeeper.port:2181}') int zooKeeperPort) {
-        new BrokerAdmin(zooKeeperHost, zooKeeperPort)
+                            @Value('${zooKeeper.port:2181}') int zooKeeperPort,
+                            @Value('${kafka.defaultPartitionsNumber:1}') int defaultPartitionsNumber) {
+        new BrokerAdmin(zooKeeperHost, zooKeeperPort, defaultPartitionsNumber)
     }
 
 }

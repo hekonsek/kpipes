@@ -5,7 +5,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.core.KPipesFactory
+import net.kpipes.core.KPipes
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
@@ -13,10 +13,12 @@ import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplat
 import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import static io.vertx.core.buffer.Buffer.buffer
+import static net.kpipes.core.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -27,15 +29,22 @@ class WebSocketsAdapterTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
-    static zooKeeperPort = kpipesTest.zooKeeperPort()
+    KPipes kpipes
+
+    BrokerAdmin brokerAdmin
 
     def source = uuid()
+
+    @Before
+    void before() {
+        kpipes = kpipes()
+        brokerAdmin = kpipes.serviceRegistry().service(BrokerAdmin)
+    }
 
     @Test(timeout = 60000L)
     void shouldSendEvent(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = KPipesFactory.kpipes()
         kpipes.start()
 
         // When
@@ -46,7 +55,7 @@ class WebSocketsAdapterTest {
         }
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(new BrokerAdmin('localhost', zooKeeperPort)).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), source) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), source) {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('bar')
             async.complete()
@@ -57,9 +66,8 @@ class WebSocketsAdapterTest {
     void shouldReceiveNotification(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = KPipesFactory.kpipes()
         kpipes.start()
-        new BrokerAdmin('localhost', zooKeeperPort).ensureTopicExists("notification.${source}")
+        brokerAdmin.ensureTopicExists("notification.${source}")
 
         // When
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("anonymous.notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))

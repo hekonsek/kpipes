@@ -16,6 +16,7 @@
  */
 package net.kpipes.lib.kafka.client
 
+import groovy.transform.CompileStatic
 import kafka.admin.AdminUtils
 import kafka.admin.RackAwareMode
 import kafka.utils.ZKStringSerializer$
@@ -26,6 +27,7 @@ import org.slf4j.Logger
 
 import static org.slf4j.LoggerFactory.getLogger
 
+@CompileStatic
 class BrokerAdmin {
 
     private static final Logger LOG = getLogger(BrokerAdmin)
@@ -34,10 +36,12 @@ class BrokerAdmin {
 
     private final int zooKeeperPort
 
-    BrokerAdmin(String zooKeeperHost, int zooKeeperPort) {
+    private final int defaultPartitionsNumber
+
+    BrokerAdmin(String zooKeeperHost, int zooKeeperPort, int defaultPartitionsNumber) {
         this.zooKeeperHost = zooKeeperHost
         this.zooKeeperPort = zooKeeperPort
-
+        this.defaultPartitionsNumber = defaultPartitionsNumber
     }
 
     void ensureTopicExists(Set<String> topics) {
@@ -49,7 +53,7 @@ class BrokerAdmin {
             try {
                 if (!AdminUtils.topicExists(zooKeeperUtils, topic)) {
                     RackAwareMode mode = RackAwareMode.Disabled$.MODULE$
-                    AdminUtils.createTopic(zooKeeperUtils, topic, 25, 1, new Properties(), mode)
+                    AdminUtils.createTopic(zooKeeperUtils, topic, defaultPartitionsNumber, 1, new Properties(), mode)
                     topicCreated = true
                 }
             } catch (TopicExistsException e) {

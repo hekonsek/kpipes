@@ -11,6 +11,7 @@ import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.context.annotation.Bean
@@ -28,18 +29,29 @@ class KPipesTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
-    static brokerAdmin = new BrokerAdmin('localhost', kpipesTest.zooKeeperPort())
+    KPipes kpipes
+
+    BrokerAdmin brokerAdmin
+
+    PipeBuilder pipeBuilder
 
     def source = uuid()
 
     def target = uuid()
 
-    @Test(timeout = 60000L)
+    @Before
+    void before() {
+        kpipes = kpipes()
+        brokerAdmin = kpipes.serviceRegistry().service(BrokerAdmin)
+        pipeBuilder = kpipes.pipeBuilder()
+    }
+
+    // Tests
+
+    @Test(timeout = 30000L)
     void shouldExecuteFunction(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | functionFoo | ${target}")
         kpipes.start()
 
@@ -52,12 +64,10 @@ class KPipesTest {
         }
     }
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 30000L)
     void shouldConnectTwoPipes(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | functionFoo | ${target}")
         pipeBuilder.build("${target} | functionFoo | finalTarget")
 
@@ -72,16 +82,13 @@ class KPipesTest {
         }
     }
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 30000L)
     void shouldSplitStream(TestContext context) {
         // Given
         def secondTarget = uuid()
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | functionFoo | ${target}")
         pipeBuilder.build("${source} | functionFoo | ${secondTarget}")
-
         kpipes.start()
 
         // When
@@ -95,14 +102,11 @@ class KPipesTest {
         }
     }
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 30000L)
     void shouldPassConfigToFunction(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | functionWithConfig [configKey: 'configValue'] | ${target}")
-
         kpipes.start()
 
         // When
@@ -116,12 +120,10 @@ class KPipesTest {
         }
     }
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 30000L)
     void shouldFilterOutMessage(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | filter [predicate: 'event.foo == /baz/'] | ${target}")
         kpipes.start()
 
@@ -137,12 +139,10 @@ class KPipesTest {
         }
     }
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 30000L)
     void shouldRouteEvent(TestContext context) {
         // Given
         def async = context.async()
-        def kpipes = kpipes()
-        def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build("${source} | routingFunction")
         kpipes.start()
 
