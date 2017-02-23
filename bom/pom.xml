@@ -34,7 +34,7 @@
         <junit.version>4.12</junit.version>
         <kafka.version>0.10.1.1</kafka.version>
         <kpipes.version>0.0.1-SNAPSHOT</kpipes.version>
-        <logback.version>1.1.7</logback.version>
+        <logback.version>1.2.1</logback.version>
         <mockito.version>1.10.19</mockito.version>
         <slf4j.version>1.7.22</slf4j.version>
         <vertx.version>3.3.3</vertx.version>
