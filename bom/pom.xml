@@ -23,7 +23,6 @@
     <properties>
         <assertj.version>3.6.2</assertj.version>
         <camel.version>2.18.2</camel.version>
-        <commons-configuration.version>2.1</commons-configuration.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-lang.version>3.4</commons-lang.version>
         <googlemaps.version>0.1.17</googlemaps.version>
@@ -144,11 +143,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-configuration2</artifactId>
-                <version>${commons-configuration.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
