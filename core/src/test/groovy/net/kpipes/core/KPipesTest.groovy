@@ -155,7 +155,7 @@ class KPipesTest {
         }
     }
 
-    @Test(timeout = 66630000L)
+    @Test(timeout = 30000L)
     void shouldExecuteJoinFunction(TestContext context) {
         // Given
         def async = context.async()
