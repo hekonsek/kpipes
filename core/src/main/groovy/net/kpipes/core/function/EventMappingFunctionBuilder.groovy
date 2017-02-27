@@ -2,6 +2,7 @@ package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipesContext
+import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.KeyValue
@@ -21,7 +22,10 @@ class EventMappingFunctionBuilder implements StreamFunctionBuilder<EventMappingF
     }
 
     @Override
-    void build(PipeDefinition pipeDefinition, EventMappingFunction function, KStream<String, Bytes> source) {
+    void build(PipeBuilder pipeBuilder, PipeDefinition pipeDefinition, EventMappingFunction function, KStream<String, Bytes> source) {
+        if(function instanceof FunctionInitializer) {
+            function.initialize(pipeBuilder, pipeDefinition)
+        }
         source.map{ String key, Bytes value ->
             def event = new ObjectMapper().readValue(value.get(), Map)
             new KeyValue<>(key, new Bytes(new ObjectMapper().writeValueAsBytes(function.onEvent(new Event(key, event, pipeDefinition.functionConfiguration(), kPipesContext)))))

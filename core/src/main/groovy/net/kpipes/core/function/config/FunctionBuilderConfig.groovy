@@ -20,6 +20,9 @@ import net.kpipes.core.KPipesContext
 import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
 import net.kpipes.core.function.EventStreamFunctionBuilder
+import net.kpipes.core.function.RoutingEventFunctionBuilder
+import net.kpipes.lib.kafka.client.BrokerAdmin
+import org.apache.kafka.clients.producer.KafkaProducer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -39,6 +42,11 @@ class FunctionBuilderConfig {
     @Bean
     eventTableFunctionBuilder() {
         new EventStreamFunctionBuilder()
+    }
+
+    @Bean
+    routingEventFunctionBuilder(KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
+        new RoutingEventFunctionBuilder(kafkaProducer, brokerAdmin)
     }
 
 }

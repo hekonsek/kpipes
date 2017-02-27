@@ -16,12 +16,13 @@
  */
 package net.kpipes.core.function
 
+import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.KStream
 
 interface StreamFunctionBuilder<T> extends FunctionBuilder {
 
-    void build(PipeDefinition pipeDefinition, T function, KStream<String, Bytes> source)
+    void build(PipeBuilder pipeBuilder, PipeDefinition pipeDefinition, T function, KStream<String, Bytes> source)
 
 }

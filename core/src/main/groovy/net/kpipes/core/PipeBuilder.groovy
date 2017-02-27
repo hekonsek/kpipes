@@ -97,7 +97,7 @@ class PipeBuilder {
                 sourceStream = builder.stream(pipeDefinition.from())
                 sourceStreams[pipeDefinition.from()] = sourceStream
             }
-            (functionBuilder as StreamFunctionBuilder).build(pipeDefinition, function, sourceStream)
+            (functionBuilder as StreamFunctionBuilder).build(this, pipeDefinition, function, sourceStream)
         }
     }
 
@@ -120,6 +120,10 @@ class PipeBuilder {
 
     void stop() {
         kafkaStreams.close()
+    }
+
+    KafkaStreams kafkaStreams() {
+        kafkaStreams
     }
 
 }

@@ -1,5 +1,6 @@
 package net.kpipes.core.function
 
+import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.KStream
@@ -12,7 +13,7 @@ class EventStreamFunctionBuilder implements StreamFunctionBuilder<EventStreamFun
     }
 
     @Override
-    void build(PipeDefinition pipeDefinition, EventStreamFunction function, KStream<String, Bytes> source) {
+    void build(PipeBuilder pipeBuilder, PipeDefinition pipeDefinition, EventStreamFunction function, KStream<String, Bytes> source) {
         function.apply(pipeDefinition, source)
     }
 
