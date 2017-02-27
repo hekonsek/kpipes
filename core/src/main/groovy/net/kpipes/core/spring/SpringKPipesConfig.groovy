@@ -3,6 +3,7 @@ package net.kpipes.core.spring
 import net.kpipes.core.EventEncoder
 import net.kpipes.core.JsonEventEncoder
 import net.kpipes.core.KPipesConfig
+import net.kpipes.core.KPipesContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -23,6 +24,11 @@ class SpringKPipesConfig {
     @Bean
     EventEncoder eventEncoder() {
         new JsonEventEncoder()
+    }
+
+    @Bean
+    KPipesContext kPipesContext(@Value('${applicationId}') String applicationId) {
+        new KPipesContext(applicationId)
     }
 
 }

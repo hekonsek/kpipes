@@ -17,7 +17,7 @@ class GeoGoogleMapsRenderEventMappingFunctionTest {
         def fenceConfig = [fence: [center: [lat: 49.820813, lng: 19.054982], radius: 80]]
 
         // When
-        def result = function.onEvent(new Event('key', [lat: 49.820829, lng: 19.056378], fenceConfig))
+        def result = function.onEvent(new Event('key', [lat: 49.820829, lng: 19.056378], fenceConfig, null))
 
         // Then
         def mapUrl = result['response.geo.googlemaps.render'].mapUrl as URL

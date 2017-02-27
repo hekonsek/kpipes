@@ -1,6 +1,7 @@
 package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.kpipes.core.KPipesContext
 import net.kpipes.core.PipeDefinition
 import org.apache.commons.lang3.NotImplementedException
 import org.apache.kafka.common.serialization.Serdes
@@ -12,6 +13,12 @@ import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KTable
 
 class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggregateFunction> {
+
+    private final KPipesContext kpipesContext
+
+    EventAggregateFunctionBuilder(KPipesContext kpipesContext) {
+        this.kpipesContext = kpipesContext
+    }
 
     @Override
     boolean supports(Object function) {
@@ -41,7 +48,7 @@ class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggrega
                     aggregate = new ObjectMapper().readValue((aggregate as Bytes).get(), Map)
                 }
                 def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-                event = function.onEvent(new Event(aggKey as String, event, config, true), aggregate as Map)
+                event = function.onEvent(new Event(aggKey as String, event, config, true, kpipesContext), aggregate as Map)
                 new Bytes(new ObjectMapper().writeValueAsBytes(event))
             }
         }, new Aggregator() {
@@ -51,7 +58,7 @@ class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggrega
                     aggregate = new ObjectMapper().readValue((aggregate as Bytes).get(), Map)
                 }
                 def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-                event = function.onEvent(new Event(aggKey as String, event, config, false), aggregate as Map)
+                event = function.onEvent(new Event(aggKey as String, event, config, false, kpipesContext), aggregate as Map)
                 new Bytes(new ObjectMapper().writeValueAsBytes(event))
             }
         }, Serdes.Bytes(), "${pipeDefinition.from()}${pipeDefinition.to().get()}").to(pipeDefinition.to().get())

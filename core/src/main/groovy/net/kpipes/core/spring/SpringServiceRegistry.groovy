@@ -8,8 +8,8 @@ class SpringServiceRegistry implements ServiceRegistry {
 
     private ApplicationContext applicationContext
 
-    SpringServiceRegistry() {
-        applicationContext = new SpringApplicationBuilder(SpringFunctionRegistryConfiguration).run()
+    SpringServiceRegistry(String applicationId) {
+        applicationContext = new SpringApplicationBuilder(SpringFunctionRegistryConfiguration).run("--applicationId=${applicationId}")
     }
 
     @Override

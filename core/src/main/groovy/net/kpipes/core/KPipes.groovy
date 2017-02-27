@@ -9,9 +9,9 @@ class KPipes {
 
     private final PipeBuilder pipeBuilder
 
-    KPipes(KPipesConfig config, ServiceRegistry serviceRegistry) {
+    KPipes(String applicationId, KPipesConfig config, ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry
-        this.pipeBuilder = new PipeBuilder(config, serviceRegistry)
+        this.pipeBuilder = new PipeBuilder(applicationId, config, serviceRegistry)
     }
 
     void start() {

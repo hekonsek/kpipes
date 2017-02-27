@@ -38,6 +38,8 @@ class PipeBuilder {
 
     private static final Logger LOG = getLogger(PipeBuilder)
 
+    private final String applicationId
+
     // Collaborators
 
     private final ServiceRegistry serviceRegistry
@@ -60,7 +62,8 @@ class PipeBuilder {
 
     // Constructor
 
-    PipeBuilder(KPipesConfig config, ServiceRegistry serviceRegistry) {
+    PipeBuilder(String applicationId, KPipesConfig config, ServiceRegistry serviceRegistry) {
+        this.applicationId = applicationId
         this.config = config
         this.serviceRegistry = serviceRegistry
     }
@@ -103,7 +106,7 @@ class PipeBuilder {
         serviceRegistry.service(BrokerAdmin).ensureTopicExists(topics)
 
         def streamsConfiguration = new Properties()
-        streamsConfiguration.put(APPLICATION_ID_CONFIG, "wordcount-lambda-example" + Uuids.uuid());
+        streamsConfiguration.put(APPLICATION_ID_CONFIG, applicationId);
         streamsConfiguration.put(BOOTSTRAP_SERVERS_CONFIG, "${config.kafkaHost}:${config.kafkaPort}" as String);
         streamsConfiguration.put(ZOOKEEPER_CONNECT_CONFIG, "${config.zooKeeperHost}:${config.zooKeeperPort}" as String);
         streamsConfiguration.put(KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
