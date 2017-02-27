@@ -19,6 +19,7 @@ package net.kpipes.core.function.config
 import net.kpipes.core.KPipesContext
 import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
+import net.kpipes.core.function.EventStreamFunctionBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -33,6 +34,11 @@ class FunctionBuilderConfig {
     @Bean
     eventAggregateFunctionBuilder(KPipesContext kpipesContext) {
         new EventAggregateFunctionBuilder(kpipesContext)
+    }
+
+    @Bean
+    eventTableFunctionBuilder() {
+        new EventStreamFunctionBuilder()
     }
 
 }
