@@ -155,6 +155,28 @@ class KPipesTest {
         }
     }
 
+    @Test(timeout = 66630000L)
+    void shouldExecuteJoinFunction(TestContext context) {
+        // Given
+        def async = context.async()
+        def users = uuid()
+        def orders = uuid()
+        pipeBuilder.build("${orders} | join [onEvent: '${users}', onProperty: 'user'] | ${target}")
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(users, 'user1', new Bytes(new ObjectMapper().writeValueAsBytes([name: 'john']))))
+        kpipes.start()
+
+        // When
+        Thread.sleep(5000)
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(orders, 'orderKey', new Bytes(new ObjectMapper().writeValueAsBytes([orderid: 100, user: 'user1']))))
+
+        // Then
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+            def event = kpipes.serviceRegistry().service(EventEncoder).decode(it.value() as Bytes)
+            assertThat(event.user as Map).containsEntry('name', 'john')
+            async.complete()
+        }
+    }
+
     @Bean
     EventMappingFunction functionFoo() {
         new EventMappingFunction() {
