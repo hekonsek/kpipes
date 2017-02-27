@@ -35,10 +35,11 @@ class JoinFunction implements EventMappingFunction, FunctionInitializer {
         def onEvent = config.onEvent as String
         def onProperty = config.onProperty as String
         def streams = event.kafkaStreams()
-        def host = streams.metadataForKey(onEvent, event.key(), Serdes.String().serializer())
+        def key = event.body()[onProperty] as String
+        def host = streams.metadataForKey(onEvent, key, Serdes.String().serializer())
         if(host.host() == 'unavailable') {
             def store = streams.store(onEvent, keyValueStore())
-            def joinedEventBytes = store.get(event.body()[onProperty]) as Bytes
+            def joinedEventBytes = store.get(key) as Bytes
             def joinedEvent = event.serviceRegistry().service(EventEncoder).decode(joinedEventBytes)
             event.body()[onProperty] = joinedEvent
         } else {
