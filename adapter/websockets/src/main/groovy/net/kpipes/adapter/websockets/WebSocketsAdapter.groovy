@@ -70,11 +70,12 @@ class WebSocketsAdapter {
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')
                 def channel = "${authentication.get().tenant()}.notification.${channelName}"
-                kafkaConsumerTemplate.subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), channel) {
+                def kafkaConsumer = new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build()
+                kafkaConsumerTemplate.subscribe(kafkaConsumer, channel) {
                     socket.write(buffer((it.value() as Bytes).get()))
                 }
                 socket.closeHandler {
-                    // stop kafka consumer
+                    kafkaConsumer.wakeup()
                 }
             } else {
                 socket.reject()
