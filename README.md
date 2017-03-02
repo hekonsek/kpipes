@@ -1,5 +1,8 @@
 # kpipes
 
+[![Version](https://img.shields.io/badge/kpipes-0.0.0-blue.svg)](https://github.com/kpipes/kpipes/releases)
+[![Build](https://api.travis-ci.org/kpipes/kpipes.svg)](https://travis-ci.org/kpipes/kpipes/)
+
 Kpipes provides Unix-like pipes API for Apache Kafka. It allows you to easily wire serverless-like functions
 in order to create simple data pipelines on the top of Kafka topics.
 
