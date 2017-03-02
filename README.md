@@ -1,4 +1,4 @@
-# kpipes
+# KPipes
 
 [![Version](https://img.shields.io/badge/kpipes-0.0.0-blue.svg)](https://github.com/kpipes/kpipes/releases)
 [![Build](https://api.travis-ci.org/kpipes/kpipes.svg)](https://travis-ci.org/kpipes/kpipes/)
