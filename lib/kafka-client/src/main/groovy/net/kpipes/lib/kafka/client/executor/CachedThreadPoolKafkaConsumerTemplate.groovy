@@ -2,6 +2,7 @@ package net.kpipes.lib.kafka.client.executor
 
 import groovy.transform.CompileStatic
 import net.kpipes.lib.kafka.client.BrokerAdmin
+import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.errors.WakeupException
 
@@ -39,7 +40,7 @@ class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
 
     @Override
     def <K, V> void consumeRecord(KafkaConsumer<K, V> consumer, ConsumerRecordCallback<K, V> consumerRecordCallback) {
-        consumeRecords(consumer) { records ->
+        consumeRecords(consumer) { ConsumerRecords<K, V> records ->
             def iterator = records.iterator()
             while (iterator.hasNext()) {
                 def record = iterator.next()
