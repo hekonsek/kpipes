@@ -1,6 +1,7 @@
-package net.kpipes.core
+package net.kpipes.functions.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.kpipes.core.PipeDefinition
 import net.kpipes.core.function.EventStreamFunction
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.kstream.KStream

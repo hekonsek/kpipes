@@ -121,25 +121,6 @@ class KPipesTest {
     }
 
     @Test(timeout = 30000L)
-    void shouldFilterOutMessage(TestContext context) {
-        // Given
-        def async = context.async()
-        pipeBuilder.build("${source} | filter [predicate: 'event.foo == /baz/'] | ${target}")
-        kpipes.start()
-
-        // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
-
-        // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
-            def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
-            assertThat(event.foo)isEqualTo('baz')
-            async.complete()
-        }
-    }
-
-    @Test(timeout = 30000L)
     void shouldRouteEvent(TestContext context) {
         // Given
         def async = context.async()

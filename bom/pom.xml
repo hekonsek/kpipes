@@ -59,6 +59,11 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
+                <artifactId>kpipes-functions-filter</artifactId>
+                <version>${kpipes.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-functions-geo-geocoding</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>

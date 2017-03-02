@@ -1,5 +1,6 @@
-package net.kpipes.core
+package net.kpipes.functions.filter.spring
 
+import net.kpipes.functions.filter.FilterFunction
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -7,7 +8,7 @@ import org.springframework.context.annotation.Configuration
 class FilterFunctionConfig {
 
     @Bean(name = 'filter')
-    FilterFunction filterFunction() {
+    filterFunction() {
         new FilterFunction()
     }
 

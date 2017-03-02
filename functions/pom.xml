@@ -22,6 +22,7 @@
 
     <modules>
         <module>count</module>
+        <module>filter</module>
         <module>geo-geocoding</module>
         <module>geo-geofencing</module>
         <module>geo-googlemaps</module>
