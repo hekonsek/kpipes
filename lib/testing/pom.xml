@@ -23,6 +23,10 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-lib-kafka-broker</artifactId>
         </dependency>
         <dependency>

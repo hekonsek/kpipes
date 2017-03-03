@@ -3,22 +3,19 @@ package net.kpipes.functions.filter.spring
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.core.EventEncoder
 import net.kpipes.core.KPipes
 import net.kpipes.core.PipeBuilder
-import net.kpipes.core.RoutingEventFunction
-import net.kpipes.core.function.Event
-import net.kpipes.core.function.EventMappingFunction
+import net.kpipes.lib.kafka.broker.TestBroker
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
+import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 import static net.kpipes.core.KPipesFactory.kpipes
@@ -27,13 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat
 
 @RunWith(VertxUnitRunner)
 @Configuration
-class FilterFunctionTest {
-
-    static kpipesTest = new net.kpipes.lib.testing.KPipesTest().start()
-
-    static kafkaPort = kpipesTest.kafkaPort()
-
-    KPipes kpipes
+class FilterFunctionTest extends KPipesTest {
 
     BrokerAdmin brokerAdmin
 
@@ -60,8 +51,8 @@ class FilterFunctionTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
+        kafkaProducer.send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        kafkaProducer.send(new ProducerRecord(source, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))
 
         // Then
         new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {

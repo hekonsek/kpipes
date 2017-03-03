@@ -5,10 +5,12 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.function.Event
 import net.kpipes.core.function.EventMappingFunction
+import net.kpipes.lib.kafka.broker.TestBroker
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
+
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
@@ -25,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat
 @Configuration
 class KPipesTest {
 
-    static kpipesTest = new net.kpipes.lib.testing.KPipesTest().start()
+    static kpipesTest = new TestBroker().start()
 
     static kafkaPort = kpipesTest.kafkaPort()
 

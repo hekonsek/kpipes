@@ -4,10 +4,10 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.EventEncoder
 import net.kpipes.lib.commons.Uuids
+import net.kpipes.lib.kafka.broker.TestBroker
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
-import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.junit.Test
@@ -18,7 +18,7 @@ import static net.kpipes.core.KPipesFactory.kpipes
 @RunWith(VertxUnitRunner)
 class NotificationFunctionTest {
 
-    static kpipesTest = new KPipesTest().start()
+    static kpipesTest = new TestBroker().start()
 
     static kafkaPort = kpipesTest.kafkaPort()
 

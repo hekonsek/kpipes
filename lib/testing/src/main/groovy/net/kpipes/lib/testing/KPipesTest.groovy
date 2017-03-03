@@ -1,38 +1,18 @@
 package net.kpipes.lib.testing
 
-import net.kpipes.lib.kafka.broker.KafkaBrokerFactory
-
-import static com.google.common.io.Files.createTempDir
-import static net.kpipes.lib.commons.Networks.availableTcpPort
+import net.kpipes.core.KPipes
+import net.kpipes.lib.kafka.broker.TestBroker
+import net.kpipes.lib.kafka.client.KafkaProducerBuilder
+import org.apache.kafka.common.utils.Bytes
 
 class KPipesTest {
 
-    private final kafkaPort = availableTcpPort()
+    static protected broker = new TestBroker().start()
 
-    private final zooKeeperPort = availableTcpPort()
+    static protected kafkaPort = broker.kafkaPort()
 
-    private final
+    static protected kafkaProducer = new KafkaProducerBuilder<String, Bytes>().port(kafkaPort).build()
 
-    KPipesTest start() {
-        System.setProperty('kafka.broker.enabled', 'false')
-
-        System.setProperty('kafka.port', "${kafkaPort}")
-        System.setProperty('zooKeeper.port', "${zooKeeperPort}")
-
-        def kafkaDataDirectory = createTempDir().absolutePath
-        def zooKeeperDataDirectory = createTempDir().absolutePath
-        new KafkaBrokerFactory(kafkaPort, kafkaDataDirectory, 'localhost', zooKeeperPort, zooKeeperDataDirectory).start()
-
-        this
-    }
-
-    int kafkaPort() {
-        kafkaPort
-    }
-
-    int zooKeeperPort() {
-        zooKeeperPort
-    }
-
+    protected KPipes kpipes
 
 }
