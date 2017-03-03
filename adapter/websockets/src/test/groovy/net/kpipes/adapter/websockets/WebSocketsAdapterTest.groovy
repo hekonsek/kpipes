@@ -41,7 +41,7 @@ class WebSocketsAdapterTest {
         brokerAdmin = kpipes.serviceRegistry().service(BrokerAdmin)
     }
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 30000L)
     void shouldSendEvent(TestContext context) {
         // Given
         def async = context.async()
@@ -62,8 +62,8 @@ class WebSocketsAdapterTest {
         }
     }
 
-    @Test(timeout = 60000L)
-    void shouldReceiveNotification(TestContext context) {
+    @Test(timeout = 30000L)
+    void shouldReceiveAllNotifications(TestContext context) {
         // Given
         def async = context.async()
         kpipes.start()
@@ -74,6 +74,28 @@ class WebSocketsAdapterTest {
 
         // Then
         def client = Vertx.vertx().createHttpClient()
+        def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous', history: 'all'])
+        client.websocket(8080, "localhost", "/notification/${source}", headers) { websocket ->
+            websocket.handler {
+                def event = new ObjectMapper().readValue(it.bytes, Map)
+                assertThat(event.foo)isEqualTo('bar')
+                async.complete()
+            }
+        }
+    }
+
+    @Test(timeout = 30000L)
+    void shouldReceiveOnlyLatestNotificationByDefault(TestContext context) {
+        // Given
+        def async = context.async()
+        kpipes.start()
+        brokerAdmin.ensureTopicExists("notification.${source}")
+
+        // When
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("anonymous.notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'oldValue']))))
+
+        // Then
+        def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
         client.websocket(8080, "localhost", "/notification/${source}", headers) { websocket ->
             websocket.handler {
@@ -81,6 +103,8 @@ class WebSocketsAdapterTest {
                 assertThat(event.foo)isEqualTo('bar')
                 async.complete()
             }
+            Thread.sleep(1000)
+            new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("anonymous.notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
         }
     }
 

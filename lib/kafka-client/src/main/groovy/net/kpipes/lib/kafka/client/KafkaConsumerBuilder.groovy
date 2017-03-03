@@ -16,10 +16,13 @@
  */
 package net.kpipes.lib.kafka.client
 
+import groovy.transform.CompileStatic
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.BytesDeserializer
-import org.apache.kafka.common.serialization.Serializer
+import org.apache.kafka.common.serialization.Deserializer
+import org.apache.kafka.common.serialization.StringDeserializer
 
+@CompileStatic
 class KafkaConsumerBuilder<K,V> {
 
     private final String consumerGroup
@@ -28,20 +31,23 @@ class KafkaConsumerBuilder<K,V> {
 
     private int port = 9092
 
-    private Class<Serializer<V>> valueSerializer = BytesDeserializer
+    private Class<Deserializer<V>> valueDeserializer
+
+    private String offsetReset = 'earliest'
 
     KafkaConsumerBuilder(String consumerGroup) {
         this.consumerGroup = consumerGroup
+        this.valueDeserializer = BytesDeserializer as Class<Deserializer<V>>
     }
 
     KafkaConsumer<K,V> build(Properties additionalProperties) {
         def config = new Properties()
         config.put('bootstrap.servers', "${host}:${port}" as String)
         config.put('group.id', consumerGroup)
-        config.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
-        config.put('value.deserializer', valueSerializer.name)
-        config.put('enable.auto.commit', "false")
-        config.put("auto.offset.reset", "earliest")
+        config.put('key.deserializer', StringDeserializer.class.name)
+        config.put('value.deserializer', valueDeserializer.name)
+        config.put('enable.auto.commit', 'false')
+        config.put('auto.offset.reset', offsetReset)
         config.putAll(additionalProperties)
         new KafkaConsumer<K,V>(config)
     }
@@ -60,8 +66,14 @@ class KafkaConsumerBuilder<K,V> {
         this
     }
 
-    KafkaConsumerBuilder<K,V> valueSerializer(Class<Serializer<V>> valueSerializer) {
-        this.valueSerializer = valueSerializer
+    KafkaConsumerBuilder<K,V> valueDeserializer(Class<Deserializer<V>> valueDeserializer) {
+        this.valueDeserializer = valueDeserializer
         this
     }
+
+    KafkaConsumerBuilder offsetReset(String offsetReset) {
+        this.offsetReset = offsetReset
+        this
+    }
+
 }

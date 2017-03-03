@@ -23,6 +23,7 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
+import static com.google.common.base.MoreObjects.firstNonNull
 import static io.vertx.core.Vertx.vertx
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.lib.commons.Uuids.uuid
@@ -42,6 +43,7 @@ class WebSocketsAdapter {
     private final int kafkaPort
 
     // Constructors
+
     WebSocketsAdapter(KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator, int kafkaPort) {
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
@@ -70,7 +72,11 @@ class WebSocketsAdapter {
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')
                 def channel = "${authentication.get().tenant()}.notification.${channelName}"
-                def kafkaConsumer = new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build()
+                def historyMode = firstNonNull(socket.headers().get('history'), 'latest')
+                if(historyMode == 'all') {
+                    historyMode = 'earliest'
+                }
+                def kafkaConsumer = new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).offsetReset(historyMode).build()
                 kafkaConsumerTemplate.subscribe(kafkaConsumer, channel) {
                     socket.write(buffer((it.value() as Bytes).get()))
                 }
