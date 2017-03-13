@@ -55,7 +55,7 @@ class WebSocketsAdapterTest {
         }
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), source) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), 'anonymous.' + source) {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('bar')
             async.complete()

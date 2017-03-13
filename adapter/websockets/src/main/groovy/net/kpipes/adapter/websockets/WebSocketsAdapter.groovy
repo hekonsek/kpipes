@@ -66,8 +66,9 @@ class WebSocketsAdapter {
                 def eventName = uri.replaceFirst(/\/event\//, '')
                 brokerAdmin.ensureTopicExists(eventName)
                 socket.handler { message ->
-                    def key = "${authentication.get().tenant()}|${authentication.get().username()}|${socket.headers().get('key')}" as String
-                    kafkaProducer.send(new ProducerRecord(eventName, key ?: uuid(), new Bytes(message.bytes)))
+                    def key = socket.headers().get('key')
+                    def topic = "${authentication.get().tenant}.${eventName}"
+                    kafkaProducer.send(new ProducerRecord(topic, key ?: uuid(), new Bytes(message.bytes)))
                 }
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')
