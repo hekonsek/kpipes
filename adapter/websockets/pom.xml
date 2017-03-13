@@ -22,30 +22,23 @@
     <dependencies>
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-lib-kafka-client</artifactId>
+            <artifactId>kpipes-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>3.3.3</version>
         </dependency>
 
+        <!-- Optional DI runtime -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-lib-kafka-broker</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Internal testing dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
             <artifactId>kpipes-lib-testing</artifactId>

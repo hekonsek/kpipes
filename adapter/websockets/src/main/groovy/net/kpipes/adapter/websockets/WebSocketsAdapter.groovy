@@ -16,6 +16,8 @@
  */
 package net.kpipes.adapter.websockets
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import net.kpipes.core.KPipesContext
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
@@ -28,7 +30,7 @@ import static io.vertx.core.Vertx.vertx
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.lib.commons.Uuids.uuid
 
-class WebSocketsAdapter {
+class WebSocketsAdapter extends AbstractAdapter {
 
     private final KafkaConsumerTemplate kafkaConsumerTemplate
 
@@ -44,7 +46,8 @@ class WebSocketsAdapter {
 
     // Constructors
 
-    WebSocketsAdapter(KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator, int kafkaPort) {
+    WebSocketsAdapter(KPipesContext kpipesContext, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator, int kafkaPort) {
+        super(kpipesContext)
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
@@ -69,6 +72,10 @@ class WebSocketsAdapter {
                     def key = socket.headers().get('key')
                     def topic = "${authentication.get().tenant}.${eventName}"
                     kafkaProducer.send(new ProducerRecord(topic, key ?: uuid(), new Bytes(message.bytes)))
+                }
+            } else if(uri == '/operation') {
+                socket.handler { message ->
+                    socket.write(buffer(invokeOperation(message.bytes)))
                 }
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')
