@@ -72,8 +72,8 @@ class PipeBuilder {
 
     // Operations
 
-    void build(String pipeDefinition) {
-        build(parsePipeDefinition(pipeDefinition))
+    void build(String tenant, String pipeDefinition) {
+        build(parsePipeDefinition(tenant, pipeDefinition))
     }
 
     void build(PipeDefinition pipeDefinition) {

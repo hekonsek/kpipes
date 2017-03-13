@@ -17,15 +17,15 @@ class PipeDefinition {
         this.to = to
     }
 
-    static PipeDefinition parsePipeDefinition(String pipeDefinitionText) {
+    static PipeDefinition parsePipeDefinition(String tenant, pipeDefinitionText) {
         def definitionParts = pipeDefinitionText.split(/\|/).collect{ it.trim() }
-        def from = definitionParts[0]
+        String from = "${tenant}.${definitionParts[0]}" as String
 
         def functionParts = definitionParts[1].split(' ', 2)
-        def functionAddress = functionParts[0]
+        String functionAddress = functionParts[0]
         def functionConfiguration = functionParts.size() == 2 ? new GroovyShell().evaluate("L:${functionParts[1]}") as Map : [:]
 
-        def to = definitionParts.size() > 2 ? Optional.of(definitionParts[2]) : Optional.empty()
+        def to = definitionParts.size() > 2 ? Optional.of("${tenant}.${definitionParts[2]}" as String) : Optional.empty()
 
         new PipeDefinition(from, functionAddress, functionConfiguration, to)
     }

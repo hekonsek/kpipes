@@ -38,9 +38,15 @@ class KPipesTest {
 
     PipeBuilder pipeBuilder
 
+    def tenant = uuid()
+
     def source = uuid()
 
+    def effectiveSource = "${tenant}.${source}"
+
     def target = uuid()
+
+    def effectiveTarget = "${tenant}.${target}"
 
     @Before
     void before() {
@@ -55,14 +61,14 @@ class KPipesTest {
     void shouldExecuteFunction(TestContext context) {
         // Given
         def async = context.async()
-        pipeBuilder.build("${source} | functionFoo | ${target}")
+        pipeBuilder.build(tenant, "${source} | functionFoo | ${target}")
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), effectiveTarget) {
             async.complete()
         }
     }
@@ -71,16 +77,16 @@ class KPipesTest {
     void shouldConnectTwoPipes(TestContext context) {
         // Given
         def async = context.async()
-        pipeBuilder.build("${source} | functionFoo | ${target}")
-        pipeBuilder.build("${target} | functionFoo | finalTarget")
+        pipeBuilder.build(tenant, "${source} | functionFoo | ${target}")
+        pipeBuilder.build(tenant, "${target} | functionFoo | finalTarget")
 
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), 'finalTarget') {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), "${tenant}.finalTarget") {
             async.complete()
         }
     }
@@ -90,16 +96,16 @@ class KPipesTest {
         // Given
         def secondTarget = uuid()
         def async = context.async()
-        pipeBuilder.build("${source} | functionFoo | ${target}")
-        pipeBuilder.build("${source} | functionFoo | ${secondTarget}")
+        pipeBuilder.build(tenant, "${source} | functionFoo | ${target}")
+        pipeBuilder.build(tenant, "${source} | functionFoo | ${secondTarget}")
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
-            new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), secondTarget) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), effectiveTarget) {
+            new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), "${tenant}.${secondTarget}") {
                 async.complete()
             }
         }
@@ -109,14 +115,14 @@ class KPipesTest {
     void shouldPassConfigToFunction(TestContext context) {
         // Given
         def async = context.async()
-        pipeBuilder.build("${source} | functionWithConfig [configKey: 'configValue'] | ${target}")
+        pipeBuilder.build(tenant, "${source} | functionWithConfig [configKey: 'configValue'] | ${target}")
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), effectiveTarget) {
             def response = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(response.config.configKey).isEqualTo('configValue')
             async.complete()
@@ -127,14 +133,14 @@ class KPipesTest {
     void shouldRouteEvent(TestContext context) {
         // Given
         def async = context.async()
-        pipeBuilder.build("${source} | routingFunction")
+        pipeBuilder.build(tenant, "${source} | routingFunction")
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(source, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([target: target]))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([target: effectiveTarget as String]))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), effectiveTarget) {
             async.complete()
         }
     }
@@ -145,16 +151,16 @@ class KPipesTest {
         def async = context.async()
         def users = uuid()
         def orders = uuid()
-        pipeBuilder.build("${orders} | join [onEvent: '${users}', onProperty: 'user'] | ${target}")
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(users, 'user1', new Bytes(new ObjectMapper().writeValueAsBytes([name: 'john']))))
+        pipeBuilder.build(tenant, "${orders} | join [onEvent: '${users}', onProperty: 'user'] | ${target}")
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("${tenant}.${users}", 'user1', new Bytes(new ObjectMapper().writeValueAsBytes([name: 'john']))))
         kpipes.start()
 
         // When
         Thread.sleep(5000)
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(orders, 'orderKey', new Bytes(new ObjectMapper().writeValueAsBytes([orderid: 100, user: 'user1']))))
+        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("${tenant}.${orders}", 'orderKey', new Bytes(new ObjectMapper().writeValueAsBytes([orderid: 100, user: 'user1']))))
 
         // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), target) {
+        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), effectiveTarget) {
             def event = kpipes.serviceRegistry().service(EventEncoder).decode(it.value() as Bytes)
             assertThat(event.user as Map).containsEntry('name', 'john')
             async.complete()

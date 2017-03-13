@@ -20,7 +20,8 @@ class JoinFunction implements EventMappingFunction, FunctionInitializer {
 
     @Override
     void initialize(PipeBuilder pipeBuilder, PipeDefinition pipeDefinition) {
-        def joinEvent = pipeDefinition.functionConfiguration().onEvent as String
+        def joinEvent = "${pipeDefinition.from().substring(0, pipeDefinition.from().indexOf('.'))}.${pipeDefinition.functionConfiguration().onEvent}" as String
+        pipeDefinition.functionConfiguration().onEvent = joinEvent
         brokerAdmin.ensureTopicExists(joinEvent)
         def joinEventTable = pipeBuilder.@sourceTables[joinEvent]
         if(joinEventTable == null) {
