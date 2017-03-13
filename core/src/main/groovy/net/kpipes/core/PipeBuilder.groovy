@@ -20,6 +20,7 @@ import com.google.common.io.Files
 import groovy.transform.CompileStatic
 import net.kpipes.core.function.StreamFunctionBuilder
 import net.kpipes.core.function.TableFunctionBuilder
+import net.kpipes.core.function.TopologyFunctionBuilder
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.common.serialization.Serdes
@@ -27,6 +28,7 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.apache.kafka.streams.kstream.KTable
+import org.apache.kafka.streams.processor.TopologyBuilder
 import org.slf4j.Logger
 
 import static net.kpipes.core.PipeDefinition.parsePipeDefinition
@@ -91,6 +93,8 @@ class PipeBuilder {
                 sourceTables[pipeDefinition.from()] = sourceTable
             }
             (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
+        } else if(functionBuilder instanceof TopologyFunctionBuilder) {
+            (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
         } else {
             def sourceStream = sourceStreams[pipeDefinition.from()]
             if (sourceStream == null) {

@@ -31,10 +31,6 @@ class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggrega
         source.groupBy { String key, Bytes value ->
             def groupBy = config.groupBy as String
             groupBy = new ObjectMapper().readValue((value as Bytes).get(), Map)[groupBy]
-            if(config.byTenant == null || (config.byTenant as boolean)) {
-                def tenant = key.split(/\|/)[0]
-                groupBy = "${tenant}|${groupBy}" as String
-            }
             new KeyValue<>(groupBy, value)
         }.aggregate(new Initializer() {
             @Override
@@ -48,7 +44,7 @@ class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggrega
                     aggregate = new ObjectMapper().readValue((aggregate as Bytes).get(), Map)
                 }
                 def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-                event = function.onEvent(new Event(aggKey as String, event, config, true, kpipesContext), aggregate as Map)
+                event = function.onEvent(new Event(null, aggKey as String, event, config, true, kpipesContext), aggregate as Map)
                 new Bytes(new ObjectMapper().writeValueAsBytes(event))
             }
         }, new Aggregator() {
@@ -58,7 +54,7 @@ class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggrega
                     aggregate = new ObjectMapper().readValue((aggregate as Bytes).get(), Map)
                 }
                 def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-                event = function.onEvent(new Event(aggKey as String, event, config, false, kpipesContext), aggregate as Map)
+                event = function.onEvent(new Event(null, aggKey as String, event, config, false, kpipesContext), aggregate as Map)
                 new Bytes(new ObjectMapper().writeValueAsBytes(event))
             }
         }, Serdes.Bytes(), "${pipeDefinition.from()}${pipeDefinition.to().get()}").to(pipeDefinition.to().get())

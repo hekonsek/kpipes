@@ -30,6 +30,10 @@ class PipeDefinition {
         new PipeDefinition(from, functionAddress, functionConfiguration, to)
     }
 
+    String id() {
+        (from + functionAddress + functionConfiguration + to.orElse("")).replaceAll(":", "_")
+    }
+
     String from() {
         return from
     }

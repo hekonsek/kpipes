@@ -7,6 +7,8 @@ import org.apache.kafka.streams.KafkaStreams
 
 class Event {
 
+    private final String topic
+
     private final String key
 
     private final Map<String, Object> body
@@ -17,7 +19,8 @@ class Event {
 
     private final KPipesContext kpipesContext
 
-    Event(String key, Map<String, Object> body, Map<String, Object> config, boolean added, KPipesContext kpipesContext) {
+    Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, boolean added, KPipesContext kpipesContext) {
+        this.topic = topic
         this.key = key
         this.body = body
         this.config = config
@@ -25,8 +28,8 @@ class Event {
         this.kpipesContext = kpipesContext
     }
 
-    Event(String key, Map<String, Object> body, Map<String, Object> config, KPipesContext kpipesContext) {
-        this(key, body, config, true, kpipesContext)
+    Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, KPipesContext kpipesContext) {
+        this(topic, key, body, config, true, kpipesContext)
     }
 
     String key() {
