@@ -22,11 +22,11 @@ class NotificationFunctionTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
-    def source = Uuids.uuid()
+    def source = "tenant.${Uuids.uuid()}"
 
     def target = Uuids.uuid()
 
-    @Test(timeout = 60000L)
+    @Test(timeout = 30000L)
     void shouldRouteEvent(TestContext context) {
         // Given
         def async = context.async()
@@ -39,7 +39,7 @@ class NotificationFunctionTest {
         kpipes.start()
 
         // When
-        kafkaProducer.send(new ProducerRecord(source, 'tenant|user|foo', encoder.encode([foo: 'bar'])))
+        kafkaProducer.send(new ProducerRecord(source, 'foo', encoder.encode([foo: 'bar'])))
 
         // Then
         new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(Uuids.uuid()).port(kafkaPort).build(), "tenant.notification.${target}") {

@@ -19,8 +19,9 @@ package net.kpipes.core.function.config
 import net.kpipes.core.KPipesContext
 import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
+import net.kpipes.core.function.EventRoutingFunctionBuilder
 import net.kpipes.core.function.EventStreamFunctionBuilder
-import net.kpipes.core.function.RoutingEventFunctionBuilder
+
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.springframework.context.annotation.Bean
@@ -45,8 +46,8 @@ class FunctionBuilderConfig {
     }
 
     @Bean
-    routingEventFunctionBuilder(KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
-        new RoutingEventFunctionBuilder(kafkaProducer, brokerAdmin)
+    eventRoutingFunctionBuilder(KPipesContext kpipesContext, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
+        new EventRoutingFunctionBuilder(kpipesContext, kafkaProducer, brokerAdmin)
     }
 
 }

@@ -32,6 +32,15 @@ class Event {
         this(topic, key, body, config, true, kpipesContext)
     }
 
+    String topic() {
+        topic
+    }
+
+
+    def tenant() {
+        topic.substring(0, topic.indexOf('.'))
+    }
+
     String key() {
         key
     }

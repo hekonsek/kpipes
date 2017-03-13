@@ -5,6 +5,7 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.function.Event
 import net.kpipes.core.function.EventMappingFunction
+import net.kpipes.core.function.EventRoutingFunction
 import net.kpipes.lib.kafka.broker.TestBroker
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
@@ -183,11 +184,11 @@ class KPipesTest {
     }
 
     @Bean
-    RoutingEventFunction routingFunction() {
-        new RoutingEventFunction() {
+    EventRoutingFunction routingFunction() {
+        new EventRoutingFunction(){
             @Override
-            RoutingEventFunction.RoutedEvent apply(Map<String, Object> config, String key, Map<String, Object> event) {
-                new RoutingEventFunction.RoutedEvent(event, event.target as String)
+            Optional<String> onEvent(Event event) {
+                Optional.of(event.body().target as String)
             }
         }
     }

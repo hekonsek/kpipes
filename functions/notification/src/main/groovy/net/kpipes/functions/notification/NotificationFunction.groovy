@@ -1,14 +1,14 @@
 package net.kpipes.functions.notification
 
-import net.kpipes.core.RoutingEventFunction
+import net.kpipes.core.function.Event
+import net.kpipes.core.function.EventRoutingFunction
 
-class NotificationFunction implements RoutingEventFunction {
+class NotificationFunction implements EventRoutingFunction {
 
     @Override
-    RoutingEventFunction.RoutedEvent apply(Map<String, Object> config, String key, Map<String, Object> event) {
-        def channel = config.channel
-        def tenant = key.split(/\|/)[0]
-        new RoutingEventFunction.RoutedEvent(event, "${tenant}.notification.${channel}")
+    Optional<String> onEvent(Event event) {
+        def channel = event.config().channel
+        Optional.of("${event.tenant()}.notification.${channel}")
     }
 
 }
