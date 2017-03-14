@@ -3,13 +3,11 @@ package net.kpipes.core.function
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipesContext
 import net.kpipes.core.PipeDefinition
-import org.apache.commons.lang3.NotImplementedException
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.utils.Bytes
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.Aggregator
 import org.apache.kafka.streams.kstream.Initializer
-import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KTable
 
 class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggregateFunction> {
@@ -57,7 +55,7 @@ class EventAggregateFunctionBuilder implements TableFunctionBuilder<EventAggrega
                 event = function.onEvent(new Event(null, aggKey as String, event, config, false, kpipesContext), aggregate as Map)
                 new Bytes(new ObjectMapper().writeValueAsBytes(event))
             }
-        }, Serdes.Bytes(), "${pipeDefinition.from()}${pipeDefinition.to().get()}").to(pipeDefinition.to().get())
+        }, Serdes.Bytes(), "${pipeDefinition.effectiveFrom()}${pipeDefinition.effectiveTo().get()}").to(pipeDefinition.effectiveTo().get())
     }
 
 }

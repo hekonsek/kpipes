@@ -15,7 +15,7 @@ class GeoFencingDistanceFunction implements EventMappingFunction {
     @Override
     Map<String, Object> onEvent(Event event) {
         def currentLocation = new Point(event.body().lat as double, event.body().lng as double)
-        LOG.debug('About to invoke function against location: {}', currentLocation)
+        LOG.debug('About effectiveTo invoke function against location: {}', currentLocation)
         def fenceConfig = event.config().fence as Map
 
         if(fenceConfig.containsKey('center')) {

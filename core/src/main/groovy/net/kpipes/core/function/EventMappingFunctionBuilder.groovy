@@ -5,9 +5,7 @@ import net.kpipes.core.KPipesContext
 import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.errors.TopologyBuilderException
-import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.apache.kafka.streams.processor.AbstractProcessor
 import org.apache.kafka.streams.processor.Processor
@@ -32,11 +30,11 @@ class EventMappingFunctionBuilder implements TopologyFunctionBuilder<EventMappin
         if(function instanceof FunctionInitializer) {
             function.initialize(pipeBuilder, pipeDefinition)
         }
-        def sourceId = pipeDefinition.from()
+        def sourceId = pipeDefinition.effectiveFrom()
         def processorId = (topologyBuilder as KStreamBuilder).newName('processor')
         def targetId = (topologyBuilder as KStreamBuilder).newName('target')
         try {
-            topologyBuilder.addSource(sourceId, pipeDefinition.from())
+            topologyBuilder.addSource(sourceId, pipeDefinition.effectiveFrom())
         } catch (TopologyBuilderException e) {
 
         }
@@ -53,7 +51,7 @@ class EventMappingFunctionBuilder implements TopologyFunctionBuilder<EventMappin
                         }
                     }
                 }, sourceId).
-                addSink(targetId, pipeDefinition.to().get(), processorId)
+                addSink(targetId, pipeDefinition.effectiveTo().get(), processorId)
     }
 
 }

@@ -5,7 +5,6 @@ import net.kpipes.core.KPipesContext
 import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import net.kpipes.lib.kafka.client.BrokerAdmin
-import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
@@ -40,10 +39,10 @@ class EventRoutingFunctionBuilder implements TopologyFunctionBuilder<EventRoutin
         if (function instanceof FunctionInitializer) {
             function.initialize(pipeBuilder, pipeDefinition)
         }
-        def sourceId = pipeDefinition.from()
+        def sourceId = pipeDefinition.effectiveFrom()
         def processorId = (topologyBuilder as KStreamBuilder).newName('processor')
         try {
-            topologyBuilder.addSource(sourceId, pipeDefinition.from())
+            topologyBuilder.addSource(sourceId, pipeDefinition.effectiveFrom())
         } catch (TopologyBuilderException e) {
 
         }

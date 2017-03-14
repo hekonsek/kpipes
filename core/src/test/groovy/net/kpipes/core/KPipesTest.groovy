@@ -6,12 +6,12 @@ import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.function.Event
 import net.kpipes.core.function.EventMappingFunction
 import net.kpipes.core.function.EventRoutingFunction
+import net.kpipes.core.repository.PipeDefinitionsRepository
 import net.kpipes.lib.kafka.broker.TestBroker
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
-
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.PipeDefinition.parsePipeDefinition
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -42,11 +43,11 @@ class KPipesTest {
 
     def source = uuid()
 
-    def effectiveSource = "${tenant}.${source}"
+    def effectiveSource = "${tenant}.${source}" as String
 
     def target = uuid()
 
-    def effectiveTarget = "${tenant}.${target}"
+    def effectiveTarget = "${tenant}.${target}" as String
 
     @Before
     void before() {
@@ -165,6 +166,20 @@ class KPipesTest {
             assertThat(event.user as Map).containsEntry('name', 'john')
             async.complete()
         }
+    }
+
+    @Test
+    void shouldListDefinitions() {
+        // Given
+        kpipes.start()
+        kpipes.addPipe(parsePipeDefinition(tenant, "${source} | functionFoo | ${target}"))
+
+        // When
+        def definitions = kpipes.serviceRegistry().service(PipeDefinitionsRepository).list()
+
+        // Then
+        assertThat(definitions).hasSize(1)
+        assertThat(definitions.first().effectiveFrom()).isEqualTo(effectiveSource)
     }
 
     @Bean

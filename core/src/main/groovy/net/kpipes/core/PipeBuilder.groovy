@@ -21,14 +21,12 @@ import groovy.transform.CompileStatic
 import net.kpipes.core.function.StreamFunctionBuilder
 import net.kpipes.core.function.TableFunctionBuilder
 import net.kpipes.core.function.TopologyFunctionBuilder
-import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.apache.kafka.streams.kstream.KTable
-import org.apache.kafka.streams.processor.TopologyBuilder
 import org.slf4j.Logger
 
 import static net.kpipes.core.PipeDefinition.parsePipeDefinition
@@ -77,9 +75,9 @@ class PipeBuilder {
     }
 
     void build(PipeDefinition pipeDefinition) {
-        topics << pipeDefinition.from()
-        if(pipeDefinition.to().isPresent()) {
-            topics << pipeDefinition.to().get()
+        topics << pipeDefinition.effectiveFrom()
+        if(pipeDefinition.effectiveTo().isPresent()) {
+            topics << pipeDefinition.effectiveTo().get()
         }
 
         def functionBuilders = serviceRegistry.services(net.kpipes.core.function.FunctionBuilder)
@@ -87,19 +85,19 @@ class PipeBuilder {
         def functionBuilder = functionBuilders.find{ it.supports(function) }
 
         if(functionBuilder instanceof TableFunctionBuilder) {
-            def sourceTable = sourceTables[pipeDefinition.from()]
+            def sourceTable = sourceTables[pipeDefinition.effectiveFrom()]
             if (sourceTable == null) {
-                sourceTable = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.from(), pipeDefinition.from())
-                sourceTables[pipeDefinition.from()] = sourceTable
+                sourceTable = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.effectiveFrom(), pipeDefinition.effectiveFrom())
+                sourceTables[pipeDefinition.effectiveFrom()] = sourceTable
             }
             (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
         } else if(functionBuilder instanceof TopologyFunctionBuilder) {
             (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
         } else {
-            def sourceStream = sourceStreams[pipeDefinition.from()]
+            def sourceStream = sourceStreams[pipeDefinition.effectiveFrom()]
             if (sourceStream == null) {
-                sourceStream = builder.stream(pipeDefinition.from())
-                sourceStreams[pipeDefinition.from()] = sourceStream
+                sourceStream = builder.stream(pipeDefinition.effectiveFrom())
+                sourceStreams[pipeDefinition.effectiveFrom()] = sourceStream
             }
             (functionBuilder as StreamFunctionBuilder).build(this, pipeDefinition, function, sourceStream)
         }
@@ -108,6 +106,10 @@ class PipeBuilder {
     void start() {
         LOG.debug('Ensuring that all topics involved in a pipe exist.')
         serviceRegistry.service(BrokerAdmin).ensureTopicExists(topics)
+
+        if(!builder.globalStateStores().containsKey('kpipes.pipeDefinitions')) {
+            builder.globalTable('kpipes.pipeDefinitions', 'kpipes.pipeDefinitions')
+        }
 
         def streamsConfiguration = new Properties()
         streamsConfiguration.put(APPLICATION_ID_CONFIG, applicationId);

@@ -17,7 +17,7 @@ class FilterFunction implements EventStreamFunction {
             def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
             shell.setVariable('event', event)
             shell.evaluate(predicateText) as boolean
-        }.to(pipeDefinition.to().get())
+        }.to(pipeDefinition.effectiveTo().get())
     }
 
 }
