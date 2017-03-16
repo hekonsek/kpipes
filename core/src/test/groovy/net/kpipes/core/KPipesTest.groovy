@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 import static net.kpipes.core.KPipesFactory.kpipes
-import static net.kpipes.core.PipeDefinition.parsePipeDefinition
+import static net.kpipes.core.PipeDefinitionEncoder.decodePipe
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -172,7 +172,7 @@ class KPipesTest {
     void shouldListDefinitions() {
         // Given
         kpipes.start()
-        kpipes.addPipe(parsePipeDefinition(tenant, "${source} | functionFoo | ${target}"))
+        kpipes.addPipe(decodePipe(tenant, "${source} | functionFoo | ${target}"))
 
         // When
         def definitions = kpipes.serviceRegistry().service(PipeDefinitionsRepository).list()

@@ -29,7 +29,7 @@ import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.apache.kafka.streams.kstream.KTable
 import org.slf4j.Logger
 
-import static net.kpipes.core.PipeDefinition.parsePipeDefinition
+import static net.kpipes.core.PipeDefinitionEncoder.decodePipe
 import static org.apache.kafka.streams.StreamsConfig.*
 import static org.slf4j.LoggerFactory.getLogger
 
@@ -71,7 +71,7 @@ class PipeBuilder {
     // Operations
 
     void build(String tenant, String pipeDefinition) {
-        build(parsePipeDefinition(tenant, pipeDefinition))
+        build(decodePipe(tenant, pipeDefinition))
     }
 
     void build(PipeDefinition pipeDefinition) {

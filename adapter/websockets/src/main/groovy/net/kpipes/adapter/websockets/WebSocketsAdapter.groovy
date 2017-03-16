@@ -75,7 +75,7 @@ class WebSocketsAdapter extends AbstractAdapter {
                 }
             } else if(uri == '/operation') {
                 socket.handler { message ->
-                    socket.write(buffer(invokeOperation(message.bytes)))
+                    socket.write(buffer(invokeOperation(authentication.get().tenant, message.bytes)))
                 }
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')

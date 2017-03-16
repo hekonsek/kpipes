@@ -22,6 +22,7 @@
         <module>core</module>
         <module>functions</module>
         <module>adapter</module>
+        <module>service</module>
     </modules>
 
     <properties>
