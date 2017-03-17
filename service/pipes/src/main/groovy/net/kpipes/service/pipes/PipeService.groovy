@@ -1,7 +1,7 @@
 package net.kpipes.service.pipes
 
-import net.kpipes.adapter.websockets.Tenant
 import net.kpipes.core.KPipesContext
+import net.kpipes.core.adapter.Tenant
 import net.kpipes.core.repository.PipeDefinitionsRepository
 
 import static net.kpipes.core.PipeDefinitionEncoder.decodePipe

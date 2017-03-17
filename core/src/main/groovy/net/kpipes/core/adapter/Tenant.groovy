@@ -1,4 +1,4 @@
-package net.kpipes.adapter.websockets
+package net.kpipes.core.adapter
 
 import java.lang.annotation.Retention
 

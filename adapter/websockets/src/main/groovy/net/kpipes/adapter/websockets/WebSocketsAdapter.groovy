@@ -16,8 +16,8 @@
  */
 package net.kpipes.adapter.websockets
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipesContext
+import net.kpipes.core.adapter.AbstractAdapter
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate

@@ -1,4 +1,4 @@
-package net.kpipes.adapter.websockets
+package net.kpipes.core.adapter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
