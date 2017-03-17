@@ -15,16 +15,23 @@ class KPipes {
         this.pipeBuilder = new PipeBuilder(applicationId, config, serviceRegistry)
     }
 
-    void start() {
+    KPipes start() {
         pipeBuilder.start()
+        this
+    }
+
+    KPipes load() {
+        Thread.sleep(5000)
+        serviceRegistry.service(PipeDefinitionsRepository).list().each {
+            pipeBuilder.build(it)
+        }
+        this
     }
 
     void addPipe(PipeDefinition pipeDefinition) {
         serviceRegistry.service(PipeDefinitionsRepository).add(pipeDefinition)
         Thread.sleep(1000)
-        serviceRegistry.service(PipeDefinitionsRepository).list().each {
-            pipeBuilder.build(it)
-        }
+        pipeBuilder.build(pipeDefinition)
         stop()
         start()
     }

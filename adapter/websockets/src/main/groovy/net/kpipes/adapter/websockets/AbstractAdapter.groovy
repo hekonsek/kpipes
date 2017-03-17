@@ -1,9 +1,16 @@
 package net.kpipes.adapter.websockets
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.transform.CompileStatic
 import net.kpipes.core.KPipesContext
+import org.slf4j.Logger
 
+import static org.slf4j.LoggerFactory.getLogger
+
+@CompileStatic
 abstract class AbstractAdapter {
+
+    private final Logger LOG = getLogger(getClass())
 
     protected final KPipesContext kpipesContext
 
@@ -22,12 +29,15 @@ abstract class AbstractAdapter {
         def operationAnnotations = operationMethod.parameterAnnotations as List
         if(!operationAnnotations.isEmpty() && operationAnnotations.first().find{ it instanceof Tenant }) {
             if(arguments == null) {
-                arguments = []
+                arguments = [tenant]
+            } else {
+                arguments.add(0, tenant)
             }
-            arguments.add(0, tenant)
         }
 
-        new ObjectMapper().writeValueAsBytes([response: operationMethod.invoke(service, *arguments)])
+        def response = operationMethod.invoke(service, arguments.toArray())
+        LOG.debug('Received operation response: {}', response)
+        new ObjectMapper().writeValueAsBytes([response: response])
     }
 
 }

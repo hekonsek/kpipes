@@ -28,6 +28,7 @@ import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KStreamBuilder
 import org.apache.kafka.streams.kstream.KTable
 import org.slf4j.Logger
+import org.springframework.beans.factory.NoSuchBeanDefinitionException
 
 import static net.kpipes.core.PipeDefinitionEncoder.decodePipe
 import static org.apache.kafka.streams.StreamsConfig.*
@@ -75,31 +76,35 @@ class PipeBuilder {
     }
 
     void build(PipeDefinition pipeDefinition) {
-        topics << pipeDefinition.effectiveFrom()
-        if(pipeDefinition.effectiveTo().isPresent()) {
-            topics << pipeDefinition.effectiveTo().get()
-        }
-
-        def functionBuilders = serviceRegistry.services(net.kpipes.core.function.FunctionBuilder)
-        def function = serviceRegistry.service(pipeDefinition.functionAddress())
-        def functionBuilder = functionBuilders.find{ it.supports(function) }
-
-        if(functionBuilder instanceof TableFunctionBuilder) {
-            def sourceTable = sourceTables[pipeDefinition.effectiveFrom()]
-            if (sourceTable == null) {
-                sourceTable = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.effectiveFrom(), pipeDefinition.effectiveFrom())
-                sourceTables[pipeDefinition.effectiveFrom()] = sourceTable
+        try {
+            topics << pipeDefinition.effectiveFrom()
+            if (pipeDefinition.effectiveTo().isPresent()) {
+                topics << pipeDefinition.effectiveTo().get()
             }
-            (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
-        } else if(functionBuilder instanceof TopologyFunctionBuilder) {
-            (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
-        } else {
-            def sourceStream = sourceStreams[pipeDefinition.effectiveFrom()]
-            if (sourceStream == null) {
-                sourceStream = builder.stream(pipeDefinition.effectiveFrom())
-                sourceStreams[pipeDefinition.effectiveFrom()] = sourceStream
+
+            def functionBuilders = serviceRegistry.services(net.kpipes.core.function.FunctionBuilder)
+            def function = serviceRegistry.service(pipeDefinition.functionAddress())
+            def functionBuilder = functionBuilders.find { it.supports(function) }
+
+            if (functionBuilder instanceof TableFunctionBuilder) {
+                def sourceTable = sourceTables[pipeDefinition.effectiveFrom()]
+                if (sourceTable == null) {
+                    sourceTable = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.effectiveFrom(), pipeDefinition.effectiveFrom())
+                    sourceTables[pipeDefinition.effectiveFrom()] = sourceTable
+                }
+                (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
+            } else if (functionBuilder instanceof TopologyFunctionBuilder) {
+                (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
+            } else {
+                def sourceStream = sourceStreams[pipeDefinition.effectiveFrom()]
+                if (sourceStream == null) {
+                    sourceStream = builder.stream(pipeDefinition.effectiveFrom())
+                    sourceStreams[pipeDefinition.effectiveFrom()] = sourceStream
+                }
+                (functionBuilder as StreamFunctionBuilder).build(this, pipeDefinition, function, sourceStream)
             }
-            (functionBuilder as StreamFunctionBuilder).build(this, pipeDefinition, function, sourceStream)
+        } catch (NoSuchBeanDefinitionException e) {
+            LOG.info('Cannot start pipe. Reason: {}', e.message)
         }
     }
 
