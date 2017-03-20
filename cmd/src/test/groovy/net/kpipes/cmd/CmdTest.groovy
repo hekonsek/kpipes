@@ -5,6 +5,7 @@ import org.junit.Test
 
 import static com.google.common.io.Files.createTempDir
 import static net.kpipes.lib.commons.Mavens.kpipesVersion
+import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
 
 class CmdTest {
@@ -17,6 +18,12 @@ class CmdTest {
         KPipesApplication.main()
         def versionResponse = new Cmd().executeCommand('kpipes', 'version')
         assertThat(versionResponse).isEqualTo(kpipesVersion())
+    }
+
+    @Test
+    void shouldHandleNoServer() {
+        def response = new Cmd(availableTcpPort()).executeCommand('kpipes', 'version') as String
+        assertThat(response).startsWith('Cannot connect to KPipes server')
     }
 
 }
