@@ -1,10 +1,9 @@
 # KPipes
 
-[![Version](https://img.shields.io/badge/kpipes-0.0.1-blue.svg)](https://github.com/kpipes/kpipes/releases)
+[![Version](https://img.shields.io/badge/kpipes-0.0.2-blue.svg)](https://github.com/kpipes/kpipes/releases)
 [![Build](https://api.travis-ci.org/kpipes/kpipes.svg)](https://travis-ci.org/kpipes/kpipes/)
 
-Kpipes provides Unix-like pipes API for Apache Kafka. It allows you to easily wire serverless-like functions
-in order to create simple data pipelines on the top of Kafka topics.
+Kpipes provides data pipe lines on the top of the Apache Kafka topics.
 
 Primary KPipes features:
 - simple API for creating data pipelines over Kafka topics
@@ -17,46 +16,15 @@ Primary KPipes features:
 - Kipipes comes with an impressive collection predefined functions (including core transformations and geodata functions)
 - KPipes supports multi-tenancy as a first class citizen
 
-## Hello world examples
+## Starting KPipes
 
+First of all, start KPipes server:
 
-```
-KPipes kpipes = new KPipes().start();
-PipesBuilder pipesBuilder = kpipes.service(PipesBuilder.class).get();
-pipesBuilder.pipe("myGeoData | geo.coding.reverse | targetTopic");
-```
-```
-myGeoData:
-{body: { lat: 40.714224, lng: -73.961452 }}
+    docker run -d \
+      -e KAFKA_DATADIRECTORY=/var/kpipes/kafka_data -e ZOOKEEPER_DATADIRECTORY=/var/kpipes/zookeeper_data \
+      -v /var/kpipes:/var/kpipes -p 8080:8080 kpipes/server:0.0.2
+    
+Then execute KPipes client:
 
-targetTopic:
-{
-  metaData: {
-    response.geo.coding.reverse: {
-      address: "285 Bedford Avenue, Brooklyn, NY 11211, USA",
-      city: "New York"
-    }
-  },
-  body: { lat: 40.714224, lng: -73.961452 }
-}
-```
-
-You can also create your custom pipe function:
-
-```
-KPipes kpipes = new KPipes().start();
-
-new FunctionBinding(kpipes, "helloWorld",
-  { event -> event.body().set("world", "world!"); return event; }
-).start();
-
-PipesBuilder pipesBuilder = kpipes.service(PipesBuilder.class).get();
-pipesBuilder.pipe("myData | helloWorld | targetTopic");
-```
-```
-myData:
-{hello: "Hello"}
-
-targetTopic:
-{hello: "Hello", world: "world!"}
-```
+    $ docker run --net=host -it kpipes/cmd:0.0.2 kpipes version
+    0.0.2
