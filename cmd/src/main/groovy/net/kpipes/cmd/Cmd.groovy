@@ -1,3 +1,19 @@
+/**
+ * Licensed to the KPipes under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.kpipes.cmd
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -11,13 +27,21 @@ import static org.awaitility.Awaitility.await
 
 class Cmd {
 
+    // Internal collaborators
+
+    private final json = new ObjectMapper()
+
     private final vertx = Vertx.vertx()
 
     private final httpClient = vertx.createHttpClient()
 
+    // Configuration members
+
     private final String host
 
     private final int port
+
+    // Constructors
 
     Cmd(host, port) {
         this.host = host
@@ -36,12 +60,12 @@ class Cmd {
         Object response
         httpClient.websocket(port, host, '/operation', new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])) { webSocket ->
             webSocket.handler {
-                response = new ObjectMapper().readValue(it.bytes, Map).response
+                response = json.readValue(it.bytes, Map).response
             }
 
             def commandParts = command as List<String>
             def arguments = commandParts.size() > 2 ? [commandParts[2]] : null
-            webSocket.write(buffer(new ObjectMapper().writeValueAsBytes([service: commandParts[0], operation: commandParts[1], arguments: arguments])))
+            webSocket.write(buffer(json.writeValueAsBytes([service: commandParts[0], operation: commandParts[1], arguments: arguments])))
         } {
             response = "Cannot connect to KPipes server ${host}:${port}. Have you started your KPipes server? Is your firewall configured properly? Is your network connectivity OK?"
         }
