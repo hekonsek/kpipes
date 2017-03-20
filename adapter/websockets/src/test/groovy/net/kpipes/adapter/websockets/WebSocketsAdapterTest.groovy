@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component
 
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -30,8 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat
 @Configuration
 class WebSocketsAdapterTest extends KPipesTest {
 
+    int httpPort = availableTcpPort()
+
     @Before
     void before() {
+        System.setProperty('http.port', httpPort + '')
         kpipes = kpipes()
     }
 
@@ -44,7 +48,7 @@ class WebSocketsAdapterTest extends KPipesTest {
         // When
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
-        client.websocket(8080, "localhost", "/event/${source}", headers) { websocket ->
+        client.websocket(httpPort, "localhost", "/event/${source}", headers) { websocket ->
             websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([foo: 'bar'])))
         }
 
@@ -69,7 +73,7 @@ class WebSocketsAdapterTest extends KPipesTest {
         // Then
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous', history: 'all'])
-        client.websocket(8080, "localhost", "/notification/${source}", headers) { websocket ->
+        client.websocket(httpPort, "localhost", "/notification/${source}", headers) { websocket ->
             websocket.handler {
                 def event = new ObjectMapper().readValue(it.bytes, Map)
                 assertThat(event.foo)isEqualTo('bar')
@@ -91,7 +95,7 @@ class WebSocketsAdapterTest extends KPipesTest {
         // Then
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
-        client.websocket(8080, "localhost", "/notification/${source}", headers) { websocket ->
+        client.websocket(httpPort, "localhost", "/notification/${source}", headers) { websocket ->
             websocket.handler {
                 def event = new ObjectMapper().readValue(it.bytes, Map)
                 assertThat(event.foo)isEqualTo('bar')
@@ -111,7 +115,7 @@ class WebSocketsAdapterTest extends KPipesTest {
         // When
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
-        client.websocket(8080, "localhost", "/operation", headers) { websocket ->
+        client.websocket(httpPort, "localhost", "/operation", headers) { websocket ->
             websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
             websocket.handler {
                 def response = new ObjectMapper().readValue(it.bytes, Map)

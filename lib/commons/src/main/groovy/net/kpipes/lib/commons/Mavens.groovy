@@ -46,6 +46,12 @@ final class Mavens {
         Optional.ofNullable(VERSIONS.getProperty(format("%s/%s/version", groupId, artifactId)))
     }
 
+    static String kpipesVersion() {
+        artifactVersionFromDependenciesProperties('net.kpipes', 'kpipes-lib-commons').orElseThrow {
+            new IllegalStateException('Cannot read KPipes version. Verify if kpipes-lib-commons jar contains /META-INF/maven/dependencies.properties file.')
+        }
+    }
+
     // Static classes
 
     @Immutable
