@@ -27,6 +27,7 @@
         <module>geo-geofencing</module>
         <module>geo-googlemaps</module>
         <module>notification</module>
+        <module>view-materialize-keyvalue</module>
     </modules>
 
 </project>

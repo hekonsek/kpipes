@@ -31,4 +31,6 @@ class KPipesTest {
 
     protected effectiveTarget = "${tenant}.${target}"
 
+    protected key = uuid()
+
 }
