@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/kpipes-0.0.2-blue.svg)](https://github.com/kpipes/kpipes/releases)
 [![Build](https://api.travis-ci.org/kpipes/kpipes.svg)](https://travis-ci.org/kpipes/kpipes/)
 
-Kpipes provides data pipe lines on the top of the Apache Kafka topics.
+Kpipes provides data pipelines on the top of the Apache Kafka topics.
 
 Primary KPipes features:
 - simple API for creating data pipelines over Kafka topics
