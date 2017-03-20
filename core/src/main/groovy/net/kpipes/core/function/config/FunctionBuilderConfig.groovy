@@ -20,7 +20,7 @@ import net.kpipes.core.KPipesContext
 import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
 import net.kpipes.core.function.EventRoutingFunctionBuilder
-import net.kpipes.core.function.EventStreamFunctionBuilder
+
 import net.kpipes.core.function.GenericTopologyFunctionBuilder
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -38,11 +38,6 @@ class FunctionBuilderConfig {
     @Bean
     eventAggregateFunctionBuilder(KPipesContext kpipesContext) {
         new EventAggregateFunctionBuilder(kpipesContext)
-    }
-
-    @Bean
-    eventTableFunctionBuilder() {
-        new EventStreamFunctionBuilder()
     }
 
     @Bean

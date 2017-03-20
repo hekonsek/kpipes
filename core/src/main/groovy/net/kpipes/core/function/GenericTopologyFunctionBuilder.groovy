@@ -13,7 +13,7 @@ class GenericTopologyFunctionBuilder implements TopologyFunctionBuilder<GenericT
 
     @Override
     void build(PipeBuilder pipeBuilder, TopologyBuilder topologyBuilder, PipeDefinition pipeDefinition, GenericTopologyFunction function) {
-        function.apply(pipeDefinition, topologyBuilder)
+        function.apply(pipeBuilder, pipeDefinition, topologyBuilder)
     }
 
 }

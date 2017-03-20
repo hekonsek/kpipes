@@ -18,7 +18,7 @@ package net.kpipes.core
 
 import com.google.common.io.Files
 import groovy.transform.CompileStatic
-import net.kpipes.core.function.StreamFunctionBuilder
+
 import net.kpipes.core.function.TableFunctionBuilder
 import net.kpipes.core.function.TopologyFunctionBuilder
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -93,15 +93,8 @@ class PipeBuilder {
                     sourceTables[pipeDefinition.effectiveFrom()] = sourceTable
                 }
                 (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
-            } else if (functionBuilder instanceof TopologyFunctionBuilder) {
+            } else  {
                 (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
-            } else {
-                def sourceStream = sourceStreams[pipeDefinition.effectiveFrom()]
-                if (sourceStream == null) {
-                    sourceStream = builder.stream(pipeDefinition.effectiveFrom())
-                    sourceStreams[pipeDefinition.effectiveFrom()] = sourceStream
-                }
-                (functionBuilder as StreamFunctionBuilder).build(this, pipeDefinition, function, sourceStream)
             }
         } catch (NoSuchBeanDefinitionException e) {
             LOG.info('Cannot start pipe. Reason: {}', e.message)
