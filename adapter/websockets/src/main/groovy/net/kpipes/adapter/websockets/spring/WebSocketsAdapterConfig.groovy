@@ -16,8 +16,10 @@ import net.kpipes.adapter.websockets.Authenticator as KPipesAuthenticator
 class WebSocketsAdapterConfig {
 
     @Bean(initMethod = 'start')
-    WebSocketsAdapter webSocketsAdapter(KPipesContext kpipesContext, @Value('${kafka.port:9092}') int kafkaPort, BrokerAdmin brokerAdmin, KPipesAuthenticator authenticator) {
-        new WebSocketsAdapter(kpipesContext, new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin), new KafkaProducerBuilder<>().port(kafkaPort).build(), brokerAdmin, authenticator, kafkaPort)
+    WebSocketsAdapter webSocketsAdapter(KPipesContext kpipesContext, BrokerAdmin brokerAdmin, KPipesAuthenticator authenticator,
+                                        @Value('${http.port:8080}') int httpPort,
+                                        @Value('${kafka.port:9092}') int kafkaPort) {
+        new WebSocketsAdapter(kpipesContext, new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin), new KafkaProducerBuilder<>().port(kafkaPort).build(), brokerAdmin, authenticator, httpPort, kafkaPort)
     }
 
     @Bean

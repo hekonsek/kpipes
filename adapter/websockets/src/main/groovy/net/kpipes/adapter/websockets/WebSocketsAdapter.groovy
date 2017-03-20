@@ -44,14 +44,18 @@ class WebSocketsAdapter extends AbstractAdapter {
 
     private final int kafkaPort
 
+    private final int httpPort
+
     // Constructors
 
-    WebSocketsAdapter(KPipesContext kpipesContext, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator, int kafkaPort) {
+    WebSocketsAdapter(KPipesContext kpipesContext, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator,
+                      int httpPort, int kafkaPort) {
         super(kpipesContext)
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
         this.authenticator = authenticator
+        this.httpPort = httpPort
         this.kafkaPort = kafkaPort
     }
 
@@ -94,7 +98,7 @@ class WebSocketsAdapter extends AbstractAdapter {
             } else {
                 socket.reject()
             }
-        }.listen(8080)
+        }.listen(httpPort)
     }
 
 }

@@ -21,6 +21,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>kpipes</module>
         <module>pipes</module>
     </modules>
 

@@ -58,6 +58,10 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-service-kpipes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-service-pipes</artifactId>
         </dependency>
 

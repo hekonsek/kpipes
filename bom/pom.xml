@@ -119,6 +119,11 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
+                <artifactId>kpipes-service-kpipes</artifactId>
+                <version>${kpipes.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-service-pipes</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>

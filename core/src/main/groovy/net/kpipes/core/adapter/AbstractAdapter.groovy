@@ -35,7 +35,7 @@ abstract class AbstractAdapter {
             }
         }
 
-        def response = operationMethod.invoke(service, arguments.toArray())
+        def response = operationMethod.invoke(service, arguments != null ? arguments.toArray() : null)
         LOG.debug('Received operation response: {}', response)
         new ObjectMapper().writeValueAsBytes([response: response])
     }
