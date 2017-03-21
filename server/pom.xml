@@ -63,6 +63,11 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-service-event</artifactId>
+            <version>${kpipes.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-service-kpipes</artifactId>
         </dependency>
         <dependency>

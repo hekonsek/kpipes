@@ -21,6 +21,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>event</module>
         <module>kpipes</module>
         <module>pipes</module>
     </modules>

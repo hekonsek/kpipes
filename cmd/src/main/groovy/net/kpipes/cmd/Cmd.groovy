@@ -62,10 +62,7 @@ class Cmd {
             webSocket.handler {
                 response = json.readValue(it.bytes, Map).response
             }
-
-            def commandParts = command as List<String>
-            def arguments = commandParts.size() > 2 ? [commandParts[2]] : null
-            webSocket.write(buffer(json.writeValueAsBytes([service: commandParts[0], operation: commandParts[1], arguments: arguments])))
+            webSocket.write(buffer(json.writeValueAsBytes([service: command[0], operation: command[1], arguments: parseArguments(command)])))
         } {
             response = "Cannot connect to KPipes server ${host}:${port}. Have you started your KPipes server? Is your firewall configured properly? Is your network connectivity OK?"
         }
@@ -75,6 +72,16 @@ class Cmd {
 
     void close() {
         vertx.close()
+    }
+
+    protected static List<Object> parseArguments(String... command) {
+        def commandParts = command.collect{
+            if(it.startsWith('[')) {
+                it = new GroovyShell().evaluate(it) as Map
+            }
+            it
+        }
+        commandParts.size() > 2 ? commandParts.subList(2, commandParts.size()) : null
     }
 
     static void main(String... args) {

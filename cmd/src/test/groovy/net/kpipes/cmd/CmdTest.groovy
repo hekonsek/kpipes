@@ -20,6 +20,7 @@ import net.kpipes.core.KPipesApplication
 import org.junit.Test
 
 import static com.google.common.io.Files.createTempDir
+import static net.kpipes.cmd.Cmd.parseArguments
 import static net.kpipes.lib.commons.Mavens.kpipesVersion
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
@@ -40,6 +41,18 @@ class CmdTest {
     void shouldHandleStoppedServer() {
         def response = new Cmd(availableTcpPort()).executeCommand('kpipes', 'version') as String
         assertThat(response).startsWith('Cannot connect to KPipes server')
+    }
+
+    @Test
+    void shouldExtractArgumentsFromCommand() {
+        def arguments = parseArguments('service', 'operation', 'argument1', 'argument2')
+        assertThat(arguments).isEqualTo(['argument1', 'argument2'])
+    }
+
+    @Test
+    void shouldParseMapArgument() {
+        def arguments = parseArguments('service', 'operation', 'argument1', "[foo: 'bar']")
+        assertThat(arguments).isEqualTo(['argument1', [foo: 'bar']])
     }
 
 }
