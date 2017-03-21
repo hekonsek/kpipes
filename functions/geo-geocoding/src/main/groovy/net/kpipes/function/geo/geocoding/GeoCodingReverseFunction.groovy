@@ -1,4 +1,4 @@
-package net.kpipes.functions.geo.geocoding
+package net.kpipes.function.geo.geocoding
 
 import com.google.code.geocoder.model.GeocodeResponse
 import net.kpipes.core.function.Event
@@ -11,13 +11,13 @@ import java.util.concurrent.TimeoutException
 
 import static java.util.concurrent.TimeUnit.SECONDS
 
-class GeoCodingReverseEventFunction implements EventMappingFunction {
+class GeoCodingReverseFunction implements EventMappingFunction {
 
     private final executor = Executors.newCachedThreadPool()
 
     private final ProducerTemplate camelProducerTemplate
 
-    GeoCodingReverseEventFunction(ProducerTemplate camelProducerTemplate) {
+    GeoCodingReverseFunction(ProducerTemplate camelProducerTemplate) {
         this.camelProducerTemplate = camelProducerTemplate
     }
 

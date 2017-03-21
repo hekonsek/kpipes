@@ -70,7 +70,7 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-functions-geo-geocoding</artifactId>
+                <artifactId>kpipes-function-geo-geocoding</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>
             <dependency>

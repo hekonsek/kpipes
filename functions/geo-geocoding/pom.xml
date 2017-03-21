@@ -16,7 +16,7 @@
         <version>0.0.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-functions-geo-geocoding</artifactId>
+    <artifactId>kpipes-function-geo-geocoding</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>

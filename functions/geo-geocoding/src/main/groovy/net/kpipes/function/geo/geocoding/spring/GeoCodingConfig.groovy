@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kpipes.functions.geo.geocoding.spring
+package net.kpipes.function.geo.geocoding.spring
 
-import net.kpipes.functions.geo.geocoding.GeoCodingReverseEventFunction
+import net.kpipes.function.geo.geocoding.GeoCodingReverseFunction
 import org.apache.camel.ProducerTemplate
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,7 +26,7 @@ class GeoCodingConfig {
 
     @Bean(name = 'geo.coding.reverse')
     def geoCodingReverseFunction(ProducerTemplate producerTemplate) {
-        new GeoCodingReverseEventFunction(producerTemplate)
+        new GeoCodingReverseFunction(producerTemplate)
     }
 
 }
