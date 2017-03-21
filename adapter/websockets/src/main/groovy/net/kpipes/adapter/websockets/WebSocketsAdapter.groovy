@@ -16,13 +16,13 @@
  */
 package net.kpipes.adapter.websockets
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipesContext
 import net.kpipes.core.adapter.AbstractAdapter
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
 import static com.google.common.base.MoreObjects.firstNonNull
@@ -71,7 +71,11 @@ class WebSocketsAdapter extends AbstractAdapter {
             def uri = socket.uri()
             if(uri == '/operation') {
                 socket.handler { message ->
-                    socket.write(buffer(invokeOperation(authentication.get().tenant, message.bytes)))
+                    try {
+                        socket.write(buffer(invokeOperation(authentication.get().tenant, message.bytes)))
+                    } catch (Exception e) {
+                        socket.write(buffer(new ObjectMapper().writeValueAsBytes([response: e.message, error: true])))
+                    }
                 }
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')
