@@ -5,8 +5,6 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.KPipes
 import net.kpipes.core.PipeBuilder
-import net.kpipes.lib.kafka.broker.TestBroker
-import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
@@ -16,7 +14,6 @@ import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.context.annotation.Configuration
 
 import static net.kpipes.core.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
@@ -53,8 +50,8 @@ class CountFunctionTest extends KPipesTest {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             results[it.key()] = event.count
             if(results['US'] == 1 && results['PL'] == 3) {
+                kpipes.stop()
                 async.complete()
-                kpipes.pipeBuilder().stop()
             }
         }
     }
@@ -76,8 +73,8 @@ class CountFunctionTest extends KPipesTest {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             results[it.key] = event.count
             if(results.US == 1) {
+                kpipes.stop()
                 async.complete()
-                kpipes.pipeBuilder().stop()
             }
         }
     }
@@ -102,8 +99,8 @@ class CountFunctionTest extends KPipesTest {
                 new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'key', null))
             }
             if(results.US == 1) {
+                kpipes.stop()
                 async.complete()
-                kpipes.pipeBuilder().stop()
             }
         }
     }
