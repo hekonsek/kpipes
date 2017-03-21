@@ -3,7 +3,6 @@ package net.kpipes.function.count.spring
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.core.KPipes
 import net.kpipes.core.PipeBuilder
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
@@ -21,8 +20,6 @@ import static net.kpipes.lib.commons.Uuids.uuid
 @RunWith(VertxUnitRunner)
 class CountFunctionTest extends KPipesTest {
 
-    KPipes kpipes
-
     PipeBuilder pipeBuilder
 
     @Before
@@ -39,10 +36,10 @@ class CountFunctionTest extends KPipesTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, "tenant1|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, "tenant2|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, "tenant2|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, "tenant1|user|${uuid()}" as String, new Bytes(new ObjectMapper().writeValueAsBytes([country: 'US']))))
+        kafkaProducer.send(new ProducerRecord(effectiveSource, "tenant1|user|${uuid()}" as String, new Bytes(json.writeValueAsBytes([country: 'PL']))))
+        kafkaProducer.send(new ProducerRecord(effectiveSource, "tenant2|user|${uuid()}" as String, new Bytes(json.writeValueAsBytes([country: 'PL']))))
+        kafkaProducer.send(new ProducerRecord(effectiveSource, "tenant2|user|${uuid()}" as String, new Bytes(json.writeValueAsBytes([country: 'PL']))))
+        kafkaProducer.send(new ProducerRecord(effectiveSource, "tenant1|user|${uuid()}" as String, new Bytes(json.writeValueAsBytes([country: 'US']))))
 
         // Then
         def results = [:]
@@ -64,8 +61,8 @@ class CountFunctionTest extends KPipesTest {
         kpipes.start()
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([country: 'PL']))))
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([country: 'US']))))
+        send(effectiveSource, 'key', [country: 'PL'])
+        send(effectiveSource, 'key', [country: 'US'])
 
         // Then
         def results = [:]
