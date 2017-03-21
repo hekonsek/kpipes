@@ -1,6 +1,6 @@
-package net.kpipes.functions.filter.spring
+package net.kpipes.function.filter.spring
 
-import net.kpipes.functions.filter.FilterFunction
+import net.kpipes.function.filter.FilterFunction
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

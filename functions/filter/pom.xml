@@ -16,7 +16,7 @@
         <version>0.0.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-functions-filter</artifactId>
+    <artifactId>kpipes-function-filter</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>

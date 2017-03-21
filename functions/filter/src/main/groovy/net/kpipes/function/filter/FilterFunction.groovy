@@ -1,4 +1,4 @@
-package net.kpipes.functions.filter
+package net.kpipes.function.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.PipeBuilder

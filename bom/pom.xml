@@ -65,7 +65,7 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-functions-filter</artifactId>
+                <artifactId>kpipes-function-filter</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>
             <dependency>
