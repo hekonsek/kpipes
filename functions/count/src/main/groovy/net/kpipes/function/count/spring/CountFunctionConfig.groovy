@@ -1,6 +1,6 @@
-package net.kpipes.functions.count.spring
+package net.kpipes.function.count.spring
 
-import net.kpipes.functions.count.CountFunctionTable
+import net.kpipes.function.count.CountFunctionTable
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

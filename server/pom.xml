@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-functions-count</artifactId>
+            <artifactId>kpipes-function-count</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>

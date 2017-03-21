@@ -1,4 +1,4 @@
-package net.kpipes.functions.count.spring
+package net.kpipes.function.count.spring
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.ext.unit.TestContext
