@@ -40,27 +40,6 @@ class WebSocketsAdapterTest extends KPipesTest {
     }
 
     @Test(timeout = 30000L)
-    void shouldSendEvent(TestContext context) {
-        // Given
-        def async = context.async()
-        kpipes.start()
-
-        // When
-        def client = Vertx.vertx().createHttpClient()
-        def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
-        client.websocket(httpPort, "localhost", "/event/${source}", headers) { websocket ->
-            websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([foo: 'bar'])))
-        }
-
-        // Then
-        new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), 'anonymous.' + source) {
-            def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
-            assertThat(event.foo)isEqualTo('bar')
-            async.complete()
-        }
-    }
-
-    @Test(timeout = 30000L)
     void shouldReceiveAllNotifications(TestContext context) {
         // Given
         def async = context.async()

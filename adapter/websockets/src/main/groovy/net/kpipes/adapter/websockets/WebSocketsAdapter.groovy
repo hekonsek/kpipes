@@ -69,15 +69,7 @@ class WebSocketsAdapter extends AbstractAdapter {
             }
 
             def uri = socket.uri()
-            if(uri.startsWith('/event/')) {
-                def eventName = uri.replaceFirst(/\/event\//, '')
-                brokerAdmin.ensureTopicExists(eventName)
-                socket.handler { message ->
-                    def key = socket.headers().get('key')
-                    def topic = "${authentication.get().tenant}.${eventName}"
-                    kafkaProducer.send(new ProducerRecord(topic, key ?: uuid(), new Bytes(message.bytes)))
-                }
-            } else if(uri == '/operation') {
+            if(uri == '/operation') {
                 socket.handler { message ->
                     socket.write(buffer(invokeOperation(authentication.get().tenant, message.bytes)))
                 }

@@ -7,6 +7,8 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
+import static net.kpipes.lib.commons.Uuids.uuid
+
 class EventService {
 
     private final KafkaProducer kafkaProducer
@@ -19,6 +21,9 @@ class EventService {
     }
 
     void add(@Tenant String tenant, String topic, String key, Map<String, Object> event) {
+        if(topic == null) {
+            topic = uuid()
+        }
         def effectiveTopic = "${tenant}.${topic}"
         brokerAdmin.ensureTopicExists(effectiveTopic)
         kafkaProducer.send(new ProducerRecord(effectiveTopic, key, new Bytes(new ObjectMapper().writeValueAsBytes(event))))
