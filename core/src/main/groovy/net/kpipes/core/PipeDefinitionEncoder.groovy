@@ -1,23 +1,33 @@
 package net.kpipes.core
 
+import static org.slf4j.LoggerFactory.getLogger
+
 class PipeDefinitionEncoder {
 
-    static PipeDefinition decodePipe(String tenant, pipeDefinitionText) {
-        def definitionParts = pipeDefinitionText.split(/\|/).collect{ it.trim() }
+    private static final LOG = getLogger(PipeDefinitionEncoder)
+
+    static PipeDefinition decodePipe(String tenant, String pipeDefinitionText) {
+        LOG.debug('Parsing pipe {} for tenant {}', pipeDefinitionText, tenant
+        )
+        List<String> definitionParts = pipeDefinitionText.split(/\|/).toList().collect{ it.trim() }
         String from = definitionParts[0]
 
-        def functionParts = definitionParts[1].split(' ', 2)
+        String[] functionParts = definitionParts[1].split(' ', 2)
         String functionAddress = functionParts[0]
-        def functionConfiguration = functionParts.size() == 2 ? new GroovyShell().evaluate("L:${functionParts[1]}") as Map : [:]
+        Map<String, Object> functionConfiguration = functionParts.length == 2 ? new GroovyShell().evaluate("L:${functionParts[1]}") as Map : [:]
 
-        def to = definitionParts.size() > 2 ? Optional.of(definitionParts[2]) : Optional.empty()
+        Optional<String> to = definitionParts.size() > 2 ? Optional.of(definitionParts[2]) : Optional.<String>empty()
 
         new PipeDefinition(tenant, from, functionAddress, functionConfiguration, to)
     }
 
     static String encodePipe(PipeDefinition definition) {
-        def functionConfig = definition.functionConfiguration().isEmpty() ? '' : "${definition.functionConfiguration().toString()} "
-        "${definition.from()} | ${definition.functionAddress()} ${functionConfig}| ${definition.to().get()}" as String
+        String functionConfig = definition.functionConfiguration().isEmpty() ? '' : "${definition.functionConfiguration().toString()}"
+        String encoded = "${definition.from()} | ${definition.functionAddress()} ${functionConfig}"
+        if(definition.to().present) {
+            encoded = "${encoded} | ${definition.to().get()}"
+        }
+        encoded as String
     }
 
 }

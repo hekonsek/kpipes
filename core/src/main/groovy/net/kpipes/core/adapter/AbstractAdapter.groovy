@@ -5,6 +5,8 @@ import groovy.transform.CompileStatic
 import net.kpipes.core.KPipesContext
 import org.slf4j.Logger
 
+import java.lang.reflect.InvocationTargetException
+
 import static org.slf4j.LoggerFactory.getLogger
 
 @CompileStatic
@@ -35,9 +37,14 @@ abstract class AbstractAdapter {
             }
         }
 
-        def response = operationMethod.invoke(service, arguments != null ? arguments.toArray() : null)
-        LOG.debug('Received operation response: {}', response)
-        new ObjectMapper().writeValueAsBytes([response: response])
+        try {
+            def response = operationMethod.invoke(service, arguments != null ? arguments.toArray() : null)
+            LOG.debug('Received operation response: {}', response)
+            new ObjectMapper().writeValueAsBytes([response: response])
+        } catch (InvocationTargetException e) {
+            LOG.debug('Error invoking operation', e)
+            throw e.cause
+        }
     }
 
 }

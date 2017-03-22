@@ -74,7 +74,8 @@ class WebSocketsAdapter extends AbstractAdapter {
                     try {
                         socket.write(buffer(invokeOperation(authentication.get().tenant, message.bytes)))
                     } catch (Exception e) {
-                        socket.write(buffer(new ObjectMapper().writeValueAsBytes([response: e.message, error: true])))
+                        def messageText = e.message ?: 'Problem invoking operation.'
+                        socket.write(buffer(new ObjectMapper().writeValueAsBytes([response: messageText, error: true])))
                     }
                 }
             } else if(uri.startsWith('/notification/')) {
