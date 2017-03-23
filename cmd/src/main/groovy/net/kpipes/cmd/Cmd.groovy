@@ -21,6 +21,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 
 import java.util.concurrent.Callable
+import java.util.concurrent.atomic.AtomicBoolean
 
 import static io.vertx.core.buffer.Buffer.buffer
 import static org.awaitility.Awaitility.await
@@ -57,16 +58,19 @@ class Cmd {
     }
 
     Object executeCommand(String... command) {
-        Object response
+        def responseReceived = new AtomicBoolean(false)
+        Object response = null
         httpClient.websocket(port, host, '/operation', new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])) { webSocket ->
             webSocket.handler {
                 response = json.readValue(it.bytes, Map).response
+                responseReceived.set(true)
             }
             webSocket.write(buffer(json.writeValueAsBytes([service: command[0], operation: command[1], arguments: parseArguments(command)])))
         } {
             response = "Cannot connect to KPipes server ${host}:${port}. Have you started your KPipes server? Is your firewall configured properly? Is your network connectivity OK?"
+            responseReceived.set(true)
         }
-        await().until({ response != null } as Callable<Boolean>)
+        await().untilTrue(responseReceived)
         response
     }
 

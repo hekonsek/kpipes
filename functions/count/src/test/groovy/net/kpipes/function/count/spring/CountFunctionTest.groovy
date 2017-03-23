@@ -49,7 +49,7 @@ class CountFunctionTest extends KPipesTest {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             results[it.key()] = event.count
             if(results['US'] == 1 && results['PL'] == 3) {
-                kpipes.stop()
+                kpipes.stopPipes()
                 async.complete()
             }
         }
@@ -72,7 +72,7 @@ class CountFunctionTest extends KPipesTest {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             results[it.key] = event.count
             if(results.US == 1) {
-                kpipes.stop()
+                kpipes.stopPipes()
                 async.complete()
             }
         }
@@ -98,7 +98,7 @@ class CountFunctionTest extends KPipesTest {
                 new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'key', null))
             }
             if(results.US == 1) {
-                kpipes.stop()
+                kpipes.stopPipes()
                 async.complete()
             }
         }

@@ -8,4 +8,5 @@ interface ServiceRegistry {
 
     def <T> List<T> services(Class<T> type)
 
+    void stop()
 }

@@ -49,7 +49,7 @@ class EventServiceTest extends KPipesTest {
         new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), "anonymous.${source}") {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('bar')
-            kpipes.stop()
+            kpipes.stopPipes()
             async.complete()
         }
     }
@@ -75,7 +75,7 @@ class EventServiceTest extends KPipesTest {
                 def response = new ObjectMapper().readValue(it.bytes, Map).response
                 if(response instanceof Map) {
                     assertThat(response).isEqualTo([key: [foo: 'bar']])
-                    kpipes.stop()
+                    kpipes.stopPipes()
                     async.complete()
                 }
             }
@@ -102,7 +102,7 @@ class EventServiceTest extends KPipesTest {
             websocket.handler {
                 def response = new ObjectMapper().readValue(it.bytes, Map).response
                 if(response == 1) {
-                    kpipes.stop()
+                    kpipes.stopPipes()
                     async.complete()
                 }
             }

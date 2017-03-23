@@ -32,9 +32,10 @@ class CmdTest {
         System.setProperty('zooKeeper.dataDirectory', createTempDir().absolutePath)
         System.setProperty('kafka.dataDirectory', createTempDir().absolutePath)
 
-        KPipesApplication.main()
+        def kpipes = new KPipesApplication()
         def versionResponse = new Cmd().executeCommand('kpipes', 'version')
         assertThat(versionResponse).isEqualTo(kpipesVersion())
+        kpipes.stop()
     }
 
     @Test
