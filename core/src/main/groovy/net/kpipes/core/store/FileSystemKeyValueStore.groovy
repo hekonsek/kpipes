@@ -1,7 +1,9 @@
 package net.kpipes.core.store
 
 import com.google.common.io.Files
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class FileSystemKeyValueStore {
 
     private final File parentDirectory
@@ -22,13 +24,18 @@ class FileSystemKeyValueStore {
     }
 
     long count(String collection) {
-        new File(parentDirectory, collection).list().length
+        def collectionFiles = new File(parentDirectory, collection).list()
+        if(collectionFiles == null) {
+            0
+        } else {
+            collectionFiles.length
+        }
     }
 
     Map<String, byte[]> all(String collection) {
         def result = [:]
-        new File(parentDirectory, collection).listFiles().each {
-            result[it.name] = Files.toByteArray(it)
+        new File(parentDirectory, collection).listFiles().each { File file ->
+            result[file.name] = Files.toByteArray(file)
         }
         result
     }
