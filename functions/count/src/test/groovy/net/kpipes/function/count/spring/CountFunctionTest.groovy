@@ -11,6 +11,7 @@ import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -18,6 +19,7 @@ import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 
 @RunWith(VertxUnitRunner)
+@Ignore
 class CountFunctionTest extends KPipesTest {
 
     PipeBuilder pipeBuilder
