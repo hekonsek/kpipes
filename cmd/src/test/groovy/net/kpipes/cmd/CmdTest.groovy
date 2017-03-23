@@ -16,10 +16,14 @@
  */
 package net.kpipes.cmd
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.vertx.core.Vertx
+import io.vertx.core.http.HttpServerOptions
 import net.kpipes.core.KPipesApplication
 import org.junit.Test
 
 import static com.google.common.io.Files.createTempDir
+import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.cmd.Cmd.parseArguments
 import static net.kpipes.lib.commons.Mavens.kpipesVersion
 import static net.kpipes.lib.commons.Networks.availableTcpPort
@@ -54,6 +58,20 @@ class CmdTest {
     void shouldParseMapArgument() {
         def arguments = parseArguments('service', 'operation', 'argument1', "[foo: 'bar']")
         assertThat(arguments).isEqualTo(['argument1', [foo: 'bar']])
+    }
+
+    @Test
+    void shouldParseResponse() {
+        int port = availableTcpPort()
+        Vertx.vertx().createHttpServer(new HttpServerOptions().setPort(port)).websocketHandler { webSocket ->
+            webSocket.handler {
+                webSocket.write(buffer(new ObjectMapper().writeValueAsBytes([response: 'hello'])))
+            }
+        }.listen()
+
+        Thread.sleep(1000)
+        def response = new Cmd(port).executeCommand('kpipes', 'version') as String
+        assertThat(response).isEqualTo('hello')
     }
 
 }

@@ -74,6 +74,21 @@ class Cmd {
         response
     }
 
+    String formatCommand(String... command) {
+        def response = executeCommand(command)
+        if(response instanceof List) {
+            def responseList = response as List<String>
+            return responseList.join('\n')
+        } else if(response instanceof Map) {
+            def responseList = response as Map<String, Object>
+            return responseList.collect{ "${it.key}\t${it.value}" }.join('\n')
+        }  else if(response == null) {
+            return 'Success.'
+        } else {
+            return response.toString()
+        }
+    }
+
     void close() {
         vertx.close()
     }
@@ -90,13 +105,7 @@ class Cmd {
 
     static void main(String... args) {
         def cmd = new Cmd()
-        def response = cmd.executeCommand(args)
-        if(response instanceof List) {
-            def responseList = response as List<String>
-            println responseList.join('\n')
-        } else {
-            println response
-        }
+        println cmd.formatCommand(args)
         cmd.close()
     }
 
