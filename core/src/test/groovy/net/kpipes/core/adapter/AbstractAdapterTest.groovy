@@ -1,6 +1,7 @@
 package net.kpipes.core.adapter
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.common.io.Files
 import net.kpipes.core.KPipesContext
 import net.kpipes.core.ServiceRegistry
 import org.junit.Before
@@ -15,11 +16,11 @@ class AbstractAdapterTest {
 
     def application = uuid()
 
-    def adapter = new AbstractAdapter(new KPipesContext(application)){}
+    def adapter = new AbstractAdapter(new KPipesContext(application, 666, Files.createTempDir())){}
 
     @Before
     void before() {
-        registerContext(application, new ServiceRegistry() {
+        registerContext(application, uuid(), new ServiceRegistry() {
             @Override
             Object service(String id) {
                 new EchoService()

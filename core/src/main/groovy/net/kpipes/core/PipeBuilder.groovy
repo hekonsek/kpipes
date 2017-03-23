@@ -18,7 +18,7 @@ package net.kpipes.core
 
 import com.google.common.io.Files
 import groovy.transform.CompileStatic
-
+import net.kpipes.core.function.SimpleFunctionBuilder
 import net.kpipes.core.function.TableFunctionBuilder
 import net.kpipes.core.function.TopologyFunctionBuilder
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -93,6 +93,8 @@ class PipeBuilder {
                     sourceTables[pipeDefinition.effectiveFrom()] = sourceTable
                 }
                 (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
+            } else if(functionBuilder instanceof SimpleFunctionBuilder) {
+                functionBuilder.build(this, pipeDefinition, function)
             } else  {
                 (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
             }

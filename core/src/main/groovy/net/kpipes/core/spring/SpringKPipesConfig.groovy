@@ -27,8 +27,9 @@ class SpringKPipesConfig {
     }
 
     @Bean
-    KPipesContext kPipesContext(@Value('${applicationId}') String applicationId) {
-        new KPipesContext(applicationId)
+    KPipesContext kPipesContext(@Value('${applicationId}') String applicationId, @Value('${kafka.port:9092}') int kafkaPort,
+                                @Value('${kipes.home:/var/kpipes}') String homeDirectory) {
+        new KPipesContext(applicationId, kafkaPort, new File("${homeDirectory}/${applicationId}"))
     }
 
 }

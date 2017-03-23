@@ -8,13 +8,13 @@ import static net.kpipes.lib.commons.Uuids.uuid
 class KPipesFactory {
 
     static KPipes kpipes() {
-        kpipes(uuid())
+        kpipes(uuid(), uuid())
     }
 
-    static KPipes kpipes(String applicationId) {
+    static KPipes kpipes(String applicationId, String nodeId) {
         def functionRegistry = new SpringServiceRegistry(applicationId)
         def kpipes = new KPipes(applicationId, functionRegistry.applicationContext.getBean(KPipesConfig), functionRegistry)
-        registerContext(applicationId, functionRegistry, kpipes)
+        registerContext(applicationId, nodeId, functionRegistry, kpipes)
         kpipes
     }
 

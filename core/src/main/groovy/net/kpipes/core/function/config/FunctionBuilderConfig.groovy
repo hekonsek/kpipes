@@ -20,7 +20,7 @@ import net.kpipes.core.KPipesContext
 import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
 import net.kpipes.core.function.EventRoutingFunctionBuilder
-
+import net.kpipes.core.function.GenericSimpleFunctionBuilder
 import net.kpipes.core.function.GenericTopologyFunctionBuilder
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -48,6 +48,11 @@ class FunctionBuilderConfig {
     @Bean
     genericTopologyFunctionBuilder() {
         new GenericTopologyFunctionBuilder()
+    }
+
+    @Bean
+    genericSimpleFunctionBuilder() {
+        new GenericSimpleFunctionBuilder()
     }
 
 }
