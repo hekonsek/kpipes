@@ -18,13 +18,13 @@
 
     <modules>
         <module>bom</module>
+        <module>docker</module>
         <module>lib</module>
         <module>core</module>
         <module>functions</module>
         <module>adapter</module>
         <module>service</module>
-        <module>server</module>
-        <module>cmd</module>
+        <module>distribution</module>
     </modules>
 
     <properties>
@@ -105,21 +105,6 @@
                             <image>
                                 <name>kpipes/${image.target}</name>
                                 <build>
-                                    <from>smolok/fatjar</from>
-                                    <assembly>
-                                        <basedir>/app</basedir>
-                                        <inline>
-                                            <fileSets>
-                                                <fileSet>
-                                                    <directory>${project.build.directory}</directory>
-                                                    <includes>
-                                                        <include>*-fat.jar</include>
-                                                    </includes>
-                                                    <outputDirectory>/</outputDirectory>
-                                                </fileSet>
-                                            </fileSets>
-                                        </inline>
-                                    </assembly>
                                     <tags>
                                         <tag>latest</tag>
                                         <tag>${project.version}</tag>

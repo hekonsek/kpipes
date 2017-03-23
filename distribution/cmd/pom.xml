@@ -12,9 +12,8 @@
 
     <parent>
         <groupId>net.kpipes</groupId>
-        <artifactId>kpipes-bom</artifactId>
+        <artifactId>kpipes-distribution</artifactId>
         <version>0.0.3-SNAPSHOT</version>
-        <relativePath>../bom</relativePath>
     </parent>
     <artifactId>kpipes-cmd</artifactId>
     <name>${project.artifactId}</name>

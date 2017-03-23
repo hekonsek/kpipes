@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 
-import java.util.concurrent.Callable
 import java.util.concurrent.atomic.AtomicBoolean
 
 import static io.vertx.core.buffer.Buffer.buffer
