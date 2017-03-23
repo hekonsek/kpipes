@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.core.PipeDefinitionEncoder.decodePipe
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
@@ -63,7 +63,7 @@ class KPipesTest {
         // Given
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | functionFoo | ${target}")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
@@ -81,7 +81,7 @@ class KPipesTest {
         pipeBuilder.build(tenant, "${source} | functionFoo | ${target}")
         pipeBuilder.build(tenant, "${target} | functionFoo | finalTarget")
 
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
@@ -99,7 +99,7 @@ class KPipesTest {
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | functionFoo | ${target}")
         pipeBuilder.build(tenant, "${source} | functionFoo | ${secondTarget}")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
@@ -117,7 +117,7 @@ class KPipesTest {
         // Given
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | functionWithConfig [configKey: 'configValue'] | ${target}")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
@@ -135,7 +135,7 @@ class KPipesTest {
         // Given
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | routingFunction")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, 'foo', new Bytes(new ObjectMapper().writeValueAsBytes([target: effectiveTarget as String]))))
@@ -154,7 +154,7 @@ class KPipesTest {
         def orders = uuid()
         pipeBuilder.build(tenant, "${orders} | join [onEvent: '${users}', onProperty: 'user'] | ${target}")
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("${tenant}.${users}", 'user1', new Bytes(new ObjectMapper().writeValueAsBytes([name: 'john']))))
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         Thread.sleep(5000)
@@ -171,7 +171,7 @@ class KPipesTest {
     @Test
     void shouldListDefinitions() {
         // Given
-        kpipes.start()
+        kpipes.startPipes()
         kpipes.addPipe(decodePipe(tenant, "${source} | functionFoo | ${target}"))
 
         // When

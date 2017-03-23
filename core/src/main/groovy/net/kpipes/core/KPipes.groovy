@@ -10,12 +10,12 @@ class KPipes {
 
     private final PipeBuilder pipeBuilder
 
-    KPipes(String applicationId, KPipesConfig config, ServiceRegistry serviceRegistry) {
+    KPipes(ServiceRegistry serviceRegistry, PipeBuilder pipeBuilder) {
         this.serviceRegistry = serviceRegistry
-        this.pipeBuilder = new PipeBuilder(applicationId, config, serviceRegistry)
+        this.pipeBuilder = pipeBuilder
     }
 
-    KPipes start() {
+    KPipes startPipes() {
         pipeBuilder.start()
         this
     }
@@ -33,7 +33,7 @@ class KPipes {
         Thread.sleep(1000)
         pipeBuilder.build(pipeDefinition)
         stop()
-        start()
+        startPipes()
     }
 
     PipeBuilder pipeBuilder() {

@@ -1,6 +1,6 @@
 package net.kpipes.service.pipes
 
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
 import net.kpipes.core.adapter.Tenant
 import net.kpipes.core.repository.PipeDefinitionsRepository
 
@@ -9,17 +9,17 @@ import static net.kpipes.core.PipeDefinitionEncoder.encodePipe
 
 class PipeService {
 
-    private final KPipesContext kpipesContext
+    private final KPipes kPipes
 
     private final PipeDefinitionsRepository pipeDefinitionsRepository
 
-    PipeService(KPipesContext kpipesContext, PipeDefinitionsRepository pipeDefinitionsRepository) {
-        this.kpipesContext = kpipesContext
+    PipeService(KPipes kPipes, PipeDefinitionsRepository pipeDefinitionsRepository) {
+        this.kPipes = kPipes
         this.pipeDefinitionsRepository = pipeDefinitionsRepository
     }
 
     void create(@Tenant String tenant, String pipeDefinition) {
-        kpipesContext.kpipes().addPipe(decodePipe(tenant, pipeDefinition))
+        kPipes.addPipe(decodePipe(tenant, pipeDefinition))
     }
 
     List<String> list(@Tenant String tenant) {

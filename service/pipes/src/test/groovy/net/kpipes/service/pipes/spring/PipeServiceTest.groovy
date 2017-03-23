@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 import static io.vertx.core.buffer.Buffer.buffer
-import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -28,7 +28,7 @@ class PipeServiceTest extends KPipesTest {
         System.setProperty('http.port', httpPort + '')
         def async = context.async()
         kpipes = kpipes()
-        kpipes.start()
+        kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
         client.websocket(httpPort, "localhost", "/operation", headers) { websocket ->

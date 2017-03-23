@@ -6,22 +6,16 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
-import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
-import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import static io.vertx.core.buffer.Buffer.buffer
-import static net.kpipes.core.KPipesFactory.kpipes
-import static net.kpipes.core.KPipesFactory.kpipes
-import static net.kpipes.lib.commons.Mavens.artifactVersionFromDependenciesProperties
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
@@ -43,7 +37,7 @@ class EventServiceTest extends KPipesTest {
         System.setProperty('http.port', httpPort + '')
         def async = context.async()
         kpipes = kpipes()
-        kpipes.start()
+        kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
 
@@ -68,7 +62,7 @@ class EventServiceTest extends KPipesTest {
         def async = context.async()
         kpipes = kpipes()
         kpipes.pipeBuilder().build('anonymous', "${source} | view.materialize.keyvalue")
-        kpipes.start()
+        kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
 
@@ -96,7 +90,7 @@ class EventServiceTest extends KPipesTest {
         def async = context.async()
         kpipes = kpipes()
         kpipes.pipeBuilder().build('anonymous', "${source} | view.materialize.keyvalue")
-        kpipes.start()
+        kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
 

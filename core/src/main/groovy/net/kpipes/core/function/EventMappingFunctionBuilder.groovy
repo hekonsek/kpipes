@@ -1,7 +1,7 @@
 package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
 import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import org.apache.kafka.common.utils.Bytes
@@ -14,10 +14,10 @@ import org.apache.kafka.streams.processor.TopologyBuilder
 
 class EventMappingFunctionBuilder implements TopologyFunctionBuilder<EventMappingFunction> {
 
-    private final KPipesContext kPipesContext
+    private final KPipes kpipes
 
-    EventMappingFunctionBuilder(KPipesContext kPipesContext) {
-        this.kPipesContext = kPipesContext
+    EventMappingFunctionBuilder(KPipes kpipes) {
+        this.kpipes = kpipes
     }
 
     @Override
@@ -45,7 +45,7 @@ class EventMappingFunctionBuilder implements TopologyFunctionBuilder<EventMappin
                             @Override
                             void process(String key, Bytes value) {
                                 def event = new ObjectMapper().readValue(value.get(), Map)
-                                value = new Bytes(new ObjectMapper().writeValueAsBytes(function.onEvent(new Event(context().topic(), key, event, pipeDefinition.functionConfiguration(), kPipesContext))))
+                                value = new Bytes(new ObjectMapper().writeValueAsBytes(function.onEvent(new Event(context().topic(), key, event, pipeDefinition.functionConfiguration(), kpipes))))
                                 context().forward(key, value)
                             }
                         }

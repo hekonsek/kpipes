@@ -13,7 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -35,7 +35,7 @@ class FilterFunctionTest extends KPipesTest {
         // Given
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | filter [predicate: 'event.foo == /baz/'] | ${target}")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         kafkaProducer.send(new ProducerRecord(effectiveSource, 'key', new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))

@@ -2,12 +2,9 @@ package net.kpipes.core
 
 class KPipesConfig {
 
-    KPipesConfig(String kafkaHost, int kafkaPort, String zooKeeperHost, int zooKeeperPort) {
-        this.kafkaHost = kafkaHost
-        this.kafkaPort = kafkaPort
-        this.zooKeeperHost = zooKeeperHost
-        this.zooKeeperPort = zooKeeperPort
-    }
+    private final String applicationId
+
+    private final String nodeId
 
     private final String kafkaHost
 
@@ -17,11 +14,31 @@ class KPipesConfig {
 
     private final int zooKeeperPort
 
+    private final File home
+
+    KPipesConfig(String applicationId, String nodeId, String kafkaHost, int kafkaPort, String zooKeeperHost, int zooKeeperPort, File home) {
+        this.applicationId = applicationId
+        this.nodeId = nodeId
+        this.kafkaHost = kafkaHost
+        this.kafkaPort = kafkaPort
+        this.zooKeeperHost = zooKeeperHost
+        this.zooKeeperPort = zooKeeperPort
+        this.home = home
+    }
+
+    String applicationId() {
+        return applicationId
+    }
+
+    String nodeId() {
+        return nodeId
+    }
+
     String getKafkaHost() {
         return kafkaHost
     }
 
-    int getKafkaPort() {
+    int kafkaPort() {
         return kafkaPort
     }
 
@@ -31,6 +48,14 @@ class KPipesConfig {
 
     int getZooKeeperPort() {
         return zooKeeperPort
+    }
+
+    File home() {
+        return home
+    }
+
+    File applicationHome() {
+        new File(home, applicationId)
     }
 
 }

@@ -1,41 +1,21 @@
 package net.kpipes.core.adapter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.io.Files
-import net.kpipes.core.KPipesContext
-import net.kpipes.core.ServiceRegistry
+import net.kpipes.core.spring.KPipesFactory
 import org.junit.Before
 import org.junit.Test
 import org.springframework.stereotype.Component
 
-import static net.kpipes.core.KPipesContext.registerContext
-import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
 class AbstractAdapterTest {
 
-    def application = uuid()
-
-    def adapter = new AbstractAdapter(new KPipesContext(application, 666, Files.createTempDir())){}
+    AbstractAdapter adapter
 
     @Before
     void before() {
-        registerContext(application, uuid(), new ServiceRegistry() {
-            @Override
-            Object service(String id) {
-                new EchoService()
-            }
-
-            @Override
-            def <T> T service(Class<T> type) {
-                null
-            }
-
-            @Override
-            def <T> List<T> services(Class<T> type) {
-                []
-            }
-        }, null)
+        System.setProperty('kafka.broker.enabled', 'false')
+        adapter = new AbstractAdapter(KPipesFactory.kpipes()){}
     }
 
     @Test
@@ -51,6 +31,7 @@ class AbstractAdapterTest {
         assertThat(response).isEqualTo('foo')
     }
 
+    @Component('echo')
     static class EchoService {
 
         String echo(String message) {

@@ -1,7 +1,8 @@
 package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
+import net.kpipes.core.KPipesConfig
 import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -17,14 +18,14 @@ import org.apache.kafka.streams.processor.TopologyBuilder
 
 class EventRoutingFunctionBuilder implements TopologyFunctionBuilder<EventRoutingFunction> {
 
-    private final KPipesContext kPipesContext
+    private final KPipes kPipes
 
     private final KafkaProducer<String, Bytes> kafkaProducer
 
     private final BrokerAdmin brokerAdmin
 
-    EventRoutingFunctionBuilder(KPipesContext kPipesContext, KafkaProducer<String, Bytes> kafkaProducer, BrokerAdmin brokerAdmin) {
-        this.kPipesContext = kPipesContext
+    EventRoutingFunctionBuilder(KPipes kPipes, KafkaProducer<String, Bytes> kafkaProducer, BrokerAdmin brokerAdmin) {
+        this.kPipes = kPipes
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
     }
@@ -53,7 +54,7 @@ class EventRoutingFunctionBuilder implements TopologyFunctionBuilder<EventRoutin
                     @Override
                     void process(String key, Bytes value) {
                         def body = new ObjectMapper().readValue(value.get(), Map)
-                        def event = new Event(context().topic(), key, body, pipeDefinition.functionConfiguration(), kPipesContext)
+                        def event = new Event(context().topic(), key, body, pipeDefinition.functionConfiguration(), kPipes)
                         def destination = function.onEvent(event)
                         if(destination.present) {
                             brokerAdmin.ensureTopicExists(destination.get())

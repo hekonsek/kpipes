@@ -8,8 +8,8 @@ class SpringServiceRegistry implements ServiceRegistry {
 
     private ApplicationContext applicationContext
 
-    SpringServiceRegistry(String applicationId) {
-        applicationContext = new SpringApplicationBuilder(SpringFunctionRegistryConfiguration).run("--applicationId=${applicationId}")
+    SpringServiceRegistry(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext
     }
 
     @Override
@@ -25,10 +25,6 @@ class SpringServiceRegistry implements ServiceRegistry {
     @Override
     <T> List<T> services(Class<T> type) {
         applicationContext.getBeansOfType(type).values().toList()
-    }
-
-    ApplicationContext getApplicationContext() {
-        return applicationContext
     }
 
 }

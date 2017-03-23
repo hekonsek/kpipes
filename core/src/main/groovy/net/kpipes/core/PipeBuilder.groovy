@@ -63,9 +63,8 @@ class PipeBuilder {
 
     // Constructor
 
-    PipeBuilder(String applicationId, KPipesConfig config, ServiceRegistry serviceRegistry) {
-        this.applicationId = applicationId
-        this.config = config
+    PipeBuilder(KPipesConfig kPipesConfig, ServiceRegistry serviceRegistry) {
+        this.config = kPipesConfig
         this.serviceRegistry = serviceRegistry
     }
 
@@ -94,12 +93,12 @@ class PipeBuilder {
                 }
                 (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
             } else if(functionBuilder instanceof SimpleFunctionBuilder) {
-                functionBuilder.build(this, pipeDefinition, function)
+                functionBuilder.build(serviceRegistry.service(KPipes), pipeDefinition, function)
             } else  {
                 (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
             }
         } catch (NoSuchBeanDefinitionException e) {
-            LOG.info('Cannot start pipe. Reason: {}', e.message)
+            LOG.info('Cannot startPipes pipe. Reason: {}', e.message)
         }
     }
 
@@ -112,8 +111,8 @@ class PipeBuilder {
         }
 
         def streamsConfiguration = new Properties()
-        streamsConfiguration.put(APPLICATION_ID_CONFIG, applicationId);
-        streamsConfiguration.put(BOOTSTRAP_SERVERS_CONFIG, "${config.kafkaHost}:${config.kafkaPort}" as String);
+        streamsConfiguration.put(APPLICATION_ID_CONFIG, config.applicationId());
+        streamsConfiguration.put(BOOTSTRAP_SERVERS_CONFIG, "${config.kafkaHost}:${config.kafkaPort()}" as String);
         streamsConfiguration.put(ZOOKEEPER_CONNECT_CONFIG, "${config.zooKeeperHost}:${config.zooKeeperPort}" as String);
         streamsConfiguration.put(KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         streamsConfiguration.put(VALUE_SERDE_CLASS_CONFIG, Serdes.Bytes().getClass().getName());

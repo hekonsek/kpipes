@@ -16,7 +16,8 @@
  */
 package net.kpipes.core.function.config
 
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
+import net.kpipes.core.KPipesConfig
 import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
 import net.kpipes.core.function.EventRoutingFunctionBuilder
@@ -31,18 +32,18 @@ import org.springframework.context.annotation.Configuration
 class FunctionBuilderConfig {
 
     @Bean
-    eventMappingFunctionBuilder(KPipesContext kPipesContext) {
-        new EventMappingFunctionBuilder(kPipesContext)
+    eventMappingFunctionBuilder(KPipes kpipes) {
+        new EventMappingFunctionBuilder(kpipes)
     }
 
     @Bean
-    eventAggregateFunctionBuilder(KPipesContext kpipesContext) {
-        new EventAggregateFunctionBuilder(kpipesContext)
+    eventAggregateFunctionBuilder(KPipes kpipes) {
+        new EventAggregateFunctionBuilder(kpipes)
     }
 
     @Bean
-    eventRoutingFunctionBuilder(KPipesContext kpipesContext, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
-        new EventRoutingFunctionBuilder(kpipesContext, kafkaProducer, brokerAdmin)
+    eventRoutingFunctionBuilder(KPipes kPipes, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
+        new EventRoutingFunctionBuilder(kPipes, kafkaProducer, brokerAdmin)
     }
 
     @Bean

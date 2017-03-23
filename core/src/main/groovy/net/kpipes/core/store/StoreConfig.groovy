@@ -1,6 +1,6 @@
 package net.kpipes.core.store
 
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipesConfig
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration
 class StoreConfig {
 
     @Bean
-    FileSystemKeyValueStore fileSystemKeyValueStore(KPipesContext kPipesContext) {
-        def home = kPipesContext.home()
+    FileSystemKeyValueStore fileSystemKeyValueStore(KPipesConfig config) {
+        def home = config.applicationHome()
         new FileSystemKeyValueStore(new File(home, '/store/fileSystemKeyValue'))
     }
 

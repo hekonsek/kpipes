@@ -5,24 +5,18 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.core.KPipes
-import net.kpipes.lib.kafka.broker.TestBroker
-import net.kpipes.lib.kafka.client.BrokerAdmin
-import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
-import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 
 import static io.vertx.core.buffer.Buffer.buffer
-import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
@@ -43,7 +37,7 @@ class WebSocketsAdapterTest extends KPipesTest {
     void shouldReceiveAllNotifications(TestContext context) {
         // Given
         def async = context.async()
-        kpipes.start()
+        kpipes.startPipes()
         brokerAdmin.ensureTopicExists("notification.${source}")
 
         // When
@@ -65,7 +59,7 @@ class WebSocketsAdapterTest extends KPipesTest {
     void shouldReceiveOnlyLatestNotificationByDefault(TestContext context) {
         // Given
         def async = context.async()
-        kpipes.start()
+        kpipes.startPipes()
         brokerAdmin.ensureTopicExists("notification.${source}")
 
         // When
@@ -89,7 +83,7 @@ class WebSocketsAdapterTest extends KPipesTest {
     void shouldInvokeOperation(TestContext context) {
         // Given
         def async = context.async()
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         def client = Vertx.vertx().createHttpClient()

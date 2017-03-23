@@ -1,7 +1,7 @@
 package net.kpipes.core.function
 
 import net.kpipes.core.KPipes
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipesConfig
 import net.kpipes.core.ServiceRegistry
 import org.apache.kafka.streams.KafkaStreams
 
@@ -17,19 +17,19 @@ class Event {
 
     private final boolean added
 
-    private final KPipesContext kpipesContext
+    private final KPipes kPipes
 
-    Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, boolean added, KPipesContext kpipesContext) {
+    Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, boolean added, KPipes kPipes) {
         this.topic = topic
         this.key = key
         this.body = body
         this.config = config
         this.added = added
-        this.kpipesContext = kpipesContext
+        this.kPipes = kPipes
     }
 
-    Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, KPipesContext kpipesContext) {
-        this(topic, key, body, config, true, kpipesContext)
+    Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, KPipes kPipes) {
+        this(topic, key, body, config, true, kPipes)
     }
 
     String topic() {
@@ -58,15 +58,7 @@ class Event {
     }
 
     KPipes kPipes() {
-        kpipesContext.kpipes()
-    }
-
-    ServiceRegistry serviceRegistry() {
-        kpipesContext.serviceRegistry()
-    }
-
-    KafkaStreams kafkaStreams() {
-        kpipesContext.kpipes().pipeBuilder().kafkaStreams()
+        kPipes
     }
 
 }

@@ -4,17 +4,15 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.EventEncoder
 import net.kpipes.lib.commons.Uuids
-import net.kpipes.lib.kafka.broker.TestBroker
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
-import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 
 @RunWith(VertxUnitRunner)
 class NotificationFunctionTest extends KPipesTest {
@@ -28,7 +26,7 @@ class NotificationFunctionTest extends KPipesTest {
         def encoder = kpipes.serviceRegistry().service(EventEncoder)
         def pipeBuilder = kpipes.pipeBuilder()
         pipeBuilder.build(tenant, "${source} | notification [channel: '${target}']")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         kafkaProducer.send(new ProducerRecord(effectiveSource, 'foo', encoder.encode([foo: 'bar'])))

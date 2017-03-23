@@ -35,13 +35,13 @@ class JoinFunction implements EventMappingFunction, FunctionInitializer {
         def config = event.config()
         def onEvent = config.onEvent as String
         def onProperty = config.onProperty as String
-        def streams = event.kafkaStreams()
+        def streams = event.kPipes().pipeBuilder().kafkaStreams()
         def key = event.body()[onProperty] as String
         def host = streams.metadataForKey(onEvent, key, Serdes.String().serializer())
         if(host.host() == 'unavailable') {
             def store = streams.store(onEvent, keyValueStore())
             def joinedEventBytes = store.get(key) as Bytes
-            def joinedEvent = event.serviceRegistry().service(EventEncoder).decode(joinedEventBytes)
+            def joinedEvent = event.kPipes().serviceRegistry().service(EventEncoder).decode(joinedEventBytes)
             event.body()[onProperty] = joinedEvent
         } else {
             throw new NotImplementedException('Remote invocation is not supported yet.')

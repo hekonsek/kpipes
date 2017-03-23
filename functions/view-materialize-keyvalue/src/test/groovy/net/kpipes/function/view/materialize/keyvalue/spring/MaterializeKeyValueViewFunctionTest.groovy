@@ -10,7 +10,7 @@ import org.apache.kafka.common.utils.Bytes
 import org.junit.Before
 import org.junit.Test
 
-import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -37,7 +37,7 @@ class MaterializeKeyValueViewFunctionTest extends KPipesTest {
     void shouldMaterializeTopicAsView() {
         // Given
         pipeBuilder.build(tenant, "${source} | view.materialize.keyvalue")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         kafkaProducer.send(new ProducerRecord(effectiveSource, key, new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'baz']))))

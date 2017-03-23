@@ -2,7 +2,7 @@ package net.kpipes.adapter.websockets.spring
 
 import net.kpipes.adapter.websockets.AnonymousAuthenticator
 import net.kpipes.adapter.websockets.WebSocketsAdapter
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
@@ -16,10 +16,10 @@ import net.kpipes.adapter.websockets.Authenticator as KPipesAuthenticator
 class WebSocketsAdapterConfig {
 
     @Bean(initMethod = 'start')
-    WebSocketsAdapter webSocketsAdapter(KPipesContext kpipesContext, BrokerAdmin brokerAdmin, KPipesAuthenticator authenticator,
+    WebSocketsAdapter webSocketsAdapter(KPipes kPipes, BrokerAdmin brokerAdmin, KPipesAuthenticator authenticator,
                                         @Value('${http.port:8080}') int httpPort,
                                         @Value('${kafka.port:9092}') int kafkaPort) {
-        new WebSocketsAdapter(kpipesContext, new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin), new KafkaProducerBuilder<>().port(kafkaPort).build(), brokerAdmin, authenticator, httpPort, kafkaPort)
+        new WebSocketsAdapter(kPipes, new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin), new KafkaProducerBuilder<>().port(kafkaPort).build(), brokerAdmin, authenticator, httpPort, kafkaPort)
     }
 
     @Bean

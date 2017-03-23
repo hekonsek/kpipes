@@ -1,7 +1,7 @@
 package net.kpipes.service.event
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
 import net.kpipes.core.adapter.Tenant
 import net.kpipes.core.store.FileSystemKeyValueStore
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -17,14 +17,14 @@ class EventService {
 
     private final static Logger LOG = getLogger(EventService)
 
-    private final KPipesContext kpipesContext
+    private final KPipes kpipes
 
     private final KafkaProducer kafkaProducer
 
     private final BrokerAdmin brokerAdmin
 
-    EventService(KPipesContext kpipesContext, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {\
-        this.kpipesContext = kpipesContext
+    EventService(KPipes kpipes, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
+        this.kpipes = kpipes
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
     }
@@ -42,14 +42,14 @@ class EventService {
 
     Map<String, Map<String, Object>> view(@Tenant String tenant, String topic) {
         def results = [:]
-        kpipesContext.kpipes().@serviceRegistry.service(FileSystemKeyValueStore).all("${tenant}.${topic}").each {
+        kpipes.serviceRegistry().service(FileSystemKeyValueStore).all("${tenant}.${topic}").each {
             results[it.key] = new ObjectMapper().readValue(it.value, Map)
         }
         results
     }
 
     long count(@Tenant String tenant, String topic) {
-        kpipesContext.kpipes().@serviceRegistry.service(FileSystemKeyValueStore).count("${tenant}.${topic}")
+        kpipes.serviceRegistry().service(FileSystemKeyValueStore).count("${tenant}.${topic}")
     }
 
 }

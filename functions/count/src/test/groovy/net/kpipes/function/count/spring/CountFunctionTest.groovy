@@ -14,7 +14,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 
 @RunWith(VertxUnitRunner)
@@ -33,7 +33,7 @@ class CountFunctionTest extends KPipesTest {
         // Given
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | count [groupBy: 'country'] | ${target}")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         kafkaProducer.send(new ProducerRecord(effectiveSource, "tenant1|user|${uuid()}" as String, new Bytes(json.writeValueAsBytes([country: 'PL']))))
@@ -58,7 +58,7 @@ class CountFunctionTest extends KPipesTest {
         // Given
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | count [groupBy: 'country'] | ${target}")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         send(effectiveSource, 'key', [country: 'PL'])
@@ -81,7 +81,7 @@ class CountFunctionTest extends KPipesTest {
         // Given
         def async = context.async()
         pipeBuilder.build(tenant, "${source} | count [groupBy: 'country'] | ${target}")
-        kpipes.start()
+        kpipes.startPipes()
 
         // When
         new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord(effectiveSource, uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([country: 'US']))))

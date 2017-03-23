@@ -1,6 +1,6 @@
 package net.kpipes.core.function
 
-import net.kpipes.core.PipeBuilder
+import net.kpipes.core.KPipes
 import net.kpipes.core.PipeDefinition
 
 class GenericSimpleFunctionBuilder implements SimpleFunctionBuilder<GenericSimpleFunction> {
@@ -11,8 +11,8 @@ class GenericSimpleFunctionBuilder implements SimpleFunctionBuilder<GenericSimpl
     }
 
     @Override
-    void build(PipeBuilder pipeBuilder, PipeDefinition pipeDefinition, GenericSimpleFunction function) {
-        function.apply(pipeBuilder, pipeDefinition)
+    void build(KPipes kpipes, PipeDefinition pipeDefinition, GenericSimpleFunction function) {
+        function.apply(kpipes, pipeDefinition)
     }
 
 }

@@ -17,7 +17,7 @@
 package net.kpipes.adapter.websockets
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
 import net.kpipes.core.adapter.AbstractAdapter
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
@@ -48,9 +48,9 @@ class WebSocketsAdapter extends AbstractAdapter {
 
     // Constructors
 
-    WebSocketsAdapter(KPipesContext kpipesContext, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator,
+    WebSocketsAdapter(KPipes kPipes, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator,
                       int httpPort, int kafkaPort) {
-        super(kpipesContext)
+        super(kPipes)
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin

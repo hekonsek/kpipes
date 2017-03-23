@@ -2,7 +2,7 @@ package net.kpipes.core.adapter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.transform.CompileStatic
-import net.kpipes.core.KPipesContext
+import net.kpipes.core.KPipes
 import org.slf4j.Logger
 
 import java.lang.reflect.InvocationTargetException
@@ -14,10 +14,10 @@ abstract class AbstractAdapter {
 
     private final Logger LOG = getLogger(getClass())
 
-    protected final KPipesContext kpipesContext
+    protected final KPipes kpipes
 
-    AbstractAdapter(KPipesContext kpipesContext) {
-        this.kpipesContext = kpipesContext
+    AbstractAdapter(KPipes kpipes) {
+        this.kpipes = kpipes
     }
 
     protected byte[] invokeOperation(String tenant, byte[] serializedRequest) {
@@ -25,7 +25,7 @@ abstract class AbstractAdapter {
         def serviceName = request.service as String
         def operation = request.operation as String
         def arguments = request.arguments as List
-        def service = kpipesContext.serviceRegistry().service(serviceName)
+        def service = kpipes.serviceRegistry().service(serviceName)
         def operationMethod = service.class.declaredMethods.find{ it.name == operation }
 
         def operationAnnotations = operationMethod.parameterAnnotations as List
