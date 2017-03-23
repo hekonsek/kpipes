@@ -1,6 +1,7 @@
 package net.kpipes.service.event.spring
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.common.io.Files
 import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
@@ -12,20 +13,28 @@ import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.core.KPipesFactory.kpipes
+import static net.kpipes.core.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Mavens.artifactVersionFromDependenciesProperties
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
-@Ignore
 @RunWith(VertxUnitRunner)
 class EventServiceTest extends KPipesTest {
+
+    def home = Files.createTempDir()
+
+    @Before
+    void before() {
+        System.setProperty('kipes.home', home.absolutePath)
+    }
 
     @Test(timeout = 30000L)
     void shouldAddEvent(TestContext context) {

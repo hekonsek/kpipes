@@ -1,4 +1,4 @@
-package net.kpipes.function.view.materialize.keyvalue
+package net.kpipes.core.store
 
 import com.google.common.io.Files
 
@@ -19,6 +19,18 @@ class FileSystemKeyValueStore {
     byte[] read(String collection, String key) {
         def targetFile = new File(parentDirectory, "${collection}/${key}")
         Files.toByteArray(targetFile)
+    }
+
+    long count(String collection) {
+        new File(parentDirectory, collection).list().length
+    }
+
+    Map<String, byte[]> all(String collection) {
+        def result = [:]
+        new File(parentDirectory, collection).listFiles().each {
+            result[it.name] = Files.toByteArray(it)
+        }
+        result
     }
 
 }
