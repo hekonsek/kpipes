@@ -17,16 +17,16 @@ class EventService {
 
     private final static Logger LOG = getLogger(EventService)
 
-    private final KPipes kpipes
-
     private final KafkaProducer kafkaProducer
 
     private final BrokerAdmin brokerAdmin
 
-    EventService(KPipes kpipes, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
-        this.kpipes = kpipes
+    private final FileSystemKeyValueStore store
+
+    EventService(KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, FileSystemKeyValueStore store) {
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
+        this.store = store
     }
 
     // Operations
@@ -42,11 +42,11 @@ class EventService {
 
     Map<String, Map<String, Object>> view(@Tenant String tenant, String topic) {
         def collection = "${tenant}.${topic}"
-        if(!kpipes.serviceRegistry().service(FileSystemKeyValueStore).exists(collection)) {
-            throw new IllegalStateException("Collection ${topic} for tenant ${tenant} doesn't exist.")
+        if(!store.exists(collection)) {
+            throw new IllegalStateException("Materialized view of topic ${topic} for tenant ${tenant} doesn't exist. Have you materialized it?")
         }
         def results = [:]
-        kpipes.serviceRegistry().service(FileSystemKeyValueStore).all(collection).each {
+        store.all(collection).each {
             results[it.key] = new ObjectMapper().readValue(it.value, Map)
         }
         results
@@ -54,10 +54,10 @@ class EventService {
 
     long count(@Tenant String tenant, String topic) {
         def collection = "${tenant}.${topic}"
-        if(!kpipes.serviceRegistry().service(FileSystemKeyValueStore).exists(collection)) {
-            throw new IllegalStateException("Collection ${topic} for tenant ${tenant} doesn't exist.")
+        if(!store.exists(collection)) {
+            throw new IllegalStateException("Materialized view of topic ${topic} for tenant ${tenant} doesn't exist. Have you materialized it?")
         }
-        kpipes.serviceRegistry().service(FileSystemKeyValueStore).count(collection)
+        store.count(collection)
     }
 
 }
