@@ -26,7 +26,7 @@ class MaterializeKeyValueViewFunctionTest extends KPipesTest {
 
     @Before
     void before() {
-        System.setProperty('kipes.home', home.absolutePath)
+        System.setProperty('kpipes.home', home.absolutePath)
         kpipes = kpipes(applicationId, nodeId)
         pipeBuilder = kpipes.pipeBuilder()
     }

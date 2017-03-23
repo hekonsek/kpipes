@@ -3,6 +3,7 @@ package net.kpipes.core.repository
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipes
 import net.kpipes.core.PipeDefinition
+import net.kpipes.core.store.FileSystemKeyValueStore
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
@@ -16,11 +17,11 @@ class KafkaPipeDefinitionsRepository implements PipeDefinitionsRepository {
 
     private final KafkaProducer kafkaProducer
 
-    private final KPipes kpipes
+    private final FileSystemKeyValueStore store
 
-    KafkaPipeDefinitionsRepository(KafkaProducer kafkaProducer, KPipes kpipes) {
+    KafkaPipeDefinitionsRepository(KafkaProducer kafkaProducer, FileSystemKeyValueStore store) {
         this.kafkaProducer = kafkaProducer
-        this.kpipes = kpipes
+        this.store = store
     }
 
     @Override
@@ -31,10 +32,8 @@ class KafkaPipeDefinitionsRepository implements PipeDefinitionsRepository {
 
     @Override
     List<PipeDefinition> list() {
-        def streams = kpipes.pipeBuilder().kafkaStreams()
-        streams.store('kpipes.pipeDefinitions', QueryableStoreTypes.keyValueStore()).all().collect { KeyValue keyValue ->
-            def pipeDef = keyValue.value as Bytes
-            def pipe = new ObjectMapper().readValue(pipeDef.get(), Map)
+        store.all('kpipes.pipeDefinitions').collect {
+            def pipe = new ObjectMapper().readValue(it.value, Map)
             decodePipe(pipe.tenant as String, pipe.pipe as String)
         }
     }

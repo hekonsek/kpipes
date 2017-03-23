@@ -27,7 +27,7 @@ class EventServiceTest extends KPipesTest {
 
     @Before
     void before() {
-        System.setProperty('kipes.home', home.absolutePath)
+        System.setProperty('kpipes.home', home.absolutePath)
     }
 
     @Test(timeout = 30000L)

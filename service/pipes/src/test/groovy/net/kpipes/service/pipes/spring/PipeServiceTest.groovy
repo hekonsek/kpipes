@@ -1,6 +1,7 @@
 package net.kpipes.service.pipes.spring
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.common.io.Files
 import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
@@ -24,6 +25,8 @@ class PipeServiceTest extends KPipesTest {
 
     @Test(timeout = 30000L)
     void shouldListAddedPipes(TestContext context) {
+        def home = Files.createTempDir()
+        System.setProperty('kpipes.home', home.absolutePath)
         int httpPort = availableTcpPort()
         System.setProperty('http.port', httpPort + '')
         def async = context.async()

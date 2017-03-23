@@ -21,6 +21,7 @@ import groovy.transform.CompileStatic
 import net.kpipes.core.function.SimpleFunctionBuilder
 import net.kpipes.core.function.TableFunctionBuilder
 import net.kpipes.core.function.TopologyFunctionBuilder
+import net.kpipes.core.store.ViewMaterializer
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
@@ -106,9 +107,7 @@ class PipeBuilder {
         LOG.debug('Ensuring that all topics involved in a pipe exist.')
         serviceRegistry.service(BrokerAdmin).ensureTopicExists(topics)
 
-        if(!builder.globalStateStores().containsKey('kpipes.pipeDefinitions')) {
-            builder.globalTable('kpipes.pipeDefinitions', 'kpipes.pipeDefinitions')
-        }
+        serviceRegistry.service(ViewMaterializer).materialize('kpipes.pipeDefinitions')
 
         def streamsConfiguration = new Properties()
         streamsConfiguration.put(APPLICATION_ID_CONFIG, config.applicationId());

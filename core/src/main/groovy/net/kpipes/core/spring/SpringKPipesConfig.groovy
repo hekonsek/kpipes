@@ -37,7 +37,7 @@ class SpringKPipesConfig {
                               @Value('${kafka.port:9092}') int kafkaPort,
                               @Value('${zooKeeper.host:localhost}') String zooKeeperHost,
                               @Value('${zooKeeper.port:2181}') int zooKeeperPort,
-                              @Value('${kipes.home:/var/kpipes}') File kpipesHome) {
+                              @Value('${kpipes.home:/var/kpipes}') File kpipesHome) {
         new KPipesConfig(applicationId, nodeId, kafkaHost, kafkaPort, zooKeeperHost, zooKeeperPort, kpipesHome)
     }
 

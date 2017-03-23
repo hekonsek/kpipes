@@ -1,8 +1,8 @@
 package net.kpipes.core.repository.spring
 
-import net.kpipes.core.KPipes
 import net.kpipes.core.repository.KafkaPipeDefinitionsRepository
 import net.kpipes.core.repository.PipeDefinitionsRepository
+import net.kpipes.core.store.FileSystemKeyValueStore
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration
 class PipeDefinitionsRepositoryConfig {
 
     @Bean
-    PipeDefinitionsRepository pipeDefinitionsRepository(KPipes kPipes, KafkaProducer kafkaProducer) {
-        new KafkaPipeDefinitionsRepository(kafkaProducer, kPipes)
+    PipeDefinitionsRepository pipeDefinitionsRepository(KafkaProducer kafkaProducer, FileSystemKeyValueStore store) {
+        new KafkaPipeDefinitionsRepository(kafkaProducer, store)
     }
 
 }

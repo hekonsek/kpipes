@@ -1,6 +1,7 @@
 package net.kpipes.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.common.io.Files
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.function.Event
@@ -33,6 +34,8 @@ class KPipesTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
+    def home = Files.createTempDir()
+
     KPipes kpipes
 
     BrokerAdmin brokerAdmin
@@ -51,6 +54,7 @@ class KPipesTest {
 
     @Before
     void before() {
+        System.setProperty('kpipes.home', home.absolutePath)
         kpipes = kpipes()
         brokerAdmin = kpipes.serviceRegistry().service(BrokerAdmin)
         pipeBuilder = kpipes.pipeBuilder()
