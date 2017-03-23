@@ -1,6 +1,7 @@
 package net.kpipes.core.spring
 
 import net.kpipes.core.EventEncoder
+import net.kpipes.core.Json
 import net.kpipes.core.JsonEventEncoder
 import net.kpipes.core.KPipes
 import net.kpipes.core.KPipesConfig
@@ -39,6 +40,11 @@ class SpringKPipesConfig {
                               @Value('${zooKeeper.port:2181}') int zooKeeperPort,
                               @Value('${kpipes.home:/var/kpipes}') File kpipesHome) {
         new KPipesConfig(applicationId, nodeId, kafkaHost, kafkaPort, zooKeeperHost, zooKeeperPort, kpipesHome)
+    }
+
+    @Bean
+    json() {
+        new Json()
     }
 
     @ConditionalOnMissingBean
