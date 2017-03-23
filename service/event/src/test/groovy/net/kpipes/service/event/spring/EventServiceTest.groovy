@@ -109,4 +109,25 @@ class EventServiceTest extends KPipesTest {
         }
     }
 
+    @Test(timeout = 30000L)
+    void shouldNotCountNotExistingCollection(TestContext context) {
+        // Given
+        int httpPort = availableTcpPort()
+        System.setProperty('http.port', httpPort + '')
+        def async = context.async()
+        kpipes = kpipes()
+        def client = Vertx.vertx().createHttpClient()
+        def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
+
+        client.websocket(httpPort, "localhost", "/operation", headers) { websocket ->
+            // When
+            websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'event', operation: 'count', arguments: [uuid()]])))
+            websocket.handler {
+                def response = new ObjectMapper().readValue(it.bytes, Map).response as String
+                assertThat(response).contains("doesn't exist")
+                async.complete()
+            }
+        }
+    }
+
 }

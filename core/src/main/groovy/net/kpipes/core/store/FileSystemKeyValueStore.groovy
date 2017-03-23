@@ -18,6 +18,10 @@ class FileSystemKeyValueStore {
         Files.write(value, targetFile)
     }
 
+    boolean exists(String collection) {
+        new File(parentDirectory, collection).exists()
+    }
+
     byte[] read(String collection, String key) {
         def targetFile = new File(parentDirectory, "${collection}/${key}")
         Files.toByteArray(targetFile)

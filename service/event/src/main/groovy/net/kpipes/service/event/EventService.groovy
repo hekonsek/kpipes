@@ -41,15 +41,23 @@ class EventService {
     }
 
     Map<String, Map<String, Object>> view(@Tenant String tenant, String topic) {
+        def collection = "${tenant}.${topic}"
+        if(!kpipes.serviceRegistry().service(FileSystemKeyValueStore).exists(collection)) {
+            throw new IllegalStateException("Collection ${topic} for tenant ${tenant} doesn't exist.")
+        }
         def results = [:]
-        kpipes.serviceRegistry().service(FileSystemKeyValueStore).all("${tenant}.${topic}").each {
+        kpipes.serviceRegistry().service(FileSystemKeyValueStore).all(collection).each {
             results[it.key] = new ObjectMapper().readValue(it.value, Map)
         }
         results
     }
 
     long count(@Tenant String tenant, String topic) {
-        kpipes.serviceRegistry().service(FileSystemKeyValueStore).count("${tenant}.${topic}")
+        def collection = "${tenant}.${topic}"
+        if(!kpipes.serviceRegistry().service(FileSystemKeyValueStore).exists(collection)) {
+            throw new IllegalStateException("Collection ${topic} for tenant ${tenant} doesn't exist.")
+        }
+        kpipes.serviceRegistry().service(FileSystemKeyValueStore).count(collection)
     }
 
 }
