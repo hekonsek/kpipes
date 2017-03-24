@@ -26,6 +26,13 @@
         <module>cmd</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-docker-fatjar</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -37,7 +44,7 @@
                         <images>
                             <image>
                                 <build>
-                                    <from>smolok/fatjar</from>
+                                    <from>kpipes/fatjar:${project.version}</from>
                                     <assembly>
                                         <basedir>/app</basedir>
                                         <inline>

@@ -60,6 +60,16 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
+                <artifactId>kpipes-docker-fatjar</artifactId>
+                <version>${kpipes.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kpipes</groupId>
+                <artifactId>kpipes-docker-machinelearning-base</artifactId>
+                <version>${kpipes.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-function-count</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>

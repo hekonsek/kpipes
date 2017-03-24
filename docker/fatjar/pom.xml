@@ -10,10 +10,10 @@
         <artifactId>kpipes-docker</artifactId>
         <version>0.0.3-SNAPSHOT</version>
     </parent>
-    <artifactId>kpipes-docker-machinelearning-base</artifactId>
+    <artifactId>kpipes-docker-fatjar</artifactId>
 
     <properties>
-        <image.target>machinelearning-base</image.target>
+        <image.target>fatjar</image.target>
     </properties>
 
     <build>

@@ -21,6 +21,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>fatjar</module>
         <module>machinelearning-base</module>
         <module>machinelearning-train</module>
     </modules>
