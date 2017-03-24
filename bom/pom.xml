@@ -26,7 +26,7 @@
         <camel.version>2.18.2</camel.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-lang.version>3.5</commons-lang.version>
-        <googlemaps.version>0.1.17</googlemaps.version>
+        <googlemaps.version>0.1.18</googlemaps.version>
         <groovy.version>2.4.10</groovy.version>
         <guava.version>21.0</guava.version>
         <jackson.version>2.7.3</jackson.version>
