@@ -47,6 +47,15 @@
                             </image>
                         </images>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>build</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
