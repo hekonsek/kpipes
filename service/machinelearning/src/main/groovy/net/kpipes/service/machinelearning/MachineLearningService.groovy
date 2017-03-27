@@ -20,10 +20,10 @@ class MachineLearningService {
 
     void train(@Tenant String tenant, String dataset, String model) {
         def volumes = [:]
-        volumes[new File(kpipesConfig.applicationHome(), 'data').absolutePath] = '/data'
+        volumes[new File(kpipesConfig.applicationHome(), '/store/fileSystemKeyValue').absolutePath] = '/data'
         volumes[new File(kpipesConfig.applicationHome(), 'model').absolutePath] = '/model'
         def container = new ContainerBuilder("kpipes/machinelearning-train:${kpipesVersion()}").
-                environment(DATA_ID: dataset, MODEL_ID: "${tenant}_${model}").
+                environment(DATA_ID: "${tenant}.${dataset}", MODEL_ID: "${tenant}_${model}").
                 volumes(volumes).
                 build()
         def results = docker.execute(container)

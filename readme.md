@@ -22,6 +22,7 @@ First of all, start KPipes server:
 
     docker run -d \
       -e KAFKA_DATADIRECTORY=/var/kpipes/kafka_data -e ZOOKEEPER_DATADIRECTORY=/var/kpipes/zookeeper_data \
+      -v /var/run/docker.sock:/var/run/docker.sock \
       -v /var/kpipes:/var/kpipes -p 8080:8080 kpipes/server:0.0.3
     
 Then execute KPipes client:

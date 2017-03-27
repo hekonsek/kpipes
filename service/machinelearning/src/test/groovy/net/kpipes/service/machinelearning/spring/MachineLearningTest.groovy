@@ -36,9 +36,9 @@ class MachineLearningTest extends KPipesTest {
     void shouldTrainModel(TestContext context) {
         def async = context.async()
         def config =  kpipes.serviceRegistry().service(KPipesConfig)
-        new File(config.applicationHome(), 'data/dataset1').mkdirs()
-        Files.copy(new File('src/test/resources/featureFector1.json'), new File(config.applicationHome(), 'data/dataset1/data1.json'))
-        Files.copy(new File('src/test/resources/featureFector2.json'), new File(config.applicationHome(), 'data/dataset1/data2.json'))
+        new File(config.applicationHome(), '/store/fileSystemKeyValue/anonymous.dataset1').mkdirs()
+        Files.copy(new File('src/test/resources/featureFector1.json'), new File(config.applicationHome(), '/store/fileSystemKeyValue/anonymous.dataset1/data1.json'))
+        Files.copy(new File('src/test/resources/featureFector2.json'), new File(config.applicationHome(), '/store/fileSystemKeyValue/anonymous.dataset1/data2.json'))
 
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
