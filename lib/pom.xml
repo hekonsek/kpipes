@@ -26,6 +26,7 @@
         <module>kafka-client</module>
         <module>kafka-broker</module>
         <module>process</module>
+        <module>docker</module>
         <module>testing</module>
     </modules>
 
