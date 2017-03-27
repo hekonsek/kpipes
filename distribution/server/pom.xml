@@ -69,6 +69,10 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-service-machinelearning</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-service-pipes</artifactId>
         </dependency>
 

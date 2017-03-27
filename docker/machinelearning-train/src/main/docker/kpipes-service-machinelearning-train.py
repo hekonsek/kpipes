@@ -26,11 +26,16 @@ modelId = os.getenv('MODEL_ID')
 modelDir = modelDirBase + "/" + modelId
 ensureDirectoryExists(modelDir)
 
-###
+### Data type recognition
 
-sampleFile = glob.glob(dataDir + '/*')[0]
-sampleJson = json.loads(open(sampleFile, "r").read())
+sampleFileSet = glob.glob(dataDir + '/*')
+assert len(sampleFileSet) > 0, 'Dataset cannot be empty.'
+sampleFile = sampleFileSet[0]
+sampleJson = json.loads(open(sampleFile, 'r').read())
 isTextData = isText(sampleJson)
+print 'Detected text data: %s' % isTextData
+
+### Data loading
 
 featureVectors = []
 labels = []
@@ -62,3 +67,5 @@ else:
 from sklearn.naive_bayes import MultinomialNB
 model = MultinomialNB().fit(featureVectors, labels)
 joblib.dump(model, modelDir +  '/model.pkl')
+
+print 'KPIPES:SUCCESS'

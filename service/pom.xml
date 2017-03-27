@@ -24,6 +24,7 @@
         <module>event</module>
         <module>kpipes</module>
         <module>pipes</module>
+        <module>machinelearning</module>
     </modules>
 
 </project>
