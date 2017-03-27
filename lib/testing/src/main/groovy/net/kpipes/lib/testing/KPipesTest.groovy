@@ -7,7 +7,10 @@ import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaProducerBuilder
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Before
 
+import static com.google.common.io.Files.createTempDir
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 
 class KPipesTest {
@@ -23,6 +26,22 @@ class KPipesTest {
     static protected kafkaProducer = new KafkaProducerBuilder<String, Bytes>().port(kafkaPort).build()
 
     protected KPipes kpipes
+
+    protected home = createTempDir()
+
+    @Before
+    void kpipesTestBefore() {
+        beforeKPipesCreated()
+        System.setProperty('kpipes.home', home.absolutePath)
+        kpipes = kpipes()
+        beforeKPipesStarted(kpipes)
+    }
+
+    protected beforeKPipesCreated() {}
+
+    protected beforeKPipesStarted(KPipes kpipes) {}
+
+    // Data fixtures
 
     protected tenant = uuid()
 

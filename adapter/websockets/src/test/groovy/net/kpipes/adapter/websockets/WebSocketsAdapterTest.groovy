@@ -27,10 +27,9 @@ class WebSocketsAdapterTest extends KPipesTest {
 
     int httpPort = availableTcpPort()
 
-    @Before
-    void before() {
+    @Override
+    protected beforeKPipesCreated() {
         System.setProperty('http.port', httpPort + '')
-        kpipes = kpipes()
     }
 
     @Test(timeout = 30000L)
@@ -41,7 +40,7 @@ class WebSocketsAdapterTest extends KPipesTest {
         brokerAdmin.ensureTopicExists("notification.${source}")
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("anonymous.notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+        send("anonymous.notification.${source}", uuid(), [foo: 'bar'])
 
         // Then
         def client = Vertx.vertx().createHttpClient()
@@ -63,7 +62,7 @@ class WebSocketsAdapterTest extends KPipesTest {
         brokerAdmin.ensureTopicExists("notification.${source}")
 
         // When
-        new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("anonymous.notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'oldValue']))))
+        send("anonymous.notification.${source}", uuid(), [foo: 'oldValue'])
 
         // Then
         def client = Vertx.vertx().createHttpClient()
@@ -75,7 +74,7 @@ class WebSocketsAdapterTest extends KPipesTest {
                 async.complete()
             }
             Thread.sleep(1000)
-            new KafkaProducerBuilder<>().port(kafkaPort).build().send(new ProducerRecord("anonymous.notification.${source}", uuid(), new Bytes(new ObjectMapper().writeValueAsBytes([foo: 'bar']))))
+            send("anonymous.notification.${source}", uuid(), [foo: 'bar'])
         }
     }
 
