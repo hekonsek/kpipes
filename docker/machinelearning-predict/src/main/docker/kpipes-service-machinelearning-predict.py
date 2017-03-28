@@ -50,3 +50,5 @@ print docs_new
 response = {}
 response['response'] = predicted[0]
 open(baseDataDir + '/response.json', 'w').write(json.dumps(response))
+
+print 'KPIPES:SUCCESS'

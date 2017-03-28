@@ -44,7 +44,7 @@ class SpringKPipesConfig {
     }
 
     @Bean
-    json() {
+    Json json() {
         new Json()
     }
 

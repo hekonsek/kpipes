@@ -28,6 +28,7 @@
         <module>geo-googlemaps</module>
         <module>notification</module>
         <module>view-materialize-keyvalue</module>
+        <module>machinelearning-predict</module>
     </modules>
 
 </project>

@@ -53,6 +53,10 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-function-machinelearning-predict</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-function-view-materialize-keyvalue</artifactId>
         </dependency>
         <dependency>

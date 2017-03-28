@@ -37,7 +37,7 @@ class Event {
     }
 
 
-    def tenant() {
+    String tenant() {
         topic.substring(0, topic.indexOf('.'))
     }
 
