@@ -12,7 +12,7 @@ class KPipesFactory {
     }
 
     static KPipes kpipes(String applicationId, String nodeId) {
-        def applicationContext = new SpringApplicationBuilder(SpringFunctionRegistryConfiguration).run("--applicationId=${applicationId}", "--nodeId=${nodeId}")
+        def applicationContext = new SpringApplicationBuilder(SpringKPipesConfig).run("--applicationId=${applicationId}", "--nodeId=${nodeId}")
         applicationContext.getBean(KPipes)
     }
 
