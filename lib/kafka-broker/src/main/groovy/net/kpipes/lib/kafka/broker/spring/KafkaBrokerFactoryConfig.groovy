@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Configuration
 class KafkaBrokerFactoryConfig {
 
     @Bean(initMethod = 'start')
-    def kafkaBroker(@Value('${kafka.port:9092}') int kafkaPort,
-                    @Value('${kafka.dataDirectory:kafka_data}') String  kafkaDataDirectory,
-                    @Value('${zooKeeper.host:localhost}') String zooKeeperHost,
-                    @Value('${zooKeeper.port:2181}') int zooKeeperPort,
-                    @Value('${zooKeeper.dataDirectory:zookeeper_data}') String  zooKeeperDataDirectory) {
+    KafkaBrokerFactory kafkaBroker(@Value('${kafka.port:9092}') int kafkaPort,
+                            @Value('${kafka.dataDirectory:kafka_data}') String  kafkaDataDirectory,
+                            @Value('${zooKeeper.host:localhost}') String zooKeeperHost,
+                            @Value('${zooKeeper.port:2181}') int zooKeeperPort,
+                            @Value('${zooKeeper.dataDirectory:zookeeper_data}') String  zooKeeperDataDirectory) {
         new KafkaBrokerFactory(kafkaPort, kafkaDataDirectory, zooKeeperHost, zooKeeperPort, zooKeeperDataDirectory)
     }
 

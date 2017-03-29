@@ -1,7 +1,5 @@
 package net.kpipes.lib.kafka.broker
 
-import com.google.common.io.Files
-
 import static org.slf4j.LoggerFactory.getLogger
 
 class KafkaBrokerFactory {
@@ -29,7 +27,10 @@ class KafkaBrokerFactory {
     // Life-cycle
 
     KafkaBroker start() {
-        new ZooKeeperServer(zooKeeperPort, kafkaDataDirectory).start()
+        if(zooKeeperHost == 'localhost') {
+            LOG.info('Starting ZooKeeper server.')
+            new ZooKeeperServer(zooKeeperPort, kafkaDataDirectory).start()
+        }
         KafkaBroker kafka = null
         while (kafka == null) {
             try {
