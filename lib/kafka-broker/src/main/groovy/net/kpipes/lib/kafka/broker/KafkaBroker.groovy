@@ -20,6 +20,7 @@ import groovy.transform.CompileStatic
 import kafka.metrics.KafkaMetricsReporter
 import kafka.server.KafkaConfig
 import kafka.server.KafkaServer
+import net.kpipes.lib.commons.KPipesConfig
 import scala.Option
 import scala.collection.JavaConversions
 
@@ -28,32 +29,22 @@ import static org.apache.kafka.common.utils.Time.SYSTEM
 @CompileStatic
 class KafkaBroker {
 
-    private final int port
-
-    private final String zooKeeperHost
-
-    private final int zooKeeperPort
-
-    private final String dataDirectory
+    private final KPipesConfig config
 
     private KafkaServer broker
 
-    KafkaBroker(int port, String zooKeeperHost, int zooKeeperPort, String dataDirectory) {
-        this.port = port
-        this.zooKeeperHost = zooKeeperHost
-        this.zooKeeperPort = zooKeeperPort
-        this.dataDirectory = dataDirectory
+    KafkaBroker(KPipesConfig config) {
+        this.config = config
     }
 
     // Life-cycle
 
     KafkaBroker start() {
         Properties kafkaConfig = new Properties()
-        kafkaConfig.setProperty("zookeeper.connect", zooKeeperHost + ":" + zooKeeperPort)
-        kafkaConfig.setProperty("broker.id", "1")
-        kafkaConfig.setProperty("listeners", "PLAINTEXT://0.0.0.0:${port}")
-        kafkaConfig.setProperty("port", port + "")
-        kafkaConfig.setProperty("log.dir", dataDirectory)
+        kafkaConfig.setProperty('zookeeper.connect', config.zooKeeperHost + ":" + config.zooKeeperPort)
+        kafkaConfig.setProperty("listeners", "PLAINTEXT://0.0.0.0:${config.kafkaPort()}")
+        kafkaConfig.setProperty("port", config.kafkaPort() + "")
+        kafkaConfig.setProperty("log.dir", config.kafkaDataDirectory().absolutePath)
         kafkaConfig.setProperty("log.flush.interval.messages", 1 + "")
         kafkaConfig.setProperty('num.partitions', 25 + '')
 

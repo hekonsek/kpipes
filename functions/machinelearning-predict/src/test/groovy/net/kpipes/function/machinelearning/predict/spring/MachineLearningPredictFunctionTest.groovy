@@ -5,12 +5,10 @@ import com.google.common.io.Files
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.PipeBuilder
-import net.kpipes.core.store.FileSystemKeyValueStore
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
 import net.kpipes.service.machinelearning.MachineLearningService
-import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 import org.junit.Before

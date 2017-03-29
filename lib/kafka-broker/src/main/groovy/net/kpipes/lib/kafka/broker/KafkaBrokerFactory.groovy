@@ -1,40 +1,30 @@
 package net.kpipes.lib.kafka.broker
 
+import net.kpipes.lib.commons.KPipesConfig
+
 import static org.slf4j.LoggerFactory.getLogger
 
 class KafkaBrokerFactory {
 
     private static final LOG = getLogger(KafkaBrokerFactory)
 
-    private final int kafkaPort
+    private final KPipesConfig config
 
-    private final String kafkaDataDirectory
-
-    private final String zooKeeperHost
-
-    private final int zooKeeperPort
-
-    private final String zooKeeperDataDirectory
-
-    KafkaBrokerFactory(int kafkaPort, String kafkaDataDirectory, String zooKeeperHost, int zooKeeperPort, String zooKeeperDataDirectory) {
-        this.kafkaPort = kafkaPort
-        this.kafkaDataDirectory = kafkaDataDirectory
-        this.zooKeeperHost = zooKeeperHost
-        this.zooKeeperPort = zooKeeperPort
-        this.zooKeeperDataDirectory = zooKeeperDataDirectory
+    KafkaBrokerFactory(KPipesConfig config) {
+        this.config = config
     }
 
     // Life-cycle
 
     KafkaBroker start() {
-        if(zooKeeperHost == 'localhost') {
+        if(config.zooKeeperHost == 'localhost') {
             LOG.info('Starting ZooKeeper server.')
-            new ZooKeeperServer(zooKeeperPort, kafkaDataDirectory).start()
+            new ZooKeeperServer(config.zooKeeperPort, config.zooKeeperDirectory().absolutePath).start()
         }
         KafkaBroker kafka = null
         while (kafka == null) {
             try {
-                kafka = new KafkaBroker(kafkaPort, zooKeeperHost, zooKeeperPort, zooKeeperDataDirectory).start()
+                kafka = new KafkaBroker(config).start()
             } catch (Exception e) {
                 LOG.debug('Failed attempt to start a broker:', e)
                 Thread.sleep(100)

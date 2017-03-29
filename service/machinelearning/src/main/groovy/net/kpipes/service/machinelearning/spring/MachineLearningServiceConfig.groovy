@@ -1,6 +1,6 @@
 package net.kpipes.service.machinelearning.spring
 
-import net.kpipes.core.KPipesConfig
+import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.docker.Docker
 import net.kpipes.service.machinelearning.MachineLearningService
 import org.springframework.context.annotation.Bean

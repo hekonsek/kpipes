@@ -1,7 +1,8 @@
 package net.kpipes.service.machinelearning
 
-import net.kpipes.core.KPipesConfig
+
 import net.kpipes.core.adapter.Tenant
+import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.docker.ContainerBuilder
 import net.kpipes.lib.docker.Docker
 

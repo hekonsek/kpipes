@@ -2,7 +2,7 @@ package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipes
-import net.kpipes.core.KPipesConfig
+
 import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
 import net.kpipes.lib.kafka.client.BrokerAdmin

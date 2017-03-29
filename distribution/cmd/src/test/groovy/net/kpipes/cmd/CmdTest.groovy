@@ -33,8 +33,7 @@ class CmdTest {
 
     @Test
     void shouldGetKpipesVersion() {
-        System.setProperty('zooKeeper.dataDirectory', createTempDir().absolutePath)
-        System.setProperty('kafka.dataDirectory', createTempDir().absolutePath)
+        System.setProperty('kpipes.home', createTempDir().absolutePath)
 
         def kpipes = new KPipesApplication()
         def versionResponse = new Cmd().executeCommand('kpipes', 'version')

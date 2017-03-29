@@ -22,6 +22,7 @@ import net.kpipes.core.function.SimpleFunctionBuilder
 import net.kpipes.core.function.TableFunctionBuilder
 import net.kpipes.core.function.TopologyFunctionBuilder
 import net.kpipes.core.store.ViewMaterializer
+import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams

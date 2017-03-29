@@ -2,9 +2,10 @@ package net.kpipes.function.machinelearning.predict
 
 import com.google.common.io.Files
 import net.kpipes.core.Json
-import net.kpipes.core.KPipesConfig
+
 import net.kpipes.core.function.Event
 import net.kpipes.core.function.EventMappingFunction
+import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.docker.ContainerBuilder
 import net.kpipes.lib.docker.Docker
 

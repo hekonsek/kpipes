@@ -17,7 +17,7 @@
 package net.kpipes.core.function.config
 
 import net.kpipes.core.KPipes
-import net.kpipes.core.KPipesConfig
+
 import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
 import net.kpipes.core.function.EventRoutingFunctionBuilder

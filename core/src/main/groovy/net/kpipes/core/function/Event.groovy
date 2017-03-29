@@ -1,9 +1,6 @@
 package net.kpipes.core.function
 
 import net.kpipes.core.KPipes
-import net.kpipes.core.KPipesConfig
-import net.kpipes.core.ServiceRegistry
-import org.apache.kafka.streams.KafkaStreams
 
 class Event {
 

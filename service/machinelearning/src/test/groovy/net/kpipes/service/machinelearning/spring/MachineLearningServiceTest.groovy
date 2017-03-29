@@ -6,24 +6,17 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.core.KPipes
-import net.kpipes.core.KPipesConfig
-import net.kpipes.core.function.Event
-import net.kpipes.core.function.EventMappingFunction
-import net.kpipes.lib.commons.Uuids
+import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.testing.KPipesTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 import static io.vertx.core.buffer.Buffer.buffer
-import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
 
 @RunWith(VertxUnitRunner)
-class MachineLearningTest extends KPipesTest {
+class MachineLearningServiceTest extends KPipesTest {
 
     int httpPort = availableTcpPort()
 

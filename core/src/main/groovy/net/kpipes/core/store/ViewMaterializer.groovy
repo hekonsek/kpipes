@@ -1,6 +1,6 @@
 package net.kpipes.core.store
 
-import net.kpipes.core.KPipesConfig
+import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
