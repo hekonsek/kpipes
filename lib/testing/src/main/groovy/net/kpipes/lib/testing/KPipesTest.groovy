@@ -33,6 +33,8 @@ class KPipesTest {
     void kpipesTestBefore() {
         beforeKPipesCreated()
         System.setProperty('kpipes.home', home.absolutePath)
+        System.setProperty('applicationId', uuid())
+        System.setProperty('nodeId', uuid())
         kpipes = kpipes()
         beforeKPipesStarted(kpipes)
     }

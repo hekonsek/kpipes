@@ -20,14 +20,12 @@ class MaterializeKeyValueViewFunctionTest extends KPipesTest {
 
     def home = Files.createTempDir()
 
-    def applicationId = uuid()
-
-    def nodeId = uuid()
-
     @Before
     void before() {
         System.setProperty('kpipes.home', home.absolutePath)
-        kpipes = kpipes(applicationId, nodeId)
+        System.setProperty('applicationId', uuid())
+        System.setProperty('nodeId', uuid())
+        kpipes = kpipes()
         pipeBuilder = kpipes.pipeBuilder()
     }
 

@@ -5,6 +5,7 @@ import com.google.common.io.Files
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.PipeBuilder
+import net.kpipes.core.spring.KPipesFactory
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
@@ -15,7 +16,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -26,14 +26,12 @@ class MachineLearningPredictFunctionTest extends KPipesTest {
 
     def home = Files.createTempDir()
 
-    def applicationId = uuid()
-
-    def nodeId = uuid()
-
     @Before
     void before() {
         System.setProperty('kpipes.home', home.absolutePath)
-        kpipes = kpipes(applicationId, nodeId)
+        System.setProperty('applicationId', uuid())
+        System.setProperty('nodeId', uuid())
+        kpipes = KPipesFactory.kpipes()
         pipeBuilder = kpipes.pipeBuilder()
     }
 

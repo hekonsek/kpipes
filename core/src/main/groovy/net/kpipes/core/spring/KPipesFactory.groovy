@@ -8,11 +8,7 @@ import static net.kpipes.lib.commons.Uuids.uuid
 class KPipesFactory {
 
     static KPipes kpipes() {
-        kpipes(uuid(), uuid())
-    }
-
-    static KPipes kpipes(String applicationId, String nodeId) {
-        def applicationContext = new SpringApplicationBuilder(SpringKPipesConfig).run("--applicationId=${applicationId}", "--nodeId=${nodeId}")
+        def applicationContext = new SpringApplicationBuilder(SpringKPipesConfig).run()
         applicationContext.getBean(KPipes)
     }
 

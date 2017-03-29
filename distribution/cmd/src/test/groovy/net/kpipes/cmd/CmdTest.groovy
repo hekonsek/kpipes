@@ -27,6 +27,7 @@ import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.cmd.Cmd.parseArguments
 import static net.kpipes.lib.commons.Mavens.kpipesVersion
 import static net.kpipes.lib.commons.Networks.availableTcpPort
+import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
 class CmdTest {
@@ -34,6 +35,8 @@ class CmdTest {
     @Test
     void shouldGetKpipesVersion() {
         System.setProperty('kpipes.home', createTempDir().absolutePath)
+        System.setProperty('applicationId', uuid())
+        System.setProperty('nodeId', uuid())
 
         def kpipes = new KPipesApplication()
         def versionResponse = new Cmd().executeCommand('kpipes', 'version')

@@ -1,7 +1,6 @@
 package net.kpipes.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.io.Files
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.function.Event
@@ -21,8 +20,9 @@ import org.junit.runner.RunWith
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-import static net.kpipes.core.spring.KPipesFactory.kpipes
+import static com.google.common.io.Files.createTempDir
 import static net.kpipes.core.PipeDefinitionEncoder.decodePipe
+import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -34,7 +34,7 @@ class KPipesTest {
 
     static kafkaPort = kpipesTest.kafkaPort()
 
-    def home = Files.createTempDir()
+    def home = createTempDir()
 
     KPipes kpipes
 
@@ -55,6 +55,8 @@ class KPipesTest {
     @Before
     void before() {
         System.setProperty('kpipes.home', home.absolutePath)
+        System.setProperty('applicationId', uuid())
+        System.setProperty('nodeId', uuid())
         kpipes = kpipes()
         brokerAdmin = kpipes.serviceRegistry().service(BrokerAdmin)
         pipeBuilder = kpipes.pipeBuilder()
