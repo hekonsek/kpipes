@@ -48,15 +48,7 @@ class Cmd {
         this.port = port
     }
 
-    Cmd(int port) {
-        this('localhost', port)
-    }
-
-    Cmd() {
-        this(8080)
-    }
-
-    Object executeCommand(String... command) {
+    Object executeCommand(List<String> command) {
         def responseReceived = new AtomicBoolean(false)
         Object response = null
         httpClient.websocket(port, host, '/operation', new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])) { webSocket ->
@@ -73,7 +65,7 @@ class Cmd {
         response
     }
 
-    String formatCommand(String... command) {
+    String formatCommand(List<String> command) {
         def response = executeCommand(command)
         if(response instanceof List) {
             def responseList = response as List<String>
@@ -92,7 +84,9 @@ class Cmd {
         vertx.close()
     }
 
-    protected static List<Object> parseArguments(String... command) {
+    // Helpers
+
+    protected static List<Object> parseArguments(List<String> command) {
         def commandParts = command.collect{
             if(it.startsWith('[')) {
                 it = new GroovyShell().evaluate(it) as Map
@@ -102,9 +96,24 @@ class Cmd {
         commandParts.size() > 2 ? commandParts.subList(2, commandParts.size()) : null
     }
 
+    protected static Map<String, String> parseOptions(List<String> command) {
+        def options = [:]
+        if(command.find{ it.startsWith('--host=') }) {
+            options.host = command.find{ it.startsWith('--host=') }.replaceFirst('--host=', '')
+        }
+        options
+    }
+
+    // Execution point
+
     static void main(String... args) {
-        def cmd = new Cmd()
-        println cmd.formatCommand(args)
+        def argsList = args.toList()
+        def options = parseOptions(argsList)
+        def host = options.get('host', 'localhost')
+        def port = 8080
+        argsList.removeIf{ it.startsWith('--host=') }
+        def cmd = new Cmd(host, port)
+        println cmd.formatCommand(argsList)
         cmd.close()
     }
 

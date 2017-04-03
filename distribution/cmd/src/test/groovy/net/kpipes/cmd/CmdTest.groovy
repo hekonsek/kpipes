@@ -25,6 +25,7 @@ import org.junit.Test
 import static com.google.common.io.Files.createTempDir
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.cmd.Cmd.parseArguments
+import static net.kpipes.cmd.Cmd.parseOptions
 import static net.kpipes.lib.commons.Mavens.kpipesVersion
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
@@ -39,26 +40,26 @@ class CmdTest {
         System.setProperty('nodeId', uuid())
 
         def kpipes = new KPipesApplication()
-        def versionResponse = new Cmd().executeCommand('kpipes', 'version')
+        def versionResponse = new Cmd('localhost', 8080).executeCommand(['kpipes', 'version'])
         assertThat(versionResponse).isEqualTo(kpipesVersion())
         kpipes.stop()
     }
 
     @Test
     void shouldHandleStoppedServer() {
-        def response = new Cmd(availableTcpPort()).executeCommand('kpipes', 'version') as String
+        def response = new Cmd('localhost', availableTcpPort()).executeCommand(['kpipes', 'version']) as String
         assertThat(response).startsWith('Cannot connect to KPipes server')
     }
 
     @Test
     void shouldExtractArgumentsFromCommand() {
-        def arguments = parseArguments('service', 'operation', 'argument1', 'argument2')
+        def arguments = parseArguments(['service', 'operation', 'argument1', 'argument2'])
         assertThat(arguments).isEqualTo(['argument1', 'argument2'])
     }
 
     @Test
     void shouldParseMapArgument() {
-        def arguments = parseArguments('service', 'operation', 'argument1', "[foo: 'bar']")
+        def arguments = parseArguments(['service', 'operation', 'argument1', "[foo: 'bar']"])
         assertThat(arguments).isEqualTo(['argument1', [foo: 'bar']])
     }
 
@@ -72,8 +73,14 @@ class CmdTest {
         }.listen()
 
         Thread.sleep(1000)
-        def response = new Cmd(port).executeCommand('kpipes', 'version') as String
+        def response = new Cmd('localhost', port).executeCommand(['kpipes', 'version']) as String
         assertThat(response).isEqualTo('hello')
+    }
+
+    @Test
+    void shouldParseHostOption() {
+        def options = parseOptions(['--host=myhost', 'service', 'operation', 'argument1', "[foo: 'bar']"])
+        assertThat(options).containsEntry('host', 'myhost')
     }
 
 }
