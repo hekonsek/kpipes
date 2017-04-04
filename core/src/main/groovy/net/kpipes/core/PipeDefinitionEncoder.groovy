@@ -22,7 +22,7 @@ class PipeDefinitionEncoder {
     }
 
     static String encodePipe(PipeDefinition definition) {
-        String functionConfig = definition.functionConfiguration().isEmpty() ? '' : " ${definition.functionConfiguration().toString()}"
+        String functionConfig = definition.functionConfiguration().isEmpty() ? '' : " ${definition.functionConfiguration().inspect()}"
         String encoded = "${definition.from()} | ${definition.functionAddress()}${functionConfig}"
         if(definition.to().present) {
             encoded = "${encoded} | ${definition.to().get()}"

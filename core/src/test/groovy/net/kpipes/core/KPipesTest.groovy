@@ -44,7 +44,7 @@ class KPipesTest {
 
     def tenant = uuid()
 
-    def source = uuid()
+    def source = "source-${uuid()}"
 
     def effectiveSource = "${tenant}.${source}" as String
 

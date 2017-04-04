@@ -1,6 +1,7 @@
 package net.kpipes.core.repository
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.kpipes.core.Json
 import net.kpipes.core.KPipes
 import net.kpipes.core.PipeDefinition
 import net.kpipes.core.store.FileSystemKeyValueStore
@@ -19,9 +20,12 @@ class KafkaPipeDefinitionsRepository implements PipeDefinitionsRepository {
 
     private final FileSystemKeyValueStore store
 
-    KafkaPipeDefinitionsRepository(KafkaProducer kafkaProducer, FileSystemKeyValueStore store) {
+    private final Json json
+
+    KafkaPipeDefinitionsRepository(KafkaProducer kafkaProducer, FileSystemKeyValueStore store, Json json) {
         this.kafkaProducer = kafkaProducer
         this.store = store
+        this.json = json
     }
 
     @Override
@@ -33,7 +37,7 @@ class KafkaPipeDefinitionsRepository implements PipeDefinitionsRepository {
     @Override
     List<PipeDefinition> list() {
         store.all('kpipes.pipeDefinitions').collect {
-            def pipe = new ObjectMapper().readValue(it.value, Map)
+            def pipe = json.read(it.value)
             decodePipe(pipe.tenant as String, pipe.pipe as String)
         }
     }

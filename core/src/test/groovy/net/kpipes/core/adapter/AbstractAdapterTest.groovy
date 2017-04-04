@@ -6,6 +6,7 @@ import net.kpipes.core.KPipes
 import org.junit.Test
 import org.springframework.stereotype.Component
 
+import static com.google.common.io.Files.createTempDir
 import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
 import static net.kpipes.lib.commons.Uuids.uuid
@@ -21,13 +22,13 @@ class AbstractAdapterTest {
 
     static {
         System.setProperty('kafka.broker.enabled', 'false')
+        System.setProperty('kpipes.home', createTempDir().absolutePath)
         System.setProperty('applicationId', uuid())
         System.setProperty('nodeId', uuid())
         kpipes = kpipes()
         adapter = new AbstractAdapter(kpipes) {}
         json = kpipes.serviceRegistry().service(Json)
     }
-
 
     @Test
     void shouldInvokeOperation() {
