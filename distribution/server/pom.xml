@@ -53,6 +53,11 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-function-transform-groovy</artifactId>
+            <version>${kpipes.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-function-machinelearning-predict</artifactId>
         </dependency>
         <dependency>

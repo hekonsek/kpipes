@@ -29,6 +29,7 @@
         <module>notification</module>
         <module>view-materialize-keyvalue</module>
         <module>machinelearning-predict</module>
+        <module>transform-groovy</module>
     </modules>
 
 </project>
