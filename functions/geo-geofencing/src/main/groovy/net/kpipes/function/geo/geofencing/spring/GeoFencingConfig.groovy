@@ -1,6 +1,6 @@
-package net.kpipes.functions.geo.geofencing.spring
+package net.kpipes.function.geo.geofencing.spring
 
-import net.kpipes.functions.geo.geofencing.GeoFencingDistanceFunction
+import net.kpipes.function.geo.geofencing.GeoFencingDistanceFunction
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 

@@ -1,4 +1,4 @@
-package net.kpipes.functions.geo.geofencing
+package net.kpipes.function.geo.geofencing
 
 import net.kpipes.core.function.Event
 import net.kpipes.core.function.EventMappingFunction

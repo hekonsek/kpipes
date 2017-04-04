@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-functions-geo-geofencing</artifactId>
+            <artifactId>kpipes-function-geo-geofencing</artifactId>
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>

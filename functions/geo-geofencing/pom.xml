@@ -16,7 +16,7 @@
         <version>0.0.4-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-functions-geo-geofencing</artifactId>
+    <artifactId>kpipes-function-geo-geofencing</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>

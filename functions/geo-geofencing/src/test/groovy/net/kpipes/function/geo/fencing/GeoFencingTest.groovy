@@ -1,7 +1,7 @@
-package net.kpipes.functions.geo.fencing
+package net.kpipes.function.geo.fencing
 
 import net.kpipes.core.function.Event
-import net.kpipes.functions.geo.geofencing.GeoFencingDistanceFunction
+import net.kpipes.function.geo.geofencing.GeoFencingDistanceFunction
 import org.junit.Test
 
 import static org.assertj.core.api.Assertions.assertThat
