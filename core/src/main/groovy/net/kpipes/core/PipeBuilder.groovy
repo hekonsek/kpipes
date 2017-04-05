@@ -108,7 +108,7 @@ class PipeBuilder {
         LOG.debug('Ensuring that all topics involved in a pipe exist.')
         serviceRegistry.service(BrokerAdmin).ensureTopicExists(topics)
 
-        serviceRegistry.service(ViewMaterializer).materialize('kpipes.pipeDefinitions')
+        serviceRegistry.service(ViewMaterializer).materialize('kpipes_pipeDefinitions', 'kpipes.pipeDefinitions')
 
         def streamsConfiguration = new Properties()
         streamsConfiguration.put(APPLICATION_ID_CONFIG, config.applicationId());

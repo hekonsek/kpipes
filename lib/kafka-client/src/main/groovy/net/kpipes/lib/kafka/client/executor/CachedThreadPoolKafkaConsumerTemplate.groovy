@@ -1,14 +1,18 @@
 package net.kpipes.lib.kafka.client.executor
 
 import groovy.transform.CompileStatic
+import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.errors.WakeupException
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.atomic.AtomicBoolean
 
 import static java.util.concurrent.Executors.newCachedThreadPool
+import static net.kpipes.lib.commons.Uuids.uuid
 
 @CompileStatic
 class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
@@ -17,21 +21,23 @@ class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
 
     private final ExecutorService executor = newCachedThreadPool()
 
+    private final Map<String, AtomicBoolean> stopRequests = [:]
+
     CachedThreadPoolKafkaConsumerTemplate(BrokerAdmin brokerAdmin) {
         this.brokerAdmin = brokerAdmin
     }
 
     @Override
-    def <K, V> void consumeRecords(KafkaConsumer<K, V> consumer, ConsumerRecordsCallback<K, V> consumerRecordsCallback) {
+    def <K, V> void consumeRecords(KafkaConsumer<K, V> consumer, String taskId, ConsumerRecordsCallback<K, V> consumerRecordsCallback) {
+        stopRequests.put(taskId, new AtomicBoolean(false))
         executor.submit {
-            boolean isRunning = true
-            while (isRunning) {
+            while (!stopRequests[taskId].get()) {
                 try {
                     def events = consumer.poll(5000)
                     consumerRecordsCallback.onConsumerRecords(events)
                     Thread.sleep(100)
                 } catch (WakeupException e) {
-                    isRunning = false
+                    stopRequests[taskId].set(true)
                     consumer.close()
                 }
             }
@@ -39,8 +45,8 @@ class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
     }
 
     @Override
-    def <K, V> void consumeRecord(KafkaConsumer<K, V> consumer, ConsumerRecordCallback<K, V> consumerRecordCallback) {
-        consumeRecords(consumer) { ConsumerRecords<K, V> records ->
+    def <K, V> void consumeRecord(KafkaConsumer<K, V> consumer, String taskId, ConsumerRecordCallback<K, V> consumerRecordCallback) {
+        consumeRecords(consumer, taskId) { ConsumerRecords<K, V> records ->
             def iterator = records.iterator()
             while (iterator.hasNext()) {
                 def record = iterator.next()
@@ -52,10 +58,22 @@ class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
     }
 
     @Override
-    def <K, V> void subscribe(KafkaConsumer<K, V> consumer, String topic, ConsumerRecordCallback<K, V> consumerRecordCallback) {
+    def <K, V> void subscribe(KafkaConsumer<K, V> consumer, String taskId, String topic, ConsumerRecordCallback<K, V> consumerRecordCallback) {
         brokerAdmin.ensureTopicExists(topic)
         consumer.subscribe([topic])
-        consumeRecord(consumer, consumerRecordCallback)
+        consumeRecord(consumer, taskId, consumerRecordCallback)
+    }
+
+    @Override
+    def <K, V> void subscribe(KafkaConsumer<K, V> consumer, String topic, ConsumerRecordCallback<K, V> consumerRecordCallback) {
+        subscribe(consumer, uuid(), topic, consumerRecordCallback)
+    }
+
+    @Override
+    void stopTask(String taskId) {
+        if(stopRequests.containsKey(taskId)) {
+            stopRequests[taskId].set(true)
+        }
     }
 
 }

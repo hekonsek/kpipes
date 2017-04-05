@@ -23,10 +23,10 @@ class ViewMaterializer {
         this.store = store
     }
 
-    void materialize(String topic) {
+    void materialize(String taskId, String topic) {
         brokerAdmin.ensureTopicExists(topic)
-        def consumer = new KafkaConsumerBuilder("materialized_view_keyvalue_${config.applicationId()}_${config.nodeId()}").port(config.kafkaPort()).build()
-        consumerTemplate.subscribe(consumer, topic) {
+        def consumer = new KafkaConsumerBuilder("materialized_view_keyvalue_${config.applicationId()}_${config.nodeId()}_${taskId}").port(config.kafkaPort()).build()
+        consumerTemplate.subscribe(consumer, taskId, topic) {
             if(it.value() != null) {
                 store.save(it.topic(), it.key() as String, ((Bytes) it.value()).get())
             } else {

@@ -9,7 +9,7 @@ class MaterializeKeyValueViewFunction implements GenericSimpleFunction {
 
     @Override
     void apply(KPipes kpipes, PipeDefinition pipeDefinition) {
-        kpipes.serviceRegistry().service(ViewMaterializer).materialize(pipeDefinition.effectiveFrom())
+        kpipes.serviceRegistry().service(ViewMaterializer).materialize("pipe_${pipeDefinition.id()}", pipeDefinition.effectiveFrom())
     }
 
 }

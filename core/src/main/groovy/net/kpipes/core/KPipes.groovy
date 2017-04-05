@@ -2,6 +2,7 @@ package net.kpipes.core
 
 import groovy.transform.CompileStatic
 import net.kpipes.core.repository.PipeDefinitionsRepository
+import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 
 @CompileStatic
 class KPipes {
@@ -38,6 +39,7 @@ class KPipes {
 
     void removePipe(String pipeId) {
         serviceRegistry.service(PipeDefinitionsRepository).remove(pipeId)
+        serviceRegistry.service(KafkaConsumerTemplate).stopTask("pipe_${pipeId}")
         Thread.sleep(1000)
         stopPipes()
         startPipes()
