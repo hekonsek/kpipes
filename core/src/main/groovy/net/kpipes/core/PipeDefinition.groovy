@@ -1,7 +1,12 @@
 package net.kpipes.core
 
+import groovy.transform.CompileStatic
+import groovy.transform.ToString
+
 import static org.apache.commons.codec.digest.DigestUtils.sha1Hex
 
+@CompileStatic
+@ToString(includeFields = true)
 class PipeDefinition {
 
     private final String tenant
@@ -16,6 +21,8 @@ class PipeDefinition {
 
     private final Optional<String> to
 
+    // Constructors
+
     PipeDefinition(String tenant, Optional<String> id, String from, String functionAddress, Map<String, Object> functionConfiguration, Optional<String> to) {
         this.tenant = tenant
         this.id = id
@@ -24,6 +31,8 @@ class PipeDefinition {
         this.functionConfiguration = functionConfiguration
         this.to = to
     }
+
+    // Accessors
 
     String id() {
         id.orElseGet{
@@ -45,11 +54,11 @@ class PipeDefinition {
     }
 
     String functionAddress() {
-        return functionAddress
+        functionAddress
     }
 
     Map<String, Object> functionConfiguration() {
-        return functionConfiguration
+        functionConfiguration
     }
 
     Optional<String> effectiveTo() {

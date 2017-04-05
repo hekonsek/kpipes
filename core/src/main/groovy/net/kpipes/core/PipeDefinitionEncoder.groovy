@@ -8,8 +8,7 @@ class PipeDefinitionEncoder {
     private static final LOG = getLogger(PipeDefinitionEncoder)
 
     static PipeDefinition decodePipe(String tenant, String pipeDefinitionText) {
-        LOG.debug('Parsing pipe {} for tenant {}', pipeDefinitionText, tenant
-        )
+        LOG.debug('Parsing pipe {} for tenant {}', pipeDefinitionText, tenant)
         List<String> definitionParts = pipeDefinitionText.split(/\|/).toList().collect{ it.trim() }
         String from = definitionParts[0]
 
