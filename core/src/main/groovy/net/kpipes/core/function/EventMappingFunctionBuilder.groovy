@@ -2,17 +2,16 @@ package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipes
-import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
+import net.kpipes.lib.commons.KPipesConfig
+import net.kpipes.lib.kafka.client.BrokerAdmin
+import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
+import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.errors.TopologyBuilderException
-import org.apache.kafka.streams.kstream.KStreamBuilder
-import org.apache.kafka.streams.processor.AbstractProcessor
-import org.apache.kafka.streams.processor.Processor
-import org.apache.kafka.streams.processor.ProcessorSupplier
-import org.apache.kafka.streams.processor.TopologyBuilder
 
-class EventMappingFunctionBuilder implements TopologyFunctionBuilder<EventMappingFunction> {
+class EventMappingFunctionBuilder implements SimpleFunctionBuilder<EventMappingFunction> {
 
     private final KPipes kpipes
 
@@ -26,32 +25,22 @@ class EventMappingFunctionBuilder implements TopologyFunctionBuilder<EventMappin
     }
 
     @Override
-    void build(PipeBuilder pipeBuilder, TopologyBuilder topologyBuilder, PipeDefinition pipeDefinition, EventMappingFunction function) {
-        if(function instanceof FunctionInitializer) {
-            function.initialize(pipeBuilder, pipeDefinition)
-        }
-        def sourceId = pipeDefinition.effectiveFrom()
-        def processorId = (topologyBuilder as KStreamBuilder).newName('processor')
-        def targetId = (topologyBuilder as KStreamBuilder).newName('target')
-        try {
-            topologyBuilder.addSource(sourceId, pipeDefinition.effectiveFrom())
-        } catch (TopologyBuilderException e) {
+    void build(KPipes kpipes, PipeDefinition pipeDefinition, EventMappingFunction function) {
+        kpipes.serviceRegistry().service(BrokerAdmin).ensureTopicExists(pipeDefinition.from(), pipeDefinition.to().get())
 
+        def config = kpipes.serviceRegistry().service(KPipesConfig)
+
+        if(function instanceof FunctionInitializer) {
+            function.initialize(kpipes, pipeDefinition)
         }
-        topologyBuilder.addProcessor(processorId, new ProcessorSupplier<String, Bytes>() {
-                    @Override
-                    Processor<String, Bytes> get() {
-                        new AbstractProcessor<String, Bytes>() {
-                            @Override
-                            void process(String key, Bytes value) {
-                                def event = new ObjectMapper().readValue(value.get(), Map)
-                                value = new Bytes(new ObjectMapper().writeValueAsBytes(function.onEvent(new Event(context().topic(), key, event, pipeDefinition.functionConfiguration(), kpipes))))
-                                context().forward(key, value)
-                            }
-                        }
-                    }
-                }, sourceId).
-                addSink(targetId, pipeDefinition.effectiveTo().get(), processorId)
+
+        def consumerGroup = "event_mapping_function_${config.applicationId()}_${pipeDefinition.id()}"
+        def consumer = new KafkaConsumerBuilder(consumerGroup).port(config.kafkaPort()).build()
+        kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(consumer, "pipe_${pipeDefinition.id()}", pipeDefinition.effectiveFrom()) {
+            def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
+            def result = function.onEvent(new Event(it.topic(), it.key() as String, event, pipeDefinition.functionConfiguration(), kpipes))
+            kpipes.serviceRegistry().service(KafkaProducer).send(new ProducerRecord(pipeDefinition.effectiveTo().get(), it.key() as String, new Bytes(new ObjectMapper().writeValueAsBytes(result))))
+        }
     }
 
 }

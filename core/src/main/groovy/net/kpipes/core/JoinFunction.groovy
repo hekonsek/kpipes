@@ -19,7 +19,8 @@ class JoinFunction implements EventMappingFunction, FunctionInitializer {
     }
 
     @Override
-    void initialize(PipeBuilder pipeBuilder, PipeDefinition pipeDefinition) {
+    void initialize(KPipes kpipes, PipeDefinition pipeDefinition) {
+        def pipeBuilder = kpipes.serviceRegistry().service(PipeBuilder)
         def joinEvent = "${pipeDefinition.effectiveFrom().substring(0, pipeDefinition.effectiveFrom().indexOf('.'))}.${pipeDefinition.functionConfiguration().onEvent}" as String
         pipeDefinition.functionConfiguration().onEvent = joinEvent
         brokerAdmin.ensureTopicExists(joinEvent)
