@@ -184,8 +184,8 @@ class KPipesTest {
         def definitions = kpipes.serviceRegistry().service(PipeDefinitionsRepository).list()
 
         // Then
-        assertThat(definitions).hasSize(1)
-        assertThat(definitions.first().effectiveFrom()).isEqualTo(effectiveSource)
+        def definition = definitions.find{ it.from() == effectiveSource }
+        assertThat(definition).isNotNull()
     }
 
     @Bean
