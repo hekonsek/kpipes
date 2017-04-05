@@ -11,15 +11,19 @@ import static org.assertj.core.api.Assertions.assertThat
 
 class KafkaPipeDefinitionsRepositoryTest {
 
-    @Test
-    void shouldListAddedPipe() {
-        // Given
+    static KPipes kpipes
+
+    static {
         System.setProperty('kafka.broker.enabled', 'false')
         System.setProperty('kpipes.home', createTempDir().absolutePath)
         System.setProperty('applicationId', uuid())
         System.setProperty('nodeId', uuid())
-        KPipes kpipes = kpipes().startPipes()
+        kpipes = kpipes().startPipes()
+    }
 
+    @Test
+    void shouldListAddedPipe() {
+        // Given
         def repository = kpipes.serviceRegistry().service(PipeDefinitionsRepository)
         repository.add(decodePipe('tenant', 'foo | bar [config: "entry"] | baz'))
 
@@ -29,6 +33,23 @@ class KafkaPipeDefinitionsRepositoryTest {
 
         // Then
         assertThat(pipes.find{ it.from() == 'foo' }).isNotNull()
+    }
+
+    @Test
+    void shouldRemovePipe() {
+        // Given
+        def repository = kpipes.serviceRegistry().service(PipeDefinitionsRepository)
+        def pipe = decodePipe('tenant', 'bar | bar [config: "entry"] | baz')
+        repository.add(pipe)
+        Thread.sleep(1000)
+
+        // When
+        repository.remove(pipe.id())
+
+        // Then
+        Thread.sleep(1000)
+        def pipes = repository.list()
+        assertThat(pipes.find{ it.from() == 'bar' }).isNull()
     }
 
 }

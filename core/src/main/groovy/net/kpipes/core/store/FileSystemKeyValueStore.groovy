@@ -27,6 +27,10 @@ class FileSystemKeyValueStore {
         Files.toByteArray(targetFile)
     }
 
+    void remove(String collection, String key) {
+        new File(parentDirectory, "${collection}/${key}").delete()
+    }
+
     long count(String collection) {
         def collectionFiles = new File(parentDirectory, collection).list()
         if(collectionFiles == null) {

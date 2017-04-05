@@ -1,15 +1,10 @@
 package net.kpipes.core.repository
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.Json
-import net.kpipes.core.KPipes
 import net.kpipes.core.PipeDefinition
 import net.kpipes.core.store.FileSystemKeyValueStore
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.KeyValue
-import org.apache.kafka.streams.state.QueryableStoreTypes
 
 import static net.kpipes.core.PipeDefinitionEncoder.decodePipe
 import static net.kpipes.core.PipeDefinitionEncoder.encodePipe
@@ -22,16 +17,26 @@ class KafkaPipeDefinitionsRepository implements PipeDefinitionsRepository {
 
     private final Json json
 
+    // Constructors
+
     KafkaPipeDefinitionsRepository(KafkaProducer kafkaProducer, FileSystemKeyValueStore store, Json json) {
         this.kafkaProducer = kafkaProducer
         this.store = store
         this.json = json
     }
 
+    // Operations
+
     @Override
     void add(PipeDefinition pipeDefinition) {
         def encodedPipe = encodePipe(pipeDefinition)
-        kafkaProducer.send(new ProducerRecord('kpipes.pipeDefinitions', pipeDefinition.id(), new Bytes(new ObjectMapper().writeValueAsBytes([tenant: pipeDefinition.tenant(), pipe: encodedPipe]))))
+        def record = new ProducerRecord('kpipes.pipeDefinitions', pipeDefinition.id(), json.asBytes(tenant: pipeDefinition.tenant(), pipe: encodedPipe))
+        kafkaProducer.send(record)
+    }
+
+    @Override
+    void remove(String id) {
+        kafkaProducer.send(new ProducerRecord('kpipes.pipeDefinitions', id, null))
     }
 
     @Override

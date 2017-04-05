@@ -17,7 +17,7 @@ class PipeDefinitionEncoderTest {
     @Test
     void shouldEncodeTarget() {
         // Given
-        def pipe = new PipeDefinition(tenant, 'from', 'function', [:], Optional.of('target'))
+        def pipe = new PipeDefinition(tenant, empty(), 'from', 'function', [:], Optional.of('target'))
 
         // When
         def encodedPipe = encodePipe(pipe)
@@ -29,7 +29,7 @@ class PipeDefinitionEncoderTest {
     @Test
     void shouldEncodeNoTarget() {
         // Given
-        def pipe = new PipeDefinition(tenant, 'from', 'function', [foo: 'bar'], empty())
+        def pipe = new PipeDefinition(tenant, empty(), 'from', 'function', [foo: 'bar'], empty())
 
         // When
         def encodedPipe = encodePipe(pipe)

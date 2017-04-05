@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import static com.google.common.io.Files.createTempDir
 import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Uuids.uuid
-import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
 class AbstractAdapterTest {
@@ -36,7 +35,7 @@ class AbstractAdapterTest {
         def request = [service: 'echo', operation: 'echo', arguments: ['foo']]
 
         // When
-        def encodedResponse = adapter.invokeOperation('tenant', json.asBytes(request))
+        def encodedResponse = adapter.invokeOperation('tenant', json.asBytesArray(request))
         def response = new ObjectMapper().readValue(encodedResponse, Map).response
 
         // Then
@@ -49,7 +48,7 @@ class AbstractAdapterTest {
         def request = [service: 'echo', operation: 'voidOperation']
 
         // When
-        def encodedResponse = adapter.invokeOperation('tenant', json.asBytes(request))
+        def encodedResponse = adapter.invokeOperation('tenant', json.asBytesArray(request))
         def response = new ObjectMapper().readValue(encodedResponse, Map).response
 
         // Then

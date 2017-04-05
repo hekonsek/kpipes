@@ -22,8 +22,12 @@ class PipeService {
         kPipes.addPipe(decodePipe(tenant, pipeDefinition))
     }
 
+    void remove(String pipeId) {
+        kPipes.removePipe(pipeId)
+    }
+
     List<String> list(@Tenant String tenant) {
-        pipeDefinitionsRepository.list().findAll{ it.tenant() == tenant }.collect{ encodePipe(it) }
+        pipeDefinitionsRepository.list().findAll{ it.tenant() == tenant }.collect{ "${it.id()}\t${encodePipe(it)}" as String }
     }
 
 }

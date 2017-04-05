@@ -25,8 +25,6 @@ class PipeServiceTest extends KPipesTest {
 
     @Test(timeout = 30000L)
     void shouldListAddedPipes(TestContext context) {
-        def home = Files.createTempDir()
-        System.setProperty('kpipes.home', home.absolutePath)
         int httpPort = availableTcpPort()
         System.setProperty('http.port', httpPort + '')
         def async = context.async()
@@ -42,7 +40,8 @@ class PipeServiceTest extends KPipesTest {
                     Thread.sleep(1000)
                     websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'pipe', operation: 'list'])))
                 } else {
-                    assertThat(response.response as List).contains('foo | functionFoo | bar')
+                    def pipe = (response.response as List<String>).find{ it.endsWith('foo | functionFoo | bar') }
+                    assertThat(pipe).isNotNull()
                     async.complete()
                 }
             }

@@ -27,7 +27,11 @@ class ViewMaterializer {
         brokerAdmin.ensureTopicExists(topic)
         def consumer = new KafkaConsumerBuilder("materialized_view_keyvalue_${config.applicationId()}_${config.nodeId()}").port(config.kafkaPort()).build()
         consumerTemplate.subscribe(consumer, topic) {
-            store.save(it.topic(), it.key() as String, ((Bytes) it.value()).get())
+            if(it.value() != null) {
+                store.save(it.topic(), it.key() as String, ((Bytes) it.value()).get())
+            } else {
+                store.remove(it.topic(), it.key() as String)
+            }
         }
     }
 

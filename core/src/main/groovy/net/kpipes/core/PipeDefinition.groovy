@@ -1,8 +1,12 @@
 package net.kpipes.core
 
+import static org.apache.commons.codec.digest.DigestUtils.sha1Hex
+
 class PipeDefinition {
 
     private final String tenant
+
+    private final Optional<String> id
 
     private final String from
 
@@ -12,8 +16,9 @@ class PipeDefinition {
 
     private final Optional<String> to
 
-    PipeDefinition(String tenant, String from, String functionAddress, Map<String, Object> functionConfiguration, Optional<String> to) {
+    PipeDefinition(String tenant, Optional<String> id, String from, String functionAddress, Map<String, Object> functionConfiguration, Optional<String> to) {
         this.tenant = tenant
+        this.id = id
         this.from = from
         this.functionAddress = functionAddress
         this.functionConfiguration = functionConfiguration
@@ -21,7 +26,10 @@ class PipeDefinition {
     }
 
     String id() {
-        (from + functionAddress + functionConfiguration + to.orElse("")).replaceAll(":", "_")
+        id.orElseGet{
+            def hashBase = "${tenant}_${from}_${functionAddress}_${functionConfiguration}_${to.orElseGet{''}}"
+            sha1Hex(hashBase).substring(0, 8)
+        }
     }
 
     String tenant() {

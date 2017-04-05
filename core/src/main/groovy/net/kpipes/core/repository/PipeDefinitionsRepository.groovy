@@ -6,6 +6,8 @@ interface PipeDefinitionsRepository {
 
     void add(PipeDefinition pipeDefinition)
 
+    void remove(String id)
+
     List<PipeDefinition> list()
 
 }

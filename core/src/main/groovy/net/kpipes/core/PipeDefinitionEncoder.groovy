@@ -1,5 +1,6 @@
 package net.kpipes.core
 
+import static java.util.Optional.empty
 import static org.slf4j.LoggerFactory.getLogger
 
 class PipeDefinitionEncoder {
@@ -18,7 +19,7 @@ class PipeDefinitionEncoder {
 
         Optional<String> to = definitionParts.size() > 2 ? Optional.of(definitionParts[2]) : Optional.<String>empty()
 
-        new PipeDefinition(tenant, from, functionAddress, functionConfiguration, to)
+        new PipeDefinition(tenant, empty(), from, functionAddress, functionConfiguration, to)
     }
 
     static String encodePipe(PipeDefinition definition) {

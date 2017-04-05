@@ -36,6 +36,13 @@ class KPipes {
         startPipes()
     }
 
+    void removePipe(String pipeId) {
+        serviceRegistry.service(PipeDefinitionsRepository).remove(pipeId)
+        Thread.sleep(1000)
+        stopPipes()
+        startPipes()
+    }
+
     PipeBuilder pipeBuilder() {
         pipeBuilder
     }

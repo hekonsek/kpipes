@@ -174,20 +174,6 @@ class KPipesTest {
         }
     }
 
-    @Test
-    void shouldListDefinitions() {
-        // Given
-        kpipes.startPipes()
-        kpipes.addPipe(decodePipe(tenant, "${source} | functionFoo | ${target}"))
-
-        // When
-        def definitions = kpipes.serviceRegistry().service(PipeDefinitionsRepository).list()
-
-        // Then
-        def definition = definitions.find{ it.from() == effectiveSource }
-        assertThat(definition).isNotNull()
-    }
-
     @Bean
     EventMappingFunction functionFoo() {
         new EventMappingFunction() {

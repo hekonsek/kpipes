@@ -32,7 +32,7 @@ class MachineLearningPredictFunction implements EventMappingFunction {
         def model = event.config().model as String
         def volumes = [:]
         def eventDirectory = Files.createTempDir()
-        Files.write(json.asBytes(event.body().featureVector), new File(eventDirectory, 'request.json'))
+        Files.write(json.asBytesArray(event.body().featureVector), new File(eventDirectory, 'request.json'))
         volumes[eventDirectory.absolutePath] = '/event'
         volumes[new File(kpipesConfig.applicationHome(), 'model').absolutePath] = '/model'
         def container = new ContainerBuilder("kpipes/machinelearning-predict:${kpipesVersion()}").
