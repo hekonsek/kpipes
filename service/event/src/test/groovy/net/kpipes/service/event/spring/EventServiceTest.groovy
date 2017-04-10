@@ -130,4 +130,27 @@ class EventServiceTest extends KPipesTest {
         }
     }
 
+    @Test(timeout = 30000L)
+    void shouldListTopics(TestContext context) {
+        // Given
+        def async = context.async()
+        def topic = uuid()
+        brokerAdmin.ensureTopicExists(topic)
+        int httpPort = availableTcpPort()
+        System.setProperty('http.port', httpPort + '')
+        kpipes = kpipes()
+        kpipes.startPipes()
+        def client = Vertx.vertx().createHttpClient()
+        def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
+
+        client.websocket(httpPort, "localhost", "/operation", headers) { websocket ->
+            websocket.handler {
+                def event = new ObjectMapper().readValue(it.bytes, Map)
+                assertThat(event.response as List).contains(topic)
+                async.complete()
+            }
+            websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'event', operation: 'list'])))
+        }
+    }
+
 }

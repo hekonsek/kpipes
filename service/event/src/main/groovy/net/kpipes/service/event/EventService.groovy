@@ -47,11 +47,19 @@ class EventService {
 
     // Operations
 
+    List<String> list(@Tenant String tenant) {
+        Validate.notBlank(tenant, 'Tenant cannot be blank.')
+
+        LOG.debug('Listing event topics for tenant {}', tenant)
+        brokerAdmin.eventTopics()
+    }
+
     void add(@Tenant String tenant, String topic, String key, Map<String, Object> event) {
         Validate.notBlank(tenant, 'Tenant cannot be blank.')
         Validate.notBlank(topic, 'Topic cannot be blank.')
         if(key == null) {
             key = uuid()
+            LOG.debug('No key specified, generated key: {}', key)
         }
 
         def effectiveTopic = "${tenant}.${topic}"

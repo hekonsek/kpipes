@@ -24,7 +24,9 @@ import kafka.utils.ZkUtils
 import org.I0Itec.zkclient.ZkClient
 import org.apache.kafka.common.errors.TopicExistsException
 import org.slf4j.Logger
+import scala.collection.JavaConversions
 
+import static kafka.admin.AdminUtils.fetchAllTopicConfigs
 import static org.slf4j.LoggerFactory.getLogger
 
 @CompileStatic
@@ -67,6 +69,16 @@ class BrokerAdmin {
 
     void ensureTopicExists(String... topics) {
         ensureTopicExists(topics.toList().toSet())
+    }
+
+    List<String> topics() {
+        def zkClient = new ZkClient("${zooKeeperHost}:${zooKeeperPort}", Integer.MAX_VALUE, 10000, ZKStringSerializer$.MODULE$)
+        ZkUtils zooKeeperUtils = ZkUtils.apply(zkClient, false)
+        JavaConversions.mapAsJavaMap(fetchAllTopicConfigs(zooKeeperUtils)).collect { it.key }
+    }
+
+    List<String> eventTopics() {
+        topics().minus(['__consumer_offsets', 'kpipes.pipeDefinitions'])
     }
 
 }
