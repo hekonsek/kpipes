@@ -22,7 +22,7 @@ import net.kpipes.core.function.EventMappingFunctionBuilder
 import net.kpipes.core.function.EventAggregateFunctionBuilder
 import net.kpipes.core.function.EventRoutingFunctionBuilder
 import net.kpipes.core.function.GenericSimpleFunctionBuilder
-import net.kpipes.core.function.GenericTopologyFunctionBuilder
+
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.springframework.context.annotation.Bean
@@ -44,11 +44,6 @@ class FunctionBuilderConfig {
     @Bean
     eventRoutingFunctionBuilder(KPipes kPipes, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin) {
         new EventRoutingFunctionBuilder(kPipes, kafkaProducer, brokerAdmin)
-    }
-
-    @Bean
-    genericTopologyFunctionBuilder() {
-        new GenericTopologyFunctionBuilder()
     }
 
     @Bean

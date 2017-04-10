@@ -26,7 +26,7 @@ class EventMappingFunctionBuilder implements SimpleFunctionBuilder<EventMappingF
 
     @Override
     void build(KPipes kpipes, PipeDefinition pipeDefinition, EventMappingFunction function) {
-        kpipes.serviceRegistry().service(BrokerAdmin).ensureTopicExists(pipeDefinition.from(), pipeDefinition.to().get())
+        kpipes.serviceRegistry().service(BrokerAdmin).ensureTopicExists(pipeDefinition.effectiveFrom(), pipeDefinition.effectiveTo().get())
 
         def config = kpipes.serviceRegistry().service(KPipesConfig)
 

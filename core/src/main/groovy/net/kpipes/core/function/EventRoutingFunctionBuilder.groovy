@@ -2,21 +2,16 @@ package net.kpipes.core.function
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipes
-
-import net.kpipes.core.PipeBuilder
 import net.kpipes.core.PipeDefinition
+import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.kafka.client.BrokerAdmin
+import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
+import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.errors.TopologyBuilderException
-import org.apache.kafka.streams.kstream.KStreamBuilder
-import org.apache.kafka.streams.processor.AbstractProcessor
-import org.apache.kafka.streams.processor.Processor
-import org.apache.kafka.streams.processor.ProcessorSupplier
-import org.apache.kafka.streams.processor.TopologyBuilder
 
-class EventRoutingFunctionBuilder implements TopologyFunctionBuilder<EventRoutingFunction> {
+class EventRoutingFunctionBuilder implements SimpleFunctionBuilder<EventRoutingFunction> {
 
     private final KPipes kPipes
 
@@ -36,34 +31,28 @@ class EventRoutingFunctionBuilder implements TopologyFunctionBuilder<EventRoutin
     }
 
     @Override
-    void build(PipeBuilder pipeBuilder, TopologyBuilder topologyBuilder, PipeDefinition pipeDefinition, EventRoutingFunction function) {
-        if (function instanceof FunctionInitializer) {
-            function.initialize(pipeBuilder, pipeDefinition)
+    void build(KPipes kpipes, PipeDefinition pipeDefinition, EventRoutingFunction function) {
+        kpipes.serviceRegistry().service(BrokerAdmin).ensureTopicExists(pipeDefinition.effectiveFrom())
+        if (pipeDefinition.to().present) {
+            kpipes.serviceRegistry().service(BrokerAdmin).ensureTopicExists(pipeDefinition.effectiveTo().get())
         }
-        def sourceId = pipeDefinition.effectiveFrom()
-        def processorId = (topologyBuilder as KStreamBuilder).newName('processor')
-        try {
-            topologyBuilder.addSource(sourceId, pipeDefinition.effectiveFrom())
-        } catch (TopologyBuilderException e) {
 
+        def config = kpipes.serviceRegistry().service(KPipesConfig)
+
+        if (function instanceof FunctionInitializer) {
+            function.initialize(kpipes, pipeDefinition)
         }
-        topologyBuilder.addProcessor(processorId, new ProcessorSupplier<String, Bytes>() {
-            @Override
-            Processor<String, Bytes> get() {
-                new AbstractProcessor<String, Bytes>() {
-                    @Override
-                    void process(String key, Bytes value) {
-                        def body = new ObjectMapper().readValue(value.get(), Map)
-                        def event = new Event(context().topic(), key, body, pipeDefinition.functionConfiguration(), kPipes)
-                        def destination = function.onEvent(event)
-                        if(destination.present) {
-                            brokerAdmin.ensureTopicExists(destination.get())
-                            kafkaProducer.send(new ProducerRecord<String, Bytes>(destination.get(), key, new Bytes(new ObjectMapper().writeValueAsBytes(body))))
-                        }
-                    }
-                }
+
+        def consumerGroup = "event_routing_function_${config.applicationId()}_${pipeDefinition.id()}"
+        def consumer = new KafkaConsumerBuilder(consumerGroup).port(config.kafkaPort()).build()
+        kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(consumer, "pipe_${pipeDefinition.id()}", pipeDefinition.effectiveFrom()) {
+            def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
+            def destination = function.onEvent(new Event(it.topic(), pipeDefinition.to(), it.key() as String, event, pipeDefinition.functionConfiguration(), kpipes))
+            if (destination.present) {
+                brokerAdmin.ensureTopicExists(destination.get())
+                kpipes.serviceRegistry().service(KafkaProducer).send(new ProducerRecord(destination.get(), it.key() as String, it.value()))
             }
-        }, sourceId)
+        }
     }
 
 }

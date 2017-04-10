@@ -1,31 +1,18 @@
 package net.kpipes.function.filter
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import net.kpipes.core.PipeBuilder
-import net.kpipes.core.PipeDefinition
+import net.kpipes.core.function.Event
+import net.kpipes.core.function.EventRoutingFunction
 
-import net.kpipes.core.function.GenericTopologyFunction
-import org.apache.kafka.common.utils.Bytes
-import org.apache.kafka.streams.kstream.KStreamBuilder
-import org.apache.kafka.streams.processor.TopologyBuilder
-
-class FilterFunction implements GenericTopologyFunction {
+class FilterFunction implements EventRoutingFunction {
 
     @Override
-    void apply(PipeBuilder pipeBuilder, PipeDefinition pipeDefinition, TopologyBuilder topologyBuilder) {
-        def predicateText = pipeDefinition.functionConfiguration().predicate as String
-        def source = pipeBuilder.@sourceStreams[pipeDefinition.effectiveFrom()]
-        if(source == null) {
-            source = (topologyBuilder as KStreamBuilder).stream(pipeDefinition.effectiveFrom())
-            pipeBuilder.@sourceStreams[pipeDefinition.effectiveFrom()] = source
-        }
-        source.filter { Object key, Object value ->
-            def shell = new GroovyShell()
-            shell.setVariable('key', key)
-            def event = new ObjectMapper().readValue((value as Bytes).get(), Map)
-            shell.setVariable('event', event)
-            shell.evaluate(predicateText) as boolean
-        }.to(pipeDefinition.effectiveTo().get())
+    Optional<String> onEvent(Event event) {
+        def predicateText = event.config().predicate as String
+        def shell = new GroovyShell()
+        shell.setVariable('key', event.key())
+        shell.setVariable('event', event.body())
+        boolean result = shell.evaluate(predicateText) as boolean
+        result ? Optional.of("${event.tenant()}.${event.target().get()}") : Optional.empty()
     }
 
 }

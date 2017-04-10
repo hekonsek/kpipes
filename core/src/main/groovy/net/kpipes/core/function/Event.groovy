@@ -6,6 +6,8 @@ class Event {
 
     private final String topic
 
+    private final Optional<String> target
+
     private final String key
 
     private final Map<String, Object> body
@@ -16,8 +18,9 @@ class Event {
 
     private final KPipes kPipes
 
-    Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, boolean added, KPipes kPipes) {
+    Event(String topic, Optional<String> target, String key, Map<String, Object> body, Map<String, Object> config, boolean added, KPipes kPipes) {
         this.topic = topic
+        this.target = target
         this.key = key
         this.body = body
         this.config = config
@@ -26,13 +29,20 @@ class Event {
     }
 
     Event(String topic, String key, Map<String, Object> body, Map<String, Object> config, KPipes kPipes) {
-        this(topic, key, body, config, true, kPipes)
+        this(topic, Optional.empty(), key, body, config, true, kPipes)
+    }
+
+    Event(String topic, Optional<String> to, String key, Map<String, Object> body, Map<String, Object> config, KPipes kPipes) {
+        this(topic, to, key, body, config, true, kPipes)
     }
 
     String topic() {
         topic
     }
 
+    Optional<String> target() {
+        target
+    }
 
     String tenant() {
         topic.substring(0, topic.indexOf('.'))

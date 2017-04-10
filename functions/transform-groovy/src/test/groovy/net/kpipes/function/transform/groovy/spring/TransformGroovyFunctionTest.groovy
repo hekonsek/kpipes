@@ -12,7 +12,7 @@ class TransformGroovyFunctionTest {
 
     @Test
     void shouldExecuteExpression() {
-        def event = new Event('topic', 'key', [values: [1,2,3]], [expression: 'event.body().count = event.body().values.size(); event.body()'], true, null)
+        def event = new Event('topic', 'key', [values: [1,2,3]], [expression: 'event.body().count = event.body().values.size(); event.body()'], null)
         def result = function.onEvent(event)
         assertThat(result).containsEntry('count', 3)
     }

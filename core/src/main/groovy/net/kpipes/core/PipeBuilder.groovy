@@ -21,7 +21,7 @@ import groovy.transform.CompileStatic
 import net.kpipes.core.function.FunctionBuilder
 import net.kpipes.core.function.SimpleFunctionBuilder
 import net.kpipes.core.function.TableFunctionBuilder
-import net.kpipes.core.function.TopologyFunctionBuilder
+
 import net.kpipes.core.store.ViewMaterializer
 import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -98,7 +98,7 @@ class PipeBuilder {
             } else if(functionBuilder instanceof SimpleFunctionBuilder) {
                 functionBuilder.build(serviceRegistry.service(KPipes), pipeDefinition, function)
             } else  {
-                (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
+                new RuntimeException('Illegal builder type.')
             }
         } catch (NoSuchBeanDefinitionException e) {
             throw new RuntimeException("Cannot startPipes pipe. Reason: ${e.message}", e)
