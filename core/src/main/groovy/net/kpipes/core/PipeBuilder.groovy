@@ -18,6 +18,7 @@ package net.kpipes.core
 
 import com.google.common.io.Files
 import groovy.transform.CompileStatic
+import net.kpipes.core.function.FunctionBuilder
 import net.kpipes.core.function.SimpleFunctionBuilder
 import net.kpipes.core.function.TableFunctionBuilder
 import net.kpipes.core.function.TopologyFunctionBuilder
@@ -39,9 +40,9 @@ import static org.slf4j.LoggerFactory.getLogger
 @CompileStatic
 class PipeBuilder {
 
-    private static final Logger LOG = getLogger(PipeBuilder)
+    // Logger
 
-    private final String applicationId
+    private static final Logger LOG = getLogger(PipeBuilder)
 
     // Collaborators
 
@@ -83,7 +84,7 @@ class PipeBuilder {
                 topics << pipeDefinition.effectiveTo().get()
             }
 
-            def functionBuilders = serviceRegistry.services(net.kpipes.core.function.FunctionBuilder)
+            def functionBuilders = serviceRegistry.services(FunctionBuilder)
             def function = serviceRegistry.service(pipeDefinition.functionAddress())
             def functionBuilder = functionBuilders.find { it.supports(function) }
 
