@@ -101,7 +101,7 @@ class PipeBuilder {
                 (functionBuilder as TopologyFunctionBuilder).build(this, builder, pipeDefinition, function)
             }
         } catch (NoSuchBeanDefinitionException e) {
-            LOG.info('Cannot startPipes pipe. Reason: {}', e.message)
+            throw new RuntimeException("Cannot startPipes pipe. Reason: ${e.message}", e)
         }
     }
 

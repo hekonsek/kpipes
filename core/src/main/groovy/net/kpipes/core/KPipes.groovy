@@ -30,9 +30,8 @@ class KPipes {
     }
 
     void addPipe(PipeDefinition pipeDefinition) {
-        serviceRegistry.service(PipeDefinitionsRepository).add(pipeDefinition)
-        Thread.sleep(1000)
         pipeBuilder.build(pipeDefinition)
+        serviceRegistry.service(PipeDefinitionsRepository).add(pipeDefinition)
         stopPipes()
         startPipes()
     }

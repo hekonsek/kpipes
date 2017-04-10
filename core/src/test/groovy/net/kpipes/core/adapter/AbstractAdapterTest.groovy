@@ -56,6 +56,20 @@ class AbstractAdapterTest {
         assertThat(EchoService.voidOperationExecuted).isEqualTo(true)
     }
 
+    @Test
+    void shouldReturnErrorMessage() {
+        // Given
+        def request = [service: 'echo', operation: 'errorOperation']
+
+        // When
+        def encodedResponse = adapter.invokeOperation('tenant', json.asBytesArray(request))
+        def response = json.read(encodedResponse)
+
+        // Then
+        assertThat(response.error as boolean).isTrue()
+        assertThat(response.response).isEqualTo('RuntimeException: We have problem!')
+    }
+
     @Component('echo')
     static class EchoService {
 
@@ -67,6 +81,10 @@ class AbstractAdapterTest {
 
         void voidOperation() {
             voidOperationExecuted = true
+        }
+
+        void errorOperation() {
+            throw new RuntimeException('We have problem!')
         }
 
     }

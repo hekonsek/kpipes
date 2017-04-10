@@ -41,9 +41,12 @@ abstract class AbstractAdapter {
             def response = operationMethod.invoke(service, arguments != null ? arguments.toArray() : null)
             LOG.debug('Received operation response: {}', response)
             new ObjectMapper().writeValueAsBytes([response: response])
-        } catch (InvocationTargetException e) {
+        } catch (Throwable e) {
             LOG.debug('Error invoking operation', e)
-            throw e.cause
+            if(e instanceof InvocationTargetException) {
+                e = e.cause
+            }
+            new ObjectMapper().writeValueAsBytes([response: "${e.class.simpleName}: ${e.message}" as String, error: true])
         }
     }
 
