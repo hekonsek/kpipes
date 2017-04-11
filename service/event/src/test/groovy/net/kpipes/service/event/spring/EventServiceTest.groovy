@@ -135,7 +135,7 @@ class EventServiceTest extends KPipesTest {
         // Given
         def async = context.async()
         def topic = uuid()
-        brokerAdmin.ensureTopicExists(topic)
+        brokerAdmin.ensureTopicExists("anonymous.${topic}")
         int httpPort = availableTcpPort()
         System.setProperty('http.port', httpPort + '')
         kpipes = kpipes()

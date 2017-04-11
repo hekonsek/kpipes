@@ -51,7 +51,7 @@ class EventService {
         Validate.notBlank(tenant, 'Tenant cannot be blank.')
 
         LOG.debug('Listing event topics for tenant {}', tenant)
-        brokerAdmin.eventTopics()
+        brokerAdmin.eventTopics().collect{ it.replaceFirst(/$tenant\./, '') }
     }
 
     void add(@Tenant String tenant, String topic, String key, Map<String, Object> event) {

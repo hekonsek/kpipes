@@ -83,4 +83,17 @@ class CmdTest {
         assertThat(options).containsEntry('host', 'myhost')
     }
 
+    @Test
+    void shouldIndentMap() {
+        def map = Cmd.displayMap(0, [a: 'b', c: [c1: 'd1', c2: 'd2']])
+        assertThat(map).contains('c\n\tc1')
+    }
+
+    @Test
+    void shouldIndentList() {
+        def map = Cmd.displayMap(0, [a: 'b', c: [1,2,3]])
+        println map
+        assertThat(map).contains('c\n\t1')
+    }
+
 }

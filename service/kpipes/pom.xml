@@ -23,7 +23,11 @@
         <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-core</artifactId>
+            <artifactId>kpipes-service-event</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-service-pipes</artifactId>
         </dependency>
 
         <dependency>
