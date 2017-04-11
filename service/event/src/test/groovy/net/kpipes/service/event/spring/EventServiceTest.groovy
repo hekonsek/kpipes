@@ -1,7 +1,6 @@
 package net.kpipes.service.event.spring
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.io.Files
 import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
@@ -10,12 +9,10 @@ import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.common.utils.Bytes
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import static io.vertx.core.buffer.Buffer.buffer
-import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
@@ -23,20 +20,17 @@ import static org.assertj.core.api.Assertions.assertThat
 @RunWith(VertxUnitRunner)
 class EventServiceTest extends KPipesTest {
 
-    def home = Files.createTempDir()
+    int httpPort = availableTcpPort()
 
-    @Before
-    void before() {
-        System.setProperty('kpipes.home', home.absolutePath)
+    @Override
+    protected beforeKPipesCreated() {
+        System.setProperty('http.port', httpPort + '')
     }
 
     @Test(timeout = 30000L)
     void shouldAddEvent(TestContext context) {
         // Given
-        int httpPort = availableTcpPort()
-        System.setProperty('http.port', httpPort + '')
         def async = context.async()
-        kpipes = kpipes()
         kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
@@ -49,7 +43,6 @@ class EventServiceTest extends KPipesTest {
         new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), "anonymous.${source}") {
             def event = new ObjectMapper().readValue((it.value() as Bytes).get(), Map)
             assertThat(event.foo)isEqualTo('bar')
-            kpipes.stopPipes()
             async.complete()
         }
     }
@@ -57,10 +50,7 @@ class EventServiceTest extends KPipesTest {
     @Test(timeout = 30000L)
     void shouldListEvents(TestContext context) {
         // Given
-        int httpPort = availableTcpPort()
-        System.setProperty('http.port', httpPort + '')
         def async = context.async()
-        kpipes = kpipes()
         kpipes.pipeBuilder().build('anonymous', "${source} | view.materialize.keyvalue")
         kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
@@ -85,10 +75,7 @@ class EventServiceTest extends KPipesTest {
     @Test(timeout = 30000L)
     void shouldCountEvents(TestContext context) {
         // Given
-        int httpPort = availableTcpPort()
-        System.setProperty('http.port', httpPort + '')
         def async = context.async()
-        kpipes = kpipes()
         kpipes.pipeBuilder().build('anonymous', "${source} | view.materialize.keyvalue")
         kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
@@ -112,10 +99,7 @@ class EventServiceTest extends KPipesTest {
     @Test(timeout = 30000L)
     void shouldNotCountNotExistingCollection(TestContext context) {
         // Given
-        int httpPort = availableTcpPort()
-        System.setProperty('http.port', httpPort + '')
         def async = context.async()
-        kpipes = kpipes()
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
 
@@ -136,9 +120,6 @@ class EventServiceTest extends KPipesTest {
         def async = context.async()
         def topic = uuid()
         brokerAdmin.ensureTopicExists("anonymous.${topic}")
-        int httpPort = availableTcpPort()
-        System.setProperty('http.port', httpPort + '')
-        kpipes = kpipes()
         kpipes.startPipes()
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
