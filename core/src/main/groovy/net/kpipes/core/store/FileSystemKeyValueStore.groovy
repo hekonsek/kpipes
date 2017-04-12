@@ -24,6 +24,9 @@ class FileSystemKeyValueStore {
 
     byte[] read(String collection, String key) {
         def targetFile = new File(parentDirectory, "${collection}/${key}")
+        if(!targetFile.exists()) {
+            return null
+        }
         Files.toByteArray(targetFile)
     }
 

@@ -20,7 +20,6 @@ import com.google.common.io.Files
 import groovy.transform.CompileStatic
 import net.kpipes.core.function.FunctionBuilder
 import net.kpipes.core.function.SimpleFunctionBuilder
-import net.kpipes.core.function.TableFunctionBuilder
 
 import net.kpipes.core.store.ViewMaterializer
 import net.kpipes.lib.commons.KPipesConfig
@@ -86,20 +85,8 @@ class PipeBuilder {
 
             def functionBuilders = serviceRegistry.services(FunctionBuilder)
             def function = serviceRegistry.service(pipeDefinition.functionAddress())
-            def functionBuilder = functionBuilders.find { it.supports(function) }
-
-            if (functionBuilder instanceof TableFunctionBuilder) {
-                def sourceTable = sourceTables[pipeDefinition.effectiveFrom()]
-                if (sourceTable == null) {
-                    sourceTable = builder.table(Serdes.String(), Serdes.Bytes(), pipeDefinition.effectiveFrom(), pipeDefinition.effectiveFrom())
-                    sourceTables[pipeDefinition.effectiveFrom()] = sourceTable
-                }
-                (functionBuilder as TableFunctionBuilder).build(pipeDefinition, function, sourceTable)
-            } else if(functionBuilder instanceof SimpleFunctionBuilder) {
-                functionBuilder.build(serviceRegistry.service(KPipes), pipeDefinition, function)
-            } else  {
-                new RuntimeException('Illegal builder type.')
-            }
+            def functionBuilder = functionBuilders.find { it.supports(function) } as SimpleFunctionBuilder
+            functionBuilder.build(serviceRegistry.service(KPipes), pipeDefinition, function)
         } catch (NoSuchBeanDefinitionException e) {
             throw new RuntimeException("Cannot startPipes pipe. Reason: ${e.message}", e)
         }

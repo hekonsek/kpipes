@@ -29,10 +29,6 @@
         </dependency>
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-function-count</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-function-geo-geocoding</artifactId>
         </dependency>
         <dependency>

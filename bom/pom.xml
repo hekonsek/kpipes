@@ -75,11 +75,6 @@
             </dependency>
             <dependency>
                 <groupId>net.kpipes</groupId>
-                <artifactId>kpipes-function-count</artifactId>
-                <version>${kpipes.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.kpipes</groupId>
                 <artifactId>kpipes-function-filter</artifactId>
                 <version>${kpipes.version}</version>
             </dependency>

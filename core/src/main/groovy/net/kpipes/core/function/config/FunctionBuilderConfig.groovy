@@ -17,12 +17,9 @@
 package net.kpipes.core.function.config
 
 import net.kpipes.core.KPipes
-
 import net.kpipes.core.function.EventMappingFunctionBuilder
-import net.kpipes.core.function.EventAggregateFunctionBuilder
 import net.kpipes.core.function.EventRoutingFunctionBuilder
 import net.kpipes.core.function.GenericSimpleFunctionBuilder
-
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.springframework.context.annotation.Bean
@@ -34,11 +31,6 @@ class FunctionBuilderConfig {
     @Bean
     eventMappingFunctionBuilder(KPipes kpipes) {
         new EventMappingFunctionBuilder(kpipes)
-    }
-
-    @Bean
-    eventAggregateFunctionBuilder(KPipes kpipes) {
-        new EventAggregateFunctionBuilder(kpipes)
     }
 
     @Bean
