@@ -28,6 +28,7 @@
         <module>process</module>
         <module>docker</module>
         <module>testing</module>
+        <module>download</module>
     </modules>
 
 </project>
