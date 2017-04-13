@@ -71,7 +71,8 @@ class DownloadManager {
                 throw new FileDownloadException(targetFile.name, e)
             }
             targetFile.parentFile.mkdirs()
-            tmpFile.renameTo(targetFile)
+            LOG.debug('Saving downloaded file to {}.', targetFile.absolutePath)
+            Validate.isTrue(tmpFile.renameTo(targetFile), "Cannot move file ${tmpFile.absolutePath} to ${targetFile.absolutePath}.")
             LOG.debug('Saved downloaded file to {}.', targetFile.absolutePath)
         } else {
             LOG.debug('File {} exists - download skipped.', targetFile)

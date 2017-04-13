@@ -29,6 +29,7 @@
         <module>docker</module>
         <module>testing</module>
         <module>download</module>
+        <module>openshift</module>
     </modules>
 
 </project>

@@ -72,7 +72,7 @@ class Command {
         if(sudoPassword != null) {
             return sudoPassword
         }
-        System.getProperty('SUDO_PASSWORD')
+        System.getProperty('SUDO_PASSWORD', System.getenv('SUDO_PASSWORD'))
     }
 
 }
