@@ -25,68 +25,17 @@
     <dependencies>
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-adapter-websockets</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-function-geo-geocoding</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-functions-geo-googlemaps</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-function-geo-geofencing</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-function-filter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-functions-notification</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-function-transform-groovy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-function-machinelearning-predict</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-function-view-materialize-keyvalue</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-lib-kafka-broker</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-service-event</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-service-kpipes</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-service-machinelearning</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-service-pipes</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
+        <!-- External dependencies -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
     </dependencies>
 

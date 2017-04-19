@@ -21,7 +21,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>kernel</module>
         <module>server</module>
         <module>cmd</module>
     </modules>

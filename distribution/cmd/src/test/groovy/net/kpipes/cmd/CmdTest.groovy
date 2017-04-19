@@ -34,18 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat
 class CmdTest {
 
     @Test
-    void shouldGetKpipesVersion() {
-        System.setProperty('kpipes.home', createTempDir().absolutePath)
-        System.setProperty('applicationId', uuid())
-        System.setProperty('nodeId', uuid())
-
-        def kpipes = new KPipesApplication()
-        def versionResponse = new Cmd('localhost', 8080).executeCommand(['kpipes', 'version'])
-        assertThat(versionResponse).isEqualTo(kpipesVersion())
-        kpipes.stop()
-    }
-
-    @Test
     void shouldHandleStoppedServer() {
         def response = new Cmd('localhost', availableTcpPort()).executeCommand(['kpipes', 'version']) as String
         assertThat(response).startsWith('Cannot connect to KPipes server')
