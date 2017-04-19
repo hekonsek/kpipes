@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.kpipes</groupId>
         <artifactId>kpipes-lib</artifactId>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.4</version>
     </parent>
     <artifactId>kpipes-lib-process</artifactId>
     <name>${project.artifactId}</name>

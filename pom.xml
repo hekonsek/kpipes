@@ -12,7 +12,7 @@
 
     <groupId>net.kpipes</groupId>
     <artifactId>kpipes</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4</version>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
@@ -270,7 +270,7 @@
         <connection>scm:git:git@github.com:kpipes/kpipes.git</connection>
         <developerConnection>scm:git:git@github.com:kpipes/kpipes.git</developerConnection>
         <url>git@github.com:kpipes/kpipes.git</url>
-        <tag>HEAD</tag>
+        <tag>kpipes-0.0.4</tag>
     </scm>
 
     <distributionManagement>

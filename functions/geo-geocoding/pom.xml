@@ -13,7 +13,7 @@
     <parent>
         <groupId>net.kpipes</groupId>
         <artifactId>kpipes-functions</artifactId>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.4</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>kpipes-function-geo-geocoding</artifactId>
