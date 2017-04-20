@@ -16,7 +16,7 @@ A command below starts Docker container with KPipes server including embedded Ap
 
     docker run -d --name kpipes --net=host -v /var/kpipes:/var/kpipes kpipes/server:0.0.5
     
-Your data is stored in `/var/kpipes/default/` directory:
+By default KPipes starts Kafka on port 9092 and ZooKeeper on port 2181. Your data is stored in `/var/kpipes/default/` directory:
 
     $ ls /var/kpipes/default
     kafka_data  zookeeper_data
