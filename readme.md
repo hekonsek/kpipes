@@ -20,3 +20,14 @@ Your data is stored in `/var/kpipes/default/` directory:
 
     $ ls /var/kpipes/default
     kafka_data  zookeeper_data
+
+### Changing to a different data set
+
+If you need to work on on-default data set, you can specify it using `APPLICATIONID` environment variable:
+
+    docker run -d --name kpipes --net=host -v /var/kpipes:/var/kpipes -e APPLICATIONID=anotherDataSet kpipes/server:0.0.5
+    
+In such case your data is stored in `/var/kpipes/anotherDataSet/` directory:
+
+    $ ls /var/kpipes/anotherDataSet
+    kafka_data  zookeeper_data
