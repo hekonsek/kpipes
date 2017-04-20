@@ -1,6 +1,6 @@
 # KPipes
 
-[![Version](https://img.shields.io/badge/kpipes-0.0.4-blue.svg)](https://github.com/kpipes/kpipes/releases)
+[![Version](https://img.shields.io/badge/kpipes-0.0.5-blue.svg)](https://github.com/kpipes/kpipes/releases)
 [![Build](https://api.travis-ci.org/kpipes/kpipes.svg)](https://travis-ci.org/kpipes/kpipes/)
 
 KPipes - simple data pipelines on the top of Apache Kafka.
@@ -14,4 +14,4 @@ purpose of having this project is:
 
 A command below starts single Docker container
 
-    docker run -d --name kpipes --net=host -v /var/kpipes:/var/kpipes kpipes/server:0.0.4
+    docker run -d --name kpipes --net=host -v /var/kpipes:/var/kpipes kpipes/server:0.0.5
