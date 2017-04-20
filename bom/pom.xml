@@ -13,7 +13,7 @@
     <parent>
         <groupId>net.kpipes</groupId>
         <artifactId>kpipes</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.6-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>kpipes-bom</artifactId>
@@ -33,7 +33,7 @@
         <jts.version>1.14.0</jts.version>
         <junit.version>4.12</junit.version>
         <kafka.version>0.10.2.0</kafka.version>
-        <kpipes.version>0.0.5</kpipes.version>
+        <kpipes.version>0.0.6-SNAPSHOT</kpipes.version>
         <logback.version>1.2.2</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
         <vertx.version>3.4.1</vertx.version>
