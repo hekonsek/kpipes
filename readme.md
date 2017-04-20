@@ -31,3 +31,5 @@ In such case your data is stored in `/var/kpipes/anotherDataSet/` directory:
 
     $ ls /var/kpipes/anotherDataSet
     kafka_data  zookeeper_data
+
+Of course Kafka and ZooKeeper initializes new data set if one with given name doesn’t exist.
