@@ -12,6 +12,11 @@ purpose of having this project is:
 
 ## Starting KPipes
 
-A command below starts single Docker container
+A command below starts Docker container with KPipes server including embedded Apache ZooKeeper and Apache Kafka broker:
 
     docker run -d --name kpipes --net=host -v /var/kpipes:/var/kpipes kpipes/server:0.0.5
+    
+Your data is stored in `/var/kpipes/default/` directory:
+
+    $ ls /var/kpipes/default
+    kafka_data  zookeeper_data
