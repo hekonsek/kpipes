@@ -19,6 +19,7 @@
     <name>${project.artifactId}</name>
 
     <properties>
+        <mainClass>net.kpipes.server.Server</mainClass>
         <image.target>server</image.target>
     </properties>
 

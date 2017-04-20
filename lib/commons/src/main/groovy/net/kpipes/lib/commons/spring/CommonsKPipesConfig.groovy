@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration
 class CommonsKPipesConfig {
 
     @Bean
-    KPipesConfig kpipesConfig(@Value('${applicationId}') String applicationId,
-                              @Value('${nodeId}') String nodeId,
+    KPipesConfig kpipesConfig(@Value('${applicationId:default}') String applicationId,
+                              @Value('${nodeId:default}') String nodeId,
                               @Value('${kafka.host:localhost}') String kafkaHost,
                               @Value('${kafka.port:9092}') int kafkaPort,
                               @Value('${kafka.dataDirectory:kafka_data}') String  kafkaDataDirectory,
