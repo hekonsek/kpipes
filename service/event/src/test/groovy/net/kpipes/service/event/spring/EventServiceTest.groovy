@@ -9,6 +9,7 @@ import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
 import org.apache.kafka.common.utils.Bytes
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -17,6 +18,7 @@ import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
+@Ignore
 @RunWith(VertxUnitRunner)
 class EventServiceTest extends KPipesTest {
 

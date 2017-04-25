@@ -21,8 +21,8 @@
         <module>docker</module>
         <module>lib</module>
         <module>core</module>
+        <module>endpoint</module>
         <module>functions</module>
-        <module>adapter</module>
         <module>service</module>
         <module>distribution</module>
     </modules>

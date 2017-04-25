@@ -12,14 +12,14 @@
 
     <parent>
         <groupId>net.kpipes</groupId>
-        <artifactId>kpipes-adapter</artifactId>
+        <artifactId>kpipes-endpoint</artifactId>
         <version>0.0.6-SNAPSHOT</version>
-        <relativePath>..</relativePath>
     </parent>
-    <artifactId>kpipes-adapter-websockets</artifactId>
+    <artifactId>kpipes-endpoint-http</artifactId>
     <name>${project.artifactId}</name>
 
     <dependencies>
+        <!-- Internal dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
             <artifactId>kpipes-core</artifactId>

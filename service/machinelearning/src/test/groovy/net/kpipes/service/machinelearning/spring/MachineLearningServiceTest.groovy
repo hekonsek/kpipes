@@ -8,6 +8,7 @@ import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.lib.commons.KPipesConfig
 import net.kpipes.lib.testing.KPipesTest
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -15,6 +16,7 @@ import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
 
+@Ignore
 @RunWith(VertxUnitRunner)
 class MachineLearningServiceTest extends KPipesTest {
 

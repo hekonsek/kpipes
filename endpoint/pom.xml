@@ -16,12 +16,12 @@
         <version>0.0.6-SNAPSHOT</version>
         <relativePath>../bom</relativePath>
     </parent>
-    <artifactId>kpipes-adapter</artifactId>
+    <artifactId>kpipes-endpoint</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>websockets</module>
+        <module>http</module>
     </modules>
 
 </project>

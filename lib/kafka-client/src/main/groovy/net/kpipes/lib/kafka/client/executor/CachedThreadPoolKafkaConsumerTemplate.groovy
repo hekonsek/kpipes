@@ -3,13 +3,16 @@ package net.kpipes.lib.kafka.client.executor
 import groovy.transform.CompileStatic
 import net.kpipes.lib.commons.Uuids
 import net.kpipes.lib.kafka.client.BrokerAdmin
+import org.apache.kafka.clients.consumer.ConsumerRebalanceListener
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.errors.WakeupException
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.regex.Pattern
 
 import static java.util.concurrent.Executors.newCachedThreadPool
 import static net.kpipes.lib.commons.Uuids.uuid
@@ -65,8 +68,31 @@ class CachedThreadPoolKafkaConsumerTemplate implements KafkaConsumerTemplate {
     }
 
     @Override
+    def <K, V> void subscribe(KafkaConsumer<K, V> consumer, String taskId, Pattern topics, ConsumerRecordCallback<K, V> consumerRecordCallback) {
+        consumer.subscribe(topics, new ConsumerRebalanceListener() {
+            @Override
+            void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+
+            }
+
+            @Override
+            void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+//                partitions.each {
+//                    brokerAdmin.ensureTopicExists(it.topic())
+//                }
+            }
+        })
+        consumeRecord(consumer, taskId, consumerRecordCallback)
+    }
+
+    @Override
     def <K, V> void subscribe(KafkaConsumer<K, V> consumer, String topic, ConsumerRecordCallback<K, V> consumerRecordCallback) {
         subscribe(consumer, uuid(), topic, consumerRecordCallback)
+    }
+
+    @Override
+    def <K, V> void subscribe(KafkaConsumer<K, V> consumer, Pattern topics, ConsumerRecordCallback<K, V> consumerRecordCallback) {
+        subscribe(consumer, uuid(), topics, consumerRecordCallback)
     }
 
     @Override

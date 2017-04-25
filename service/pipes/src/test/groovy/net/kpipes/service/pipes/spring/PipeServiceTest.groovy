@@ -9,6 +9,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.core.function.Event
 import net.kpipes.core.function.EventMappingFunction
 import net.kpipes.lib.testing.KPipesTest
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.context.annotation.Bean
@@ -19,6 +20,7 @@ import static net.kpipes.core.spring.KPipesFactory.kpipes
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
 
+@Ignore
 @RunWith(VertxUnitRunner)
 @Configuration
 class PipeServiceTest extends KPipesTest {

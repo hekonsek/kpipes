@@ -6,6 +6,7 @@ import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import net.kpipes.lib.testing.KPipesTest
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -15,6 +16,7 @@ import static net.kpipes.lib.commons.Mavens.artifactVersionFromDependenciesPrope
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static org.assertj.core.api.Assertions.assertThat
 
+@Ignore
 @RunWith(VertxUnitRunner)
 class KpipesServiceTest extends KPipesTest {
 

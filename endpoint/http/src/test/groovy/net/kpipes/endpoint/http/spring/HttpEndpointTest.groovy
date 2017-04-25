@@ -1,29 +1,27 @@
-package net.kpipes.adapter.websockets
+package net.kpipes.endpoint.http.spring
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import net.kpipes.lib.kafka.client.KafkaProducerBuilder
+import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
+import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import net.kpipes.lib.testing.KPipesTest
-import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.utils.Bytes
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.springframework.context.annotation.Configuration
-import org.springframework.stereotype.Component
+
+import java.util.concurrent.CountDownLatch
+import java.util.regex.Pattern
 
 import static io.vertx.core.buffer.Buffer.buffer
-import static net.kpipes.core.spring.KPipesFactory.kpipes
+import static java.util.concurrent.TimeUnit.SECONDS
 import static net.kpipes.lib.commons.Networks.availableTcpPort
 import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
 @RunWith(VertxUnitRunner)
-@Configuration
-class WebSocketsAdapterTest extends KPipesTest {
+class HttpEndpointTest extends KPipesTest {
 
     int httpPort = availableTcpPort()
 
@@ -87,7 +85,7 @@ class WebSocketsAdapterTest extends KPipesTest {
         // When
         def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
-        client.websocket(httpPort, "localhost", "/operation", headers) { websocket ->
+        client.websocket(httpPort, "localhost", "/service", headers) { websocket ->
             websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
             websocket.handler {
                 def response = new ObjectMapper().readValue(it.bytes, Map)
@@ -95,15 +93,28 @@ class WebSocketsAdapterTest extends KPipesTest {
                 async.complete()
             }
         }
+
+        Thread.sleep(1000)
+        def consumer = new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build()
+        kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(consumer, Pattern.compile(/anonymous\.service\.request\..+/)) {
+            send(it.topic().replaceFirst('request','response'), it.key() as String, [response: 'hello world'])
+        }
     }
 
-    @Component('MyService')
-    static class MyService {
+    @Test
+    void shouldNotReturnResponseIfNoServiceIsPresent() {
+        def semaphore = new CountDownLatch(1)
+        kpipes.startPipes()
 
-        String echo(String text) {
-            text
+        def client = Vertx.vertx().createHttpClient()
+        def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
+        client.websocket(httpPort, "localhost", "/service", headers) { websocket ->
+            websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
+            websocket.handler {
+                semaphore.countDown()
+            }
         }
-
+        assertThat(semaphore.await(10L, SECONDS)).isFalse()
     }
 
 }

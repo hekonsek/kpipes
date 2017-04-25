@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.kpipes.adapter.websockets
+package net.kpipes.endpoint.http
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.kpipes.core.KPipes
@@ -23,6 +23,7 @@ import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.utils.Bytes
 
 import static com.google.common.base.MoreObjects.firstNonNull
@@ -30,7 +31,7 @@ import static io.vertx.core.Vertx.vertx
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.lib.commons.Uuids.uuid
 
-class WebSocketsAdapter extends AbstractAdapter {
+class HttpEndpoint extends AbstractAdapter {
 
     private final KafkaConsumerTemplate kafkaConsumerTemplate
 
@@ -48,8 +49,8 @@ class WebSocketsAdapter extends AbstractAdapter {
 
     // Constructors
 
-    WebSocketsAdapter(KPipes kPipes, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator,
-                      int httpPort, int kafkaPort) {
+    HttpEndpoint(KPipes kPipes, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator,
+                 int httpPort, int kafkaPort) {
         super(kPipes)
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
@@ -69,10 +70,19 @@ class WebSocketsAdapter extends AbstractAdapter {
             }
 
             def uri = socket.uri()
-            if(uri == '/operation') {
+            if(uri == '/service') {
+                def clientId = uuid()
+                def responseTopic = "${authentication.get().tenant}.service.response.${clientId}"
+                def requestTopic = "${authentication.get().tenant}.service.request.${clientId}"
+                brokerAdmin.ensureTopicExists(requestTopic, responseTopic)
+                kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), responseTopic) {
+                    socket.write(buffer((it.value() as Bytes).get()))
+                }
+
                 socket.handler { message ->
                     try {
-                        socket.write(buffer(invokeOperation(authentication.get().tenant, message.bytes)))
+                        def requestId = uuid()
+                        kafkaProducer.send(new ProducerRecord(requestTopic, requestId, new Bytes(message.bytes)))
                     } catch (Exception e) {
                         def messageText = e.message ?: 'Problem invoking operation.'
                         socket.write(buffer(new ObjectMapper().writeValueAsBytes([response: messageText, error: true])))

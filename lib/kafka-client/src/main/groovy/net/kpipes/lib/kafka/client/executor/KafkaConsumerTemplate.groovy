@@ -2,6 +2,8 @@ package net.kpipes.lib.kafka.client.executor
 
 import org.apache.kafka.clients.consumer.KafkaConsumer
 
+import java.util.regex.Pattern
+
 interface KafkaConsumerTemplate {
 
     def <K,V> void consumeRecords(KafkaConsumer<K,V> consumer, String taskId, ConsumerRecordsCallback<K,V> consumerRecordsCallback)
@@ -10,7 +12,11 @@ interface KafkaConsumerTemplate {
 
     def <K,V> void subscribe(KafkaConsumer<K,V> consumer, String taskId, String topic, ConsumerRecordCallback<K,V> consumerRecordCallback)
 
+    def <K,V> void subscribe(KafkaConsumer<K,V> consumer, String taskId, Pattern topics, ConsumerRecordCallback<K,V> consumerRecordCallback)
+
     def <K,V> void subscribe(KafkaConsumer<K,V> consumer, String topic, ConsumerRecordCallback<K,V> consumerRecordCallback)
+
+    def <K,V> void subscribe(KafkaConsumer<K,V> consumer, Pattern topics, ConsumerRecordCallback<K,V> consumerRecordCallback)
 
     void stopTask(String taskId)
 

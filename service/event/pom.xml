@@ -35,11 +35,6 @@
         <!-- Internal testing dependencies -->
         <dependency>
             <groupId>net.kpipes</groupId>
-            <artifactId>kpipes-adapter-websockets</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-function-view-materialize-keyvalue</artifactId>
             <scope>test</scope>
         </dependency>

@@ -1,4 +1,4 @@
-package net.kpipes.adapter.websockets
+package net.kpipes.endpoint.http
 
 interface Authenticator {
 
