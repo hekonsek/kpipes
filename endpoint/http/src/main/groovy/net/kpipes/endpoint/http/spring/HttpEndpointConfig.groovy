@@ -16,12 +16,11 @@
  */
 package net.kpipes.endpoint.http.spring
 
-import net.kpipes.core.KPipes
 import net.kpipes.endpoint.http.AnonymousAuthenticator
 import net.kpipes.endpoint.http.Authenticator as KPipesAuthenticator
 import net.kpipes.endpoint.http.HttpEndpoint
 import net.kpipes.lib.kafka.client.BrokerAdmin
-import net.kpipes.lib.kafka.client.executor.CachedThreadPoolKafkaConsumerTemplate
+import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -32,11 +31,13 @@ import org.springframework.context.annotation.Configuration
 class HttpEndpointConfig {
 
     @Bean(initMethod = 'start')
-    HttpEndpoint httpEndpoint(KPipes kPipes, BrokerAdmin brokerAdmin, KPipesAuthenticator authenticator,
-                                   @Value('${http.port:8080}') int httpPort,
-                                   @Value('${kafka.port:9092}') int kafkaPort,
+    HttpEndpoint httpEndpoint(KafkaConsumerTemplate kafkaConsumerTemplate,
+                              BrokerAdmin brokerAdmin,
+                              KPipesAuthenticator authenticator,
+                              @Value('${http.port:8080}') int httpPort,
+                              @Value('${kafka.port:9092}') int kafkaPort,
                               KafkaProducer kafkaProducer) {
-        new HttpEndpoint(kPipes, new CachedThreadPoolKafkaConsumerTemplate(brokerAdmin), kafkaProducer, brokerAdmin, authenticator, httpPort, kafkaPort)
+        new HttpEndpoint(kafkaConsumerTemplate, kafkaProducer, brokerAdmin, authenticator, httpPort, kafkaPort)
     }
 
     @Bean

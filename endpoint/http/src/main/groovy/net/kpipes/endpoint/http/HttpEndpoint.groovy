@@ -17,8 +17,6 @@
 package net.kpipes.endpoint.http
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.kpipes.core.KPipes
-import net.kpipes.core.adapter.AbstractAdapter
 import net.kpipes.lib.kafka.client.BrokerAdmin
 import net.kpipes.lib.kafka.client.KafkaConsumerBuilder
 import net.kpipes.lib.kafka.client.executor.KafkaConsumerTemplate
@@ -31,7 +29,7 @@ import static io.vertx.core.Vertx.vertx
 import static io.vertx.core.buffer.Buffer.buffer
 import static net.kpipes.lib.commons.Uuids.uuid
 
-class HttpEndpoint extends AbstractAdapter {
+class HttpEndpoint {
 
     private final KafkaConsumerTemplate kafkaConsumerTemplate
 
@@ -49,9 +47,8 @@ class HttpEndpoint extends AbstractAdapter {
 
     // Constructors
 
-    HttpEndpoint(KPipes kPipes, KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator,
+    HttpEndpoint(KafkaConsumerTemplate kafkaConsumerTemplate, KafkaProducer kafkaProducer, BrokerAdmin brokerAdmin, Authenticator authenticator,
                  int httpPort, int kafkaPort) {
-        super(kPipes)
         this.kafkaConsumerTemplate = kafkaConsumerTemplate
         this.kafkaProducer = kafkaProducer
         this.brokerAdmin = brokerAdmin
@@ -76,7 +73,7 @@ class HttpEndpoint extends AbstractAdapter {
                 def requestTopic = "${authentication.get().tenant}.service.request.${clientId}"
                 brokerAdmin.ensureTopicExists(requestTopic, responseTopic)
                 def responseTaskId = "websocket-client-response-${clientId}"
-                kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), responseTaskId, responseTopic) {
+                kafkaConsumerTemplate.subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), responseTaskId, responseTopic) {
                     socket.write(buffer((it.value() as Bytes).get()))
                 }
 
@@ -91,7 +88,7 @@ class HttpEndpoint extends AbstractAdapter {
                 }
 
                 socket.closeHandler {
-                    kpipes.serviceRegistry().service(KafkaConsumerTemplate).stopTask(responseTaskId)
+                    kafkaConsumerTemplate.stopTask(responseTaskId)
                 }
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')

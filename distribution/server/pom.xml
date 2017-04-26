@@ -26,6 +26,10 @@
     <dependencies>
         <dependency>
             <groupId>net.kpipes</groupId>
+            <artifactId>kpipes-endpoint-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.kpipes</groupId>
             <artifactId>kpipes-lib-kafka-broker</artifactId>
         </dependency>
 
