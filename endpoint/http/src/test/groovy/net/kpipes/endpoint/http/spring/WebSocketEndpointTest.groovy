@@ -84,10 +84,10 @@ class WebSocketEndpointTest extends KPipesTest {
         // When
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
         client.websocket(httpPort, "localhost", "/service", headers) { websocket ->
-            websocket.writeBinaryMessage(buffer(json.asBytesArray([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
+            websocket.writeBinaryMessage(buffer(json.asBytesArray([service: 'MyService', operation: 'echo', body: [hello: 'world']])))
             websocket.handler {
                 def response = json.read(it.bytes)
-                assertThat(response.response as String).isEqualTo('hello world')
+                assertThat(response.response as Map).containsEntry('hello', 'world')
                 async.complete()
             }
         }
@@ -95,7 +95,7 @@ class WebSocketEndpointTest extends KPipesTest {
         Thread.sleep(1000)
         def consumer = new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build()
         kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(consumer, Pattern.compile(/anonymous\.service\.request\..+/)) {
-            send(it.topic().replaceFirst('request','response'), it.key() as String, [response: 'hello world'])
+            send(it.topic().replaceFirst('request','response'), it.key() as String, [response: [hello: 'world']])
         }
     }
 
@@ -106,7 +106,7 @@ class WebSocketEndpointTest extends KPipesTest {
 
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
         client.websocket(httpPort, "localhost", "/service", headers) { websocket ->
-            websocket.writeBinaryMessage(buffer(json.asBytesArray([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
+            websocket.writeBinaryMessage(buffer(json.asBytesArray([service: 'MyService', operation: 'echo', body: [hello: 'world']])))
             websocket.handler {
                 semaphore.countDown()
             }

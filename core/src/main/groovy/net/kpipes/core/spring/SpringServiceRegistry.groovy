@@ -1,6 +1,7 @@
 package net.kpipes.core.spring
 
 import net.kpipes.core.ServiceRegistry
+import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.ApplicationContext
 import org.springframework.context.support.GenericApplicationContext
@@ -15,7 +16,11 @@ class SpringServiceRegistry implements ServiceRegistry {
 
     @Override
     Object service(String id) {
-        applicationContext.getBean(id)
+        try {
+            applicationContext.getBean(id)
+        } catch (NoSuchBeanDefinitionException e) {
+            null
+        }
     }
 
     @Override
