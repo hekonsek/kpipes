@@ -56,7 +56,7 @@ class MachineLearningPredictFunctionTest extends KPipesTest {
 
         // Then
         kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), effectiveTarget) {
-            def response = json.readValue((it.value() as Bytes).get(), Map)
+            def response = json.read(it.value() as Bytes)
             def prediction = response['response.machinelearning.predict'] as String
             assertThat(prediction).isEqualTo('big')
             async.complete()

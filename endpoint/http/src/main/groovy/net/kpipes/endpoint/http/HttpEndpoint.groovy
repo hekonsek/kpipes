@@ -75,7 +75,8 @@ class HttpEndpoint extends AbstractAdapter {
                 def responseTopic = "${authentication.get().tenant}.service.response.${clientId}"
                 def requestTopic = "${authentication.get().tenant}.service.request.${clientId}"
                 brokerAdmin.ensureTopicExists(requestTopic, responseTopic)
-                kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), responseTopic) {
+                def responseTaskId = "websocket-client-response-${clientId}"
+                kpipes.serviceRegistry().service(KafkaConsumerTemplate).subscribe(new KafkaConsumerBuilder<>(uuid()).port(kafkaPort).build(), responseTaskId, responseTopic) {
                     socket.write(buffer((it.value() as Bytes).get()))
                 }
 
@@ -87,6 +88,10 @@ class HttpEndpoint extends AbstractAdapter {
                         def messageText = e.message ?: 'Problem invoking operation.'
                         socket.write(buffer(new ObjectMapper().writeValueAsBytes([response: messageText, error: true])))
                     }
+                }
+
+                socket.closeHandler {
+                    kpipes.serviceRegistry().service(KafkaConsumerTemplate).stopTask(responseTaskId)
                 }
             } else if(uri.startsWith('/notification/')) {
                 def channelName = uri.replaceFirst(/\/notification\//, '')

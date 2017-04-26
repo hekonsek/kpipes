@@ -23,4 +23,8 @@ class Json {
         mapper.readValue(bytes, Map)
     }
 
+    Map<String, Object> read(Bytes bytes) {
+        read(bytes.get())
+    }
+
 }

@@ -1,6 +1,5 @@
 package net.kpipes.endpoint.http.spring
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.Vertx
 import io.vertx.core.http.CaseInsensitiveHeaders
 import io.vertx.ext.unit.TestContext
@@ -21,9 +20,11 @@ import static net.kpipes.lib.commons.Uuids.uuid
 import static org.assertj.core.api.Assertions.assertThat
 
 @RunWith(VertxUnitRunner)
-class HttpEndpointTest extends KPipesTest {
+class WebSocketEndpointTest extends KPipesTest {
 
     int httpPort = availableTcpPort()
+
+    def client = Vertx.vertx().createHttpClient()
 
     @Override
     protected beforeKPipesCreated() {
@@ -41,11 +42,10 @@ class HttpEndpointTest extends KPipesTest {
         send("anonymous.notification.${source}", uuid(), [foo: 'bar'])
 
         // Then
-        def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous', history: 'all'])
         client.websocket(httpPort, "localhost", "/notification/${source}", headers) { websocket ->
             websocket.handler {
-                def event = new ObjectMapper().readValue(it.bytes, Map)
+                def event = json.read(it.bytes)
                 assertThat(event.foo)isEqualTo('bar')
                 async.complete()
             }
@@ -63,11 +63,10 @@ class HttpEndpointTest extends KPipesTest {
         send("anonymous.notification.${source}", uuid(), [foo: 'oldValue'])
 
         // Then
-        def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
         client.websocket(httpPort, "localhost", "/notification/${source}", headers) { websocket ->
             websocket.handler {
-                def event = new ObjectMapper().readValue(it.bytes, Map)
+                def event = json.read(it.bytes)
                 assertThat(event.foo)isEqualTo('bar')
                 async.complete()
             }
@@ -83,12 +82,11 @@ class HttpEndpointTest extends KPipesTest {
         kpipes.startPipes()
 
         // When
-        def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
         client.websocket(httpPort, "localhost", "/service", headers) { websocket ->
-            websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
+            websocket.writeBinaryMessage(buffer(json.asBytesArray([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
             websocket.handler {
-                def response = new ObjectMapper().readValue(it.bytes, Map)
+                def response = json.read(it.bytes)
                 assertThat(response.response as String).isEqualTo('hello world')
                 async.complete()
             }
@@ -106,10 +104,9 @@ class HttpEndpointTest extends KPipesTest {
         def semaphore = new CountDownLatch(1)
         kpipes.startPipes()
 
-        def client = Vertx.vertx().createHttpClient()
         def headers = new CaseInsensitiveHeaders([username: 'anonymous', password: 'anonymous'])
         client.websocket(httpPort, "localhost", "/service", headers) { websocket ->
-            websocket.writeBinaryMessage(buffer(new ObjectMapper().writeValueAsBytes([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
+            websocket.writeBinaryMessage(buffer(json.asBytesArray([service: 'MyService', operation: 'echo', arguments: ['hello world']])))
             websocket.handler {
                 semaphore.countDown()
             }

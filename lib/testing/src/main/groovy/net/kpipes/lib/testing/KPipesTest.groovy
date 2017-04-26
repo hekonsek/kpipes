@@ -1,6 +1,7 @@
 package net.kpipes.lib.testing
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.kpipes.core.Json
 import net.kpipes.core.KPipes
 import net.kpipes.lib.kafka.broker.TestBroker
 import net.kpipes.lib.kafka.client.BrokerAdmin
@@ -21,13 +22,13 @@ class KPipesTest {
 
     static protected brokerAdmin = new BrokerAdmin('localhost', broker.zooKeeperPort(), 1)
 
-    static protected json = new ObjectMapper()
-
     static protected kafkaProducer = new KafkaProducerBuilder<String, Bytes>().port(kafkaPort).build()
 
     protected KPipes kpipes
 
     protected home = createTempDir()
+
+    protected Json json
 
     @Before
     void kpipesTestBefore() {
@@ -36,6 +37,7 @@ class KPipesTest {
         System.setProperty('applicationId', uuid())
         System.setProperty('nodeId', uuid())
         kpipes = kpipes()
+        json = kpipes.serviceRegistry().service(Json)
         beforeKPipesStarted(kpipes)
     }
 
@@ -60,7 +62,7 @@ class KPipesTest {
     // Producer helpers
 
     protected void send(String topic, String key, Object event) {
-        kafkaProducer.send(new ProducerRecord<String, Bytes>(topic, key, new Bytes(json.writeValueAsBytes(event))))
+        kafkaProducer.send(new ProducerRecord(topic, key, json.asBytes(event)))
     }
 
 }
